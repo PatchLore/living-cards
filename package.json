@@ -1,0 +1,35 @@
+{
+  "name": "living-cards",
+  "version": "1.0.0",
+  "description": "A minimal Next.js (App Router) + TypeScript + Tailwind + Stripe starter for sending a digital animated card.",
+  "main": "tailwind.config.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "next": "^15.5.7",
+    "prisma": "^6.19.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "stripe": "^20.0.0",
+    "uuid": "^13.0.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.9.3"
+  }
+}

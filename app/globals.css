@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@source "../app";
+
+@source "../components";
+
+
+:root {
+  --bg: #0f1724;
+  --panel: #0b1220;
+  --muted: #94a3b8;
+}
+
+
+html, body, #__next {
+  height: 100%;
+}
+
+
+body {
+  @apply bg-slate-900 text-slate-100 antialiased;
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 50%);
+}
+
+
+.card-panel {
+  @apply bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-xl p-6;
+}
+
+/* ❄️ ELEGANT DRIFTING SNOW — PREMIUM SLOW FALL */
+
+/* Base container */
+.snow-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* LAYER 1 — Large, slow, elegant flakes */
+.snow-overlay::before {
+  content: "";
+  position: absolute;
+  top: -150px;
+  left: -50px;
+  width: 300%;
+  height: 300%;
+  background-image:
+    radial-gradient(8px 8px at 15% 20%, rgba(255,255,255,0.9) 70%, transparent 30%),
+    radial-gradient(7px 7px at 60% 10%, rgba(255,255,255,0.85) 70%, transparent 30%),
+    radial-gradient(10px 10px at 80% 45%, rgba(255,255,255,0.9) 75%, transparent 25%),
+    radial-gradient(9px 9px at 30% 70%, rgba(255,255,255,0.9) 75%, transparent 25%);
+  animation: snowDriftLarge 18s linear infinite;
+  opacity: 0.9;
+}
+
+/* LAYER 2 — Medium flakes, gentle sway */
+.snow-overlay::after {
+  content: "";
+  position: absolute;
+  top: -150px;
+  left: -50px;
+  width: 300%;
+  height: 300%;
+  background-image:
+    radial-gradient(6px 6px at 20% 15%, rgba(255,255,255,0.75) 70%, transparent 30%),
+    radial-gradient(6px 6px at 50% 60%, rgba(255,255,255,0.8) 70%, transparent 30%),
+    radial-gradient(5px 5px at 90% 35%, rgba(255,255,255,0.7) 70%, transparent 30%),
+    radial-gradient(5px 5px at 40% 85%, rgba(255,255,255,0.8) 70%, transparent 30%);
+  animation: snowDriftMedium 14s linear infinite;
+  opacity: 0.75;
+}
+
+/* KEYFRAMES — Slow drifting movement */
+@keyframes snowDriftLarge {
+  0% {
+    transform: translateY(-200px) translateX(0);
+  }
+  100% {
+    transform: translateY(100vh) translateX(40px);
+  }
+}
+
+@keyframes snowDriftMedium {
+  0% {
+    transform: translateY(-200px) translateX(-20px);
+  }
+  100% {
+    transform: translateY(100vh) translateX(20px);
+  }
+}
+
+/* ❄️ BLIZZARD MODE — heavy snowfall, guaranteed visible */
+
+/* Snow container */
+.snow-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Single snowflake */
+.snowflake {
+  position: absolute;
+  top: -10px;
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.9;
+  filter: blur(1px);
+  animation: fall linear infinite;
+  left: calc(100% * var(--x));
+  /* duration and delay set below using CSS vars */
+  animation-duration: calc(5s + 10s * var(--d));
+  animation-delay: calc(-10s * var(--d));
+}
+
+/* Randomize sizing */
+.snowflake:nth-child(odd) { width: 6px; height: 6px; opacity: 0.75; }
+.snowflake:nth-child(3n) { width: 10px; height: 10px; opacity: 0.9; }
+
+/* Keyframes for falling + drifting */
+@keyframes fall {
+  0% {
+    transform: translateY(-10px) translateX(0);
+  }
+  100% {
+    transform: translateY(110vh) translateX(40px);
+  }
+}
+
