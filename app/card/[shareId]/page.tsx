@@ -4,7 +4,7 @@ import prisma from "../../../lib/prisma";
 export default async function Page({
   params,
 }: {
-  params: { shareId: string };
+  params: any;
 }) {
   const { shareId } = params;
   const order = await prisma.cardOrder.findUnique({ where: { shareId } });
