@@ -1,11 +1,15 @@
-import { loadStripe } from "@stripe/stripe-js";
-import type { Stripe } from "@stripe/stripe-js";
+import { loadStripe, type Stripe } from "@stripe/stripe-js";
+
+// The Stripe object returned by loadStripe() has redirectToCheckout.
+// Ensure Typescript uses the browser Stripe type.
 
 let stripePromise: Promise<Stripe | null> | null = null;
 
-export default function getStripe(): Promise<Stripe | null> {
+export default function getStripe() {
   if (!stripePromise) {
-    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+    stripePromise = loadStripe(
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
+    );
   }
   return stripePromise;
 }
