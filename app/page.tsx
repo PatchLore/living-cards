@@ -56,10 +56,10 @@ const CARDS: CardItem[] = [
   },
   // Birthday Cards
   {
-    key: "birthday-sparkle-bouquet",
-    title: "Birthday Sparkle Bouquet",
-    desc: "Glowing balloons rise softly through warm light filled with drifting golden sparkles. Gentle festive motion creates an uplifting and joyful birthday moment.",
-    src: "/cards/Birthday1.mp4",
+    key: "birthday-rose-bloom",
+    title: "Birthday Rose Bloom",
+    desc: "A single rose gently blooms in soft cinematic light with warm drifting golden dust. Smooth delicate motion creates a refined and beautifully elegant birthday moment.",
+    src: "/cards/rose.mp4",
     label: "Limited Edition",
   },
   {
@@ -71,15 +71,8 @@ const CARDS: CardItem[] = [
   },
   // Thank You Cards
   {
-    key: "thank-you-florals-i",
-    title: "Thank You Florals I",
-    desc: "Delicate blush-toned florals rest gently within a soft warm ambient light. Calm refined textures create a peaceful and heartfelt moment of gratitude.",
-    src: "/cards/Thankyou1.mp4",
-    label: "Limited Edition",
-  },
-  {
-    key: "thank-you-florals-ii",
-    title: "Thank You Florals II",
+    key: "thank-you-florals",
+    title: "Thank You Florals",
     desc: "Soft neutral florals drift gracefully across a warm minimal background. Gentle balanced lighting creates a sincere and soothing moment of gratitude.",
     src: "/cards/Thankyou2.mp4",
     label: "Limited Edition",
@@ -285,16 +278,66 @@ export default function Home() {
                 <p className="text-xs text-right text-slate-700">{message.length}/240</p>
               </div>
 
-              <div className="flex items-center gap-3">
-                <button className="px-5 py-3 rounded-2xl bg-amber-500 text-white font-semibold shadow-md">
-                  Continue to Payment
-                </button>
-                <button
-                  onClick={() => setSelectedCard(null)}
-                  className="px-4 py-3 rounded-2xl border border-slate-200 text-slate-700"
-                >
-                  Back to Collection
-                </button>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <button className="px-5 py-3 rounded-2xl bg-amber-500 text-white font-semibold shadow-md">
+                    Continue to Payment
+                  </button>
+                  <button
+                    onClick={() => setSelectedCard(null)}
+                    className="px-4 py-3 rounded-2xl border border-slate-200 text-slate-700"
+                  >
+                    Back to Collection
+                  </button>
+                </div>
+                {/* Temporary Stripe Diagnostic Button - REMOVE AFTER TESTING */}
+                <div className="pt-4 border-t border-slate-200">
+                  <p className="text-xs text-slate-500 mb-2">🔧 Stripe Diagnostic Tools:</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={async () => {
+                        try {
+                          const res = await fetch("/api/stripe-diagnostic");
+                          const data = await res.json();
+                          console.log("📊 Stripe Diagnostic:", data);
+                          alert(`Diagnostic complete! Check console for details.\n\nIssues found: ${data.issues?.length || 0}\n\nSee browser console for full report.`);
+                        } catch (error) {
+                          console.error("Diagnostic error:", error);
+                          alert("Failed to run diagnostic. Check console.");
+                        }
+                      }}
+                      className="px-3 py-2 text-xs rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200"
+                    >
+                      Run Diagnostic
+                    </button>
+                    <button
+                      onClick={async () => {
+                        try {
+                          console.log("🧪 Testing POST /api/checkout...");
+                          const res = await fetch("/api/checkout", { method: "POST" });
+                          const data = await res.json();
+                          console.log("✅ Checkout Response:", data);
+                          
+                          if (res.ok && data.id) {
+                            if (data.id === "dummy-session-id-build") {
+                              alert("⚠️ Checkout returned dummy session ID. STRIPE_SECRET_KEY may be missing.");
+                            } else {
+                              alert(`✅ Checkout successful!\n\nSession ID: ${data.id}\n\nNote: This endpoint returns session.id, not session.url. You may need to use Stripe.js to redirect.`);
+                            }
+                          } else {
+                            alert(`❌ Checkout failed!\n\nError: ${data.error || "Unknown error"}\n\nCheck console for details.`);
+                          }
+                        } catch (error) {
+                          console.error("❌ Checkout test error:", error);
+                          alert("Failed to test checkout. Check console.");
+                        }
+                      }}
+                      className="px-3 py-2 text-xs rounded-lg bg-green-100 text-green-700 hover:bg-green-200"
+                    >
+                      Test Checkout
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
