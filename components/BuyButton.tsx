@@ -1,16 +1,19 @@
 "use client";
 
-import type { Stripe } from "@stripe/stripe-js";
 import getStripe from "../lib/getStripe";
 
 export default function BuyButton() {
   const handleBuy = async () => {
     const res = await fetch("/api/checkout", { method: "POST" });
     const { id } = await res.json();
-    const stripe = (await getStripe()) as Stripe | null;
 
-    if (stripe) {
+    const stripe = await getStripe();
+
+    // Safe runtime check — no TS types required
+    if (stripe && typeof stripe.redirectToCheckout === "function") {
       await stripe.redirectToCheckout({ sessionId: id });
+    } else {
+      console.error("Stripe failed to load or missing redirectToCheckout");
     }
   };
 
@@ -23,5 +26,3 @@ export default function BuyButton() {
     </button>
   );
 }
-
-
