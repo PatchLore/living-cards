@@ -1,7 +1,8 @@
 import { loadStripe, type Stripe } from "@stripe/stripe-js";
 
-// A single shared promise across the app:
-let stripePromise: Promise<Stripe | null>;
+// Shared promise (Stripe recommends this)
+
+let stripePromise: Promise<Stripe | null> | null = null;
 
 export default function getStripe() {
   if (!stripePromise) {
