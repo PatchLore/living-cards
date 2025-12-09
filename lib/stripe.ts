@@ -6,8 +6,8 @@ if (!secret) {
   console.warn("STRIPE_SECRET_KEY is not set. Stripe client will be created with empty key.");
 }
 
-const stripe = new Stripe(secret, {
-  apiVersion: "2022-11-15",
+export const stripe = new Stripe(secret, {
+  apiVersion: "2023-10-16" as unknown as any,
 });
 
 export default stripe;
