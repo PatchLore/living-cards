@@ -1,6 +1,6 @@
  "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 type CardItem = {
   key: string;
@@ -11,25 +11,100 @@ type CardItem = {
 };
 
 const CARDS: CardItem[] = [
+  // Christmas Cards
   {
-    key: "christmas_tree",
+    key: "starlit-christmas-tree",
     title: "Starlit Christmas Tree",
-    desc: "A warm festive glow with gentle, shimmering lights.",
+    desc: "A bright Christmas tree glimmers warmly beneath a sky filled with soft winter stars. Gentle golden highlights create a magical and uplifting festive moment.",
     src: "/cards/christmas_tree.mp4",
     label: "Limited Edition",
   },
   {
-    key: "warm_wishes",
-    title: "Warm Wishes",
-    desc: "Soft golden tones with cozy motion and gentle sparkle.",
-    src: "/cards/warm_wishes.mp4",
+    key: "christmas-night-moonlight",
+    title: "Christmas Night Moonlight",
+    desc: "A calm winter night unfolds beneath a glowing moon with gentle drifting snow. Soft atmospheric tones create a serene and peaceful seasonal moment.",
+    src: "/cards/moonlight.mp4",
     label: "Limited Edition",
   },
   {
-    key: "with_love",
-    title: "With Love",
-    desc: "A tender animation filled with warmth and heartfelt charm.",
-    src: "/cards/with_love.mp4",
+    key: "snowy-cottage-evening",
+    title: "Snowy Cottage Evening",
+    desc: "A cozy snow-covered cottage glows warmly beneath softly falling winter flakes. Peaceful gentle lighting creates a comforting and serene festive moment.",
+    src: "/cards/Christmas2.mp4",
+    label: "Limited Edition",
+  },
+  {
+    key: "winter-forest-tree",
+    title: "Winter Forest Tree",
+    desc: "A beautiful Christmas tree stands bright within a quiet snow-covered forest. Calm drifting snowflakes create a peaceful and enchanting festive moment.",
+    src: "/cards/XmasTree.mp4",
+    label: "Limited Edition",
+  },
+  {
+    key: "golden-christmas-tree-rise",
+    title: "Golden Christmas Tree Rise",
+    desc: "A radiant Christmas tree glows with warm golden light rising softly in the night. Elegant shimmering sparks create a refined and magical festive moment.",
+    src: "/cards/Christmas1.mp4",
+    label: "Limited Edition",
+  },
+  {
+    key: "santas-moonlit-ride",
+    title: "Santa's Moonlit Ride",
+    desc: "Santa travels across a glowing winter sky surrounded by soft drifting starlight. Nostalgic warm tones create a timeless and comforting festive moment.",
+    src: "/cards/Santa.mp4",
+    label: "Limited Edition",
+  },
+  // Birthday Cards
+  {
+    key: "birthday-sparkle-bouquet",
+    title: "Birthday Sparkle Bouquet",
+    desc: "Glowing balloons rise softly through warm light filled with drifting golden sparkles. Gentle festive motion creates an uplifting and joyful birthday moment.",
+    src: "/cards/Birthday1.mp4",
+    label: "Limited Edition",
+  },
+  {
+    key: "elegant-floral-birthday",
+    title: "Elegant Floral Birthday",
+    desc: "Soft watercolor florals bloom gracefully with delicate blush and ivory tones. Warm subtle highlights create a refined and beautifully elegant birthday moment.",
+    src: "/cards/Birthday2.mp4",
+    label: "Limited Edition",
+  },
+  // Thank You Cards
+  {
+    key: "thank-you-florals-i",
+    title: "Thank You Florals I",
+    desc: "Delicate blush-toned florals rest gently within a soft warm ambient light. Calm refined textures create a peaceful and heartfelt moment of gratitude.",
+    src: "/cards/Thankyou1.mp4",
+    label: "Limited Edition",
+  },
+  {
+    key: "thank-you-florals-ii",
+    title: "Thank You Florals II",
+    desc: "Soft neutral florals drift gracefully across a warm minimal background. Gentle balanced lighting creates a sincere and soothing moment of gratitude.",
+    src: "/cards/Thankyou2.mp4",
+    label: "Limited Edition",
+  },
+  // Love / Heart Cards
+  {
+    key: "heart-of-light",
+    title: "Heart of Light",
+    desc: "A glowing heart formed from warm golden light shines gently in the soft darkness. Smooth subtle tones create a tender and beautifully elegant romantic moment.",
+    src: "/cards/heart1.mp4",
+    label: "Limited Edition",
+  },
+  {
+    key: "golden-heart-glow",
+    title: "Golden Heart Glow",
+    desc: "A radiant heart glows softly with shimmering golden energy in the quiet darkness. Warm calming highlights create a peaceful and deeply heartfelt romantic moment.",
+    src: "/cards/heart2.mp4",
+    label: "Limited Edition",
+  },
+  // General Cards
+  {
+    key: "warm-wishes",
+    title: "Warm Wishes",
+    desc: "Soft golden light moves gently across a warm glowing winter scene. Cozy subtle motion creates a comforting and heartfelt seasonal moment.",
+    src: "/cards/warm_wishes.mp4",
     label: "Limited Edition",
   },
 ];
@@ -52,6 +127,37 @@ export default function Home() {
       }, 80);
     }
   }, [selectedCard]);
+
+  const CATEGORY_ORDER: Record<string, number> = {
+    "Christmas": 0,
+    "Birthday": 1,
+    "Thank You": 2,
+    "Love": 3,
+    "General": 4,
+  };
+
+  function getCategory(cardKey: string): string {
+    const k = cardKey.toLowerCase();
+    if (k.includes("christmas") || k.includes("xmas") || k.includes("santa")) return "Christmas";
+    if (k.includes("birthday")) return "Birthday";
+    if (k.includes("thank")) return "Thank You";
+    if (k.includes("heart") || k.includes("love")) return "Love";
+    return "General";
+  }
+
+  const sortedCards = React.useMemo(() => {
+    return [...CARDS].sort((a, b) => {
+      const categoryA = getCategory(a.key);
+      const categoryB = getCategory(b.key);
+      const catA = CATEGORY_ORDER[categoryA] ?? 999;
+      const catB = CATEGORY_ORDER[categoryB] ?? 999;
+
+      if (catA !== catB) return catA - catB;
+
+      // alphabetic fallback inside the same category
+      return a.title.localeCompare(b.title);
+    });
+  }, []);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 px-6 relative overflow-hidden">
@@ -78,7 +184,7 @@ export default function Home() {
           </button>
           <a
             href="/corporate"
-            className="inline-flex items-center px-5 py-3 rounded-2xl border border-amber-400 text-amber-200 hover:bg-amber-500/10 transition"
+            className="inline-flex items-center px-4 py-2 rounded-2xl bg-slate-800/80 hover:bg-slate-700 border border-slate-500 text-slate-100 font-medium transition"
           >
             For Business / Bulk Orders
           </a>
@@ -94,7 +200,7 @@ export default function Home() {
         ref={collectionRef}
         className="max-w-6xl mx-auto mb-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
       >
-        {CARDS.map((card) => (
+        {sortedCards.map((card) => (
           <article
             key={card.key}
             className="rounded-3xl bg-white border border-slate-200 p-4 shadow-lg hover:shadow-2xl hover:scale-[1.02] transition transform"

@@ -10,20 +10,23 @@ export default function CorporatePage() {
         </p>
 
         <a
-          href="mailto:hello@patchlore.com"
-          className="inline-flex items-center px-6 py-3 rounded-2xl bg-amber-500 text-white font-medium shadow-md"
+          href="mailto:info@cardroots.com?subject=Corporate%20Bulk%20Card%20Order"
+          className="inline-flex items-center px-6 py-3 rounded-2xl bg-amber-500 text-white font-medium shadow-md hover:bg-amber-600 transition"
         >
           Contact Us for a Bulk Quote
         </a>
 
-        <div className="mt-6 text-slate-600">
-          <h2 className="text-lg font-medium mb-2">Drop-service workflow</h2>
-          <p>
-            Prefer us to manage your recipient list? Simply email us your names, messages, and delivery dates — we’ll handle the rest.
+        <div className="mt-8 text-slate-600">
+          <h2 className="text-xl font-semibold mb-3 text-slate-800">Drop-service workflow</h2>
+          <p className="mb-4">
+            Prefer us to manage your recipient list? Simply email us your names, messages, and delivery dates — we'll handle the rest.
           </p>
           <p className="mt-3">
             Sending 100+ holiday cards?{" "}
-            <a href="mailto:hello@patchlore.com" className="underline text-blue-300">
+            <a
+              href="mailto:info@cardroots.com?subject=Managed%20Sending%20Service%20Enquiry"
+              className="underline text-blue-600 hover:text-blue-700"
+            >
               Request a Managed Sending Service
             </a>
           </p>

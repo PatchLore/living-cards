@@ -32,7 +32,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Every card plants a tree — helping restore forests and support sustainable projects worldwide. 🌱
             <div className="mt-2">
               Sending 100+ holiday cards?{" "}
-              <a href="mailto:hello@patchlore.com" className="underline text-blue-300">
+              <a
+                href="mailto:info@cardroots.com?subject=Managed%20Sending%20Service%20Enquiry"
+                className="underline text-blue-300"
+              >
                 Request a Managed Sending Service
               </a>
             </div>
