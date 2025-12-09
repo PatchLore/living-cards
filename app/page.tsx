@@ -121,6 +121,38 @@ export default function Home() {
     }
   }, [selectedCard]);
 
+  const handleCheckout = async () => {
+    if (!selectedCard) {
+      alert("Please select a card first.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cardKey: selectedCard,
+          // Recipient + message can be added to Stripe metadata later if needed
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error("Stripe checkout error:", data);
+        alert("Unable to start checkout. Please try again.");
+      }
+    } catch (error) {
+      console.error("Checkout request failed:", error);
+      alert("Something went wrong starting checkout. Please try again.");
+    }
+  };
+
   const CATEGORY_ORDER: Record<string, number> = {
     "Christmas": 0,
     "Birthday": 1,
@@ -280,7 +312,10 @@ export default function Home() {
 
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <button className="px-5 py-3 rounded-2xl bg-amber-500 text-white font-semibold shadow-md">
+                  <button
+                    onClick={handleCheckout}
+                    className="px-5 py-3 rounded-2xl bg-amber-500 text-white font-semibold shadow-md"
+                  >
                     Continue to Payment
                   </button>
                   <button
