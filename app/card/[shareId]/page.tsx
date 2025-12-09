@@ -1,11 +1,11 @@
 import React from "react";
 import prisma from "../../../lib/prisma";
 
-type Props = {
+export default async function Page({
+  params,
+}: {
   params: { shareId: string };
-};
-
-export default async function CardPage({ params }: Props) {
+}) {
   const { shareId } = params;
   const order = await prisma.cardOrder.findUnique({ where: { shareId } });
 
