@@ -67,7 +67,7 @@ export default function Home() {
         <p className="text-lg text-slate-700 max-w-2xl mx-auto">
           A beautiful animated card. A personal message. A real tree planted.
         </p>
-        <div className="pt-4">
+        <div className="pt-4 flex items-center justify-center gap-3">
           <button
             onClick={() =>
               collectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
@@ -76,6 +76,15 @@ export default function Home() {
           >
             Browse Limited Collection
           </button>
+          <a
+            href="/corporate"
+            className="inline-flex items-center px-5 py-3 rounded-2xl border border-amber-400 text-amber-200 hover:bg-amber-500/10 transition"
+          >
+            For Business / Bulk Orders
+          </a>
+        </div>
+        <div className="mt-4 text-sm text-slate-600">
+          For every digital card sent, we fund the planting of a real tree. Your small gesture makes a real-world impact. 🌱
         </div>
       </section>
 
@@ -104,7 +113,8 @@ export default function Home() {
               />
             </div>
             <h3 className="text-lg font-semibold text-slate-800 mb-1">{card.title}</h3>
-            <p className="text-sm text-slate-700 mb-4">{card.desc}</p>
+            <p className="text-sm text-slate-700 mb-2">{card.desc}</p>
+            <div className="text-sm text-slate-800 font-medium mb-3">£5 — Includes 1 tree planted 🌱</div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSelectedCard(card.key)}
