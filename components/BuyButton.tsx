@@ -9,11 +9,10 @@ export default function BuyButton() {
 
     const stripe = await getStripe();
 
-    // Safe runtime check — no TS types required
-    if (stripe && typeof stripe.redirectToCheckout === "function") {
-      await stripe.redirectToCheckout({ sessionId: id });
+    if (stripe && stripe.checkout && typeof stripe.checkout.redirectToCheckout === "function") {
+      await stripe.checkout.redirectToCheckout({ sessionId: id });
     } else {
-      console.error("Stripe failed to load or missing redirectToCheckout");
+      console.error("Stripe checkout is unavailable");
     }
   };
 
