@@ -1,15 +1,19 @@
-import Stripe from "stripe";
+// Server-side Stripe helper — lazy-import to avoid build-time execution
 
-const secret = process.env.STRIPE_SECRET_KEY || "";
+export default async function getServerStripe() {
+  const { default: Stripe } = await import("stripe");
 
-if (!secret) {
-  console.warn("STRIPE_SECRET_KEY is not set. Stripe client will be created with empty key.");
+  const secret = process.env.STRIPE_SECRET_KEY || "";
+  if (!secret) {
+    console.warn("STRIPE_SECRET_KEY is not set. Server Stripe cannot be initialized.");
+    return null;
+  }
+
+  const stripe = new Stripe(secret, {
+    apiVersion: "2023-10-16" as any,
+  });
+
+  return stripe;
 }
-
-export const stripe = new Stripe(secret, {
-  apiVersion: "2023-10-16" as unknown as any,
-});
-
-export default stripe;
 
 
