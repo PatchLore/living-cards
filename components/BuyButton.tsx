@@ -7,12 +7,12 @@ export default function BuyButton() {
     const res = await fetch("/api/checkout", { method: "POST" });
     const { id } = await res.json();
 
-    const stripe = await getStripe();
+    const stripe = (await getStripe()) as any; // ← bypass Stripe TS issues completely
 
-    if (stripe && stripe.checkout && typeof stripe.checkout.redirectToCheckout === "function") {
-      await stripe.checkout.redirectToCheckout({ sessionId: id });
+    if (stripe && typeof stripe.redirectToCheckout === "function") {
+      await stripe.redirectToCheckout({ sessionId: id });
     } else {
-      console.error("Stripe checkout is unavailable");
+      console.error("Stripe redirectToCheckout is unavailable");
     }
   };
 
