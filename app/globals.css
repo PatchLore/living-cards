@@ -31,63 +31,88 @@ body {
 
 /* Base container */
 .snow-overlay {
-  position: absolute;
-  inset: 0;
   pointer-events: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
   overflow: hidden;
+  z-index: 9999;
 }
 
-/* LAYER 1 — Large, slow, elegant flakes */
+/* Layer 1 — light flakes */
 .snow-overlay::before {
   content: "";
   position: absolute;
-  top: -150px;
-  left: -50px;
-  width: 300%;
-  height: 300%;
+  top: -200px; /* ensures flakes exist above viewport */
+  left: 0;
+  width: 200%;
+  height: 200%;
   background-image:
-    radial-gradient(8px 8px at 15% 20%, rgba(255,255,255,0.9) 70%, transparent 30%),
-    radial-gradient(7px 7px at 60% 10%, rgba(255,255,255,0.85) 70%, transparent 30%),
-    radial-gradient(10px 10px at 80% 45%, rgba(255,255,255,0.9) 75%, transparent 25%),
-    radial-gradient(9px 9px at 30% 70%, rgba(255,255,255,0.9) 75%, transparent 25%);
-  animation: snowDriftLarge 18s linear infinite;
-  opacity: 0.9;
+    radial-gradient(3px 3px at 10% 20%, rgba(255,255,255,0.9) 50%, transparent 50%),
+    radial-gradient(2px 2px at 80% 30%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(4px 4px at 50% 80%, rgba(255,255,255,0.8) 50%, transparent 50%);
+  background-size: 400px 400px;
+  animation: blizzard-fall-1 15s linear infinite;
+  opacity: 0.8;
 }
 
-/* LAYER 2 — Medium flakes, gentle sway */
+/* Layer 2 — medium flakes */
 .snow-overlay::after {
   content: "";
   position: absolute;
-  top: -150px;
+  top: -250px;
   left: -50px;
-  width: 300%;
-  height: 300%;
+  width: 220%;
+  height: 220%;
   background-image:
-    radial-gradient(6px 6px at 20% 15%, rgba(255,255,255,0.75) 70%, transparent 30%),
-    radial-gradient(6px 6px at 50% 60%, rgba(255,255,255,0.8) 70%, transparent 30%),
-    radial-gradient(5px 5px at 90% 35%, rgba(255,255,255,0.7) 70%, transparent 30%),
-    radial-gradient(5px 5px at 40% 85%, rgba(255,255,255,0.8) 70%, transparent 30%);
-  animation: snowDriftMedium 14s linear infinite;
-  opacity: 0.75;
+    radial-gradient(5px 5px, rgba(255,255,255,0.9) 55%, transparent 45%),
+    radial-gradient(3px 3px, rgba(255,255,255,0.7) 55%, transparent 45%);
+  background-size: 300px 300px;
+  animation: blizzard-fall-2 10s linear infinite;
+  opacity: 0.9;
 }
 
-/* KEYFRAMES — Slow drifting movement */
-@keyframes snowDriftLarge {
-  0% {
-    transform: translateY(-200px) translateX(0);
-  }
-  100% {
-    transform: translateY(100vh) translateX(40px);
-  }
+/* Optional Layer 3 (heaviest blizzard) */
+.snow-overlay-layer3 {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 10000;
 }
 
-@keyframes snowDriftMedium {
-  0% {
-    transform: translateY(-200px) translateX(-20px);
-  }
-  100% {
-    transform: translateY(100vh) translateX(20px);
-  }
+.snow-overlay-layer3::before {
+  content: "";
+  position: absolute;
+  top: -300px;
+  left: -100px;
+  width: 240%;
+  height: 240%;
+  background-image:
+    radial-gradient(6px 6px, rgba(255,255,255,1) 60%, transparent 40%),
+    radial-gradient(8px 8px, rgba(255,255,255,0.9) 60%, transparent 40%);
+  background-size: 350px 350px;
+  animation: blizzard-fall-3 7s linear infinite;
+  opacity: 1;
+}
+
+/* Keyframes — ensure all snow starts fully offscreen */
+@keyframes blizzard-fall-1 {
+  0% { transform: translateY(-200px); }
+  100% { transform: translateY(200px); }
+}
+
+@keyframes blizzard-fall-2 {
+  0% { transform: translateY(-300px); }
+  100% { transform: translateY(300px); }
+}
+
+@keyframes blizzard-fall-3 {
+  0% { transform: translateY(-350px); }
+  100% { transform: translateY(350px); }
 }
 
 /* ❄️ BLIZZARD MODE — heavy snowfall, guaranteed visible */
