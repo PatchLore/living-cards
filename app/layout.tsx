@@ -1,5 +1,6 @@
 import "./globals.css";
 import React from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: "Living Tree Cards",
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </div>
         </div>
+        <Analytics />
       </body>
     </html>
   );
