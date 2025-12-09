@@ -1,13 +1,17 @@
-"use client";
+ "use client";
 
+import type { Stripe } from "@stripe/stripe-js";
 import getStripe from "../lib/getStripe";
 
 export default function BuyButton() {
   const handleBuy = async () => {
     const res = await fetch("/api/checkout", { method: "POST" });
     const { id } = await res.json();
-    const stripe = await getStripe();
-    await stripe?.redirectToCheckout({ sessionId: id });
+    const stripe = (await getStripe()) as Stripe | null;
+
+    if (stripe) {
+      await stripe.redirectToCheckout({ sessionId: id });
+    }
   };
 
   return (
