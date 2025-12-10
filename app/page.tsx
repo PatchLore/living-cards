@@ -135,7 +135,8 @@ export default function Home() {
         },
         body: JSON.stringify({
           cardKey: selectedCard,
-          // Recipient + message can be added to Stripe metadata later if needed
+          recipient: recipient,
+          message: message,
         }),
       });
 
