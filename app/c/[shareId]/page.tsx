@@ -1,5 +1,6 @@
-import crypto from "crypto";
 import { notFound } from "next/navigation";
+import { getCardByShareId } from "../../../lib/db/cards";
+import CopyButton from "./CopyButton";
 
 export const runtime = "nodejs";
 
@@ -19,65 +20,28 @@ const CARD_VIDEO_MAP: Record<string, string> = {
   "warm-wishes": "warm_wishes.mp4",
 };
 
-function getShareSecret() {
-  const secret = process.env.CARDROOTS_SHARE_SECRET;
-  if (!secret) {
-    throw new Error("CARDROOTS_SHARE_SECRET is not set");
-  }
-  return secret;
-}
+export default async function PrettySharePage({
+  params,
+}: {
+  params: { shareId: string };
+}) {
+  const { shareId } = params;
+  
+  // 1. Fetch card from database
+  const card = await getCardByShareId(shareId);
 
-function verifyShareToken(token: string): {
-  cardKey: string;
-  recipient: string;
-  message: string;
-} {
-  const secret = getShareSecret();
-  const parts = token.split(".");
-
-  if (parts.length !== 2) {
-    throw new Error("Invalid token format");
-  }
-
-  const [payloadB64, sig] = parts;
-
-  const expectedSig = crypto
-    .createHmac("sha256", secret)
-    .update(payloadB64)
-    .digest("base64url");
-
-  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) {
-    throw new Error("Invalid token signature");
-  }
-
-  const json = Buffer.from(payloadB64, "base64url").toString("utf8");
-  const data = JSON.parse(json);
-
-  if (!data.cardKey || !data.recipient || !data.message) {
-    throw new Error("Invalid token payload");
-  }
-
-  return data;
-}
-
-export default function PrettySharePage({ params }: { params: { shareId: string } }) {
-  let cardKey: string;
-  let recipient: string;
-  let message: string;
-
-  try {
-    const decoded = verifyShareToken(params.shareId);
-    cardKey = decoded.cardKey;
-    recipient = decoded.recipient;
-    message = decoded.message;
-  } catch (e) {
-    console.error("❌ Invalid share token:", e);
+  if (!card) {
+    console.error(`[CARD-VIEWER] Card not found for share_id: ${shareId}`);
     notFound();
   }
 
-  const videoFile = CARD_VIDEO_MAP[cardKey];
+  // 2. Get video file from mapping
+  const videoFile = CARD_VIDEO_MAP[card.card_key];
 
   if (!videoFile) {
+    console.error(
+      `[CARD-VIEWER] No video mapping found for card_key: ${card.card_key}`
+    );
     notFound();
   }
 
@@ -92,7 +56,8 @@ export default function PrettySharePage({ params }: { params: { shareId: string 
             Your Living Card 💌
           </h1>
           <p className="text-slate-600">
-            A premium digital greeting, paired with a real tree planted in your name. 🌱
+            A premium digital greeting, paired with a real tree planted in your
+            name. 🌱
           </p>
         </div>
 
@@ -118,11 +83,14 @@ export default function PrettySharePage({ params }: { params: { shareId: string 
               </div>
 
               <p className="text-base text-slate-700 font-medium">
-                To: <span className="font-semibold text-slate-900">{recipient}</span>
+                To:{" "}
+                <span className="font-semibold text-slate-900">
+                  {card.recipient_name}
+                </span>
               </p>
               <p className="mt-2 text-xs text-slate-500">
-                Animated front cover · This is the looping Living Card animation your
-                recipient will see first.
+                Animated front cover · This is the looping Living Card animation
+                your recipient will see first.
               </p>
             </div>
           </div>
@@ -140,14 +108,14 @@ export default function PrettySharePage({ params }: { params: { shareId: string 
                   A Personal Note
                 </p>
                 <p className="whitespace-pre-wrap text-slate-800 leading-relaxed text-base">
-                  {message}
+                  {card.message}
                 </p>
               </div>
 
               <div className="mt-6 flex items-center justify-between gap-3 text-xs text-slate-500">
                 <span>
-                  ✨ This message is shown with your card when your recipient opens the
-                  link.
+                  ✨ This message is shown with your card when your recipient
+                  opens the link.
                 </span>
                 <span className="whitespace-nowrap">
                   🌱 1 tree planted with this card
@@ -157,29 +125,75 @@ export default function PrettySharePage({ params }: { params: { shareId: string 
           </div>
         </div>
 
+        {/* Tree Certificate Section */}
+        <div className="mt-8 text-center">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">
+            Tree Certificate
+          </h3>
+
+          {/* Tree Metadata */}
+          {(card.tree_species || card.tree_location || card.tree_date_planted) && (
+            <div className="mb-4 text-center text-sm text-slate-600 space-y-1">
+              {card.tree_species && (
+                <p>
+                  🌱 <span className="font-semibold">Species:</span>{" "}
+                  {card.tree_species}
+                </p>
+              )}
+              {card.tree_location && (
+                <p>
+                  📍 <span className="font-semibold">Location:</span>{" "}
+                  {card.tree_location}
+                </p>
+              )}
+              {card.tree_date_planted && (
+                <p>
+                  📅 <span className="font-semibold">Planted:</span>{" "}
+                  {(() => {
+                    try {
+                      const date = new Date(card.tree_date_planted);
+                      if (isNaN(date.getTime())) return "Invalid date";
+                      return date.toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      });
+                    } catch {
+                      return "Invalid date";
+                    }
+                  })()}
+                </p>
+              )}
+            </div>
+          )}
+
+          {card.tree_certificate_url ? (
+            <a
+              href={card.tree_certificate_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 text-white font-semibold px-4 py-2 shadow hover:bg-emerald-700 transition"
+            >
+              🌱 View Tree Certificate
+            </a>
+          ) : (
+            <p className="text-center text-sm text-slate-400 mt-4">
+              🌱 Tree certificate will appear here once planting is confirmed.
+            </p>
+          )}
+        </div>
+
         {/* Actions */}
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href={videoSrc}
-            download={`${cardKey}.mp4`}
+            download={`${card.card_key}.mp4`}
             className="px-6 py-3 rounded-2xl bg-amber-500 text-white font-medium shadow-md hover:bg-amber-600 transition text-center"
           >
             Download Animated Front (MP4)
           </a>
 
-          <button
-            onClick={async () => {
-              try {
-                await navigator.clipboard.writeText(window.location.href);
-                alert("Share link copied!");
-              } catch {
-                alert("Failed to copy link.");
-              }
-            }}
-            className="px-6 py-3 rounded-2xl bg-slate-900 text-white font-medium shadow-md hover:bg-slate-950 transition"
-          >
-            Copy Card Link
-          </button>
+          <CopyButton />
         </div>
 
         <div className="mt-8 text-center text-sm text-slate-600">
