@@ -20,12 +20,8 @@ const CARD_VIDEO_MAP: Record<string, string> = {
   "warm-wishes": "warm_wishes.mp4",
 };
 
-export default async function PrettySharePage({
-  params,
-}: {
-  params: { shareId: string };
-}) {
-  const { shareId } = params;
+export default async function PrettySharePage(props: any) {
+  const { shareId } = await props.params;
   
   // 1. Fetch card from database
   const card = await getCardByShareId(shareId);
