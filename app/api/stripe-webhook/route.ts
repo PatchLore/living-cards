@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createCard } from "../../../lib/db/cards";
+import { sendCardEmail } from "../../../lib/email/sendCardEmail";
+import prisma from "../../../lib/prisma";
 
 // Important: Webhooks must use the Node.js runtime, not Edge
 export const runtime = "nodejs";
@@ -135,6 +137,37 @@ export async function POST(req: Request): Promise<NextResponse> {
         // 11. Log confirmation that internal card creation was triggered
         console.log("✅ [WEBHOOK] Internal card creation function was triggered and completed");
         console.log("✅ [WEBHOOK] Card is now available at share_id:", card.share_id);
+
+        // 12. Send email if not already sent
+        if (!card.email_sent && session.customer_details?.email) {
+          try {
+            console.log("📧 [WEBHOOK] Sending email to:", session.customer_details.email);
+            await sendCardEmail({
+              to: session.customer_details.email,
+              shareId: card.share_id,
+              recipientName: card.recipient_name,
+            });
+
+            // Mark email as sent
+            await prisma.card.update({
+              where: { id: card.id },
+              data: { emailSent: true },
+            });
+
+            console.log("✅ [WEBHOOK] Email sent successfully");
+          } catch (emailError: unknown) {
+            const errorMessage = emailError instanceof Error ? emailError.message : "Unknown error";
+            console.error("❌ [WEBHOOK] Email sending failed:", errorMessage);
+            // Don't fail the webhook if email fails - card is already created
+            // Log the error but continue
+          }
+        } else {
+          if (card.email_sent) {
+            console.log("ℹ️ [WEBHOOK] Email already sent for this card, skipping");
+          } else if (!session.customer_details?.email) {
+            console.log("ℹ️ [WEBHOOK] No customer email available, skipping email");
+          }
+        }
       } catch (cardError: unknown) {
         const errorMessage = cardError instanceof Error ? cardError.message : "Unknown error";
         console.error("❌ [WEBHOOK] Card creation failed:", errorMessage);

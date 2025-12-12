@@ -12,6 +12,7 @@ export interface Card {
   message: string;
   stripe_session_id: string;
   stripe_customer_email: string | null;
+  email_sent: boolean;
   tree_certificate_url: string | null;
   tree_id: string | null;
   tree_species: string | null;
@@ -33,6 +34,7 @@ function prismaCardToCard(card: {
   message: string;
   stripeSessionId: string;
   stripeCustomerEmail: string | null;
+  emailSent: boolean;
   treeCertificateUrl: string | null;
   treeId: string | null;
   treeSpecies: string | null;
@@ -49,6 +51,7 @@ function prismaCardToCard(card: {
     message: card.message,
     stripe_session_id: card.stripeSessionId,
     stripe_customer_email: card.stripeCustomerEmail,
+    email_sent: card.emailSent,
     tree_certificate_url: card.treeCertificateUrl,
     tree_id: card.treeId,
     tree_species: card.treeSpecies,
