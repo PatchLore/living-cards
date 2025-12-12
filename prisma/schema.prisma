@@ -25,6 +25,29 @@ model Card {
   cardKey             String
   recipientName       String
   message             String
+
+  stripeSessionId     String?
+  stripeCustomerEmail String?
+
+  treeCertificateUrl  String?
+  treeId              String?
+  treeSpecies         String?
+  treeLocation        String?
+  treeDatePlanted     DateTime?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([shareId])
+  @@index([stripeSessionId])
+}
+
+model Card {
+  id                  String   @id @default(uuid())
+  shareId             String   @unique
+  cardKey             String
+  recipientName       String
+  message             String
   stripeSessionId     String?
   stripeCustomerEmail String?
   treeCertificateUrl  String?
