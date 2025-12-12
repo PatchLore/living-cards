@@ -17,20 +17,20 @@ export async function POST(req: Request): Promise<NextResponse> {
   // 1. Log webhook arrival
   const timestamp = new Date().toISOString();
   const url = new URL(req.url);
-  console.log(`[STRIPE WEBHOOK] Webhook arrived at ${timestamp}`);
-  console.log(`[STRIPE WEBHOOK] Method: ${req.method}`);
-  console.log(`[STRIPE WEBHOOK] URL: ${url.pathname}`);
+  console.log(`[WEBHOOK] Webhook arrived at ${timestamp}`);
+  console.log(`[WEBHOOK] Method: ${req.method}`);
+  console.log(`[WEBHOOK] URL: ${url.pathname}`);
 
   // 2. Environment safety - Check STRIPE_WEBHOOK_SECRET first
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    console.error("[STRIPE WEBHOOK] STRIPE_WEBHOOK_SECRET is missing!");
+    console.error("[WEBHOOK] STRIPE_WEBHOOK_SECRET is missing!");
     return new NextResponse("Webhook secret not configured", { status: 500 });
   }
 
   // 3. Validate STRIPE_SECRET_KEY
   if (!process.env.STRIPE_SECRET_KEY) {
-    console.error("[STRIPE WEBHOOK] STRIPE_SECRET_KEY is missing!");
+    console.error("[WEBHOOK] STRIPE_SECRET_KEY is missing!");
     return new NextResponse("Stripe secret key not configured", { status: 500 });
   }
 
@@ -39,7 +39,7 @@ export async function POST(req: Request): Promise<NextResponse> {
   const signature = req.headers.get("stripe-signature") as string;
 
   if (!signature) {
-    console.error("[STRIPE WEBHOOK] No Stripe signature found on webhook request");
+    console.error("[WEBHOOK] No Stripe signature found on webhook request");
     return new NextResponse("Missing Stripe signature", { status: 400 });
   }
 
@@ -54,7 +54,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     );
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
-    console.error("[STRIPE WEBHOOK] Signature verification failed:", errorMessage);
+    console.error("[WEBHOOK] Signature verification failed:", errorMessage);
     return new NextResponse(
       `Webhook Error: Signature verification failed - ${errorMessage}`,
       { status: 400 }
@@ -62,8 +62,9 @@ export async function POST(req: Request): Promise<NextResponse> {
   }
 
   // 6. Log event details after verification
-  console.log(`[STRIPE WEBHOOK] Event verified - ID: ${event.id}, Type: ${event.type}, Livemode: ${event.livemode}`);
+  console.log(`[WEBHOOK] Event verified - ID: ${event.id}, Type: ${event.type}, Livemode: ${event.livemode}`);
 
+  // After verification, always return 200 - never throw errors
   // --- HANDLE EVENTS ---
 
   switch (event.type) {
@@ -71,9 +72,9 @@ export async function POST(req: Request): Promise<NextResponse> {
       const session = event.data.object as Stripe.Checkout.Session;
 
       // 7. Log session details
-      console.log(`[STRIPE WEBHOOK] Processing checkout.session.completed`);
-      console.log(`[STRIPE WEBHOOK] Session ID: ${session.id}`);
-      console.log(`[STRIPE WEBHOOK] Customer email: ${session.customer_details?.email || "Not provided"}`);
+      console.log(`[WEBHOOK] Processing checkout.session.completed`);
+      console.log(`[WEBHOOK] Session ID: ${session.id}`);
+      console.log(`[WEBHOOK] Customer email: ${session.customer_details?.email || "Not provided"}`);
 
       // Metadata from checkout
       const metadata = session.metadata || {};
@@ -81,11 +82,11 @@ export async function POST(req: Request): Promise<NextResponse> {
       const recipient = metadata.recipient;
       const message = metadata.message;
 
-      console.log(`[STRIPE WEBHOOK] Metadata - cardKey: ${cardKey || "MISSING"}, recipient: ${recipient || "MISSING"}`);
+      console.log(`[WEBHOOK] Metadata - cardKey: ${cardKey || "MISSING"}, recipient: ${recipient || "MISSING"}`);
 
       // Validate required metadata
       if (!cardKey || !recipient || !message) {
-        console.error(`[STRIPE WEBHOOK] Missing required metadata - cardKey: ${!!cardKey}, recipient: ${!!recipient}, message: ${!!message}`);
+        console.error(`[WEBHOOK] Missing required metadata - cardKey: ${!!cardKey}, recipient: ${!!recipient}, message: ${!!message}`);
         // Return 200 to prevent retries - missing metadata is a data issue, not a transient error
         return NextResponse.json({ received: true }, { status: 200 });
       }
@@ -98,12 +99,12 @@ export async function POST(req: Request): Promise<NextResponse> {
         });
 
         if (existingCard) {
-          console.log(`[STRIPE WEBHOOK] Card already exists for session ${session.id} - ID: ${existingCard.id}, shareId: ${existingCard.shareId}, emailSent: ${existingCard.emailSent}`);
+          console.log(`[WEBHOOK] Card already exists for session ${session.id} - ID: ${existingCard.id}, shareId: ${existingCard.shareId}, emailSent: ${existingCard.emailSent}`);
         } else {
-          console.log(`[STRIPE WEBHOOK] No existing card found for session ${session.id}, creating new card`);
+          console.log(`[WEBHOOK] No existing card found for session ${session.id}, creating new card`);
         }
 
-        // 9. Create card
+        // 9. Create or fetch card idempotently
         const card = await createCard({
           cardKey,
           recipientName: recipient,
@@ -113,15 +114,15 @@ export async function POST(req: Request): Promise<NextResponse> {
         });
 
         // 10. Log card creation result
-        console.log(`[STRIPE WEBHOOK] Card created/retrieved - ID: ${card.id}, shareId: ${card.share_id}`);
+        console.log(`[WEBHOOK] Card created/retrieved - ID: ${card.id}, shareId: ${card.share_id}`);
 
         // 11. Check email status before sending
         const willSendEmail = !card.email_sent && !!session.customer_details?.email;
-        console.log(`[STRIPE WEBHOOK] Email status - emailSent: ${card.email_sent}, willSend: ${willSendEmail}`);
+        console.log(`[WEBHOOK] Email status - emailSent: ${card.email_sent}, willSend: ${willSendEmail}`);
 
         if (willSendEmail) {
           try {
-            console.log(`[STRIPE WEBHOOK] Sending email to: ${session.customer_details.email}`);
+            console.log(`[WEBHOOK] Sending email to: ${session.customer_details.email}`);
             await sendCardEmail({
               to: session.customer_details.email,
               shareId: card.share_id,
@@ -134,23 +135,23 @@ export async function POST(req: Request): Promise<NextResponse> {
               data: { emailSent: true },
             });
 
-            console.log(`[STRIPE WEBHOOK] Email sent successfully to ${session.customer_details.email}`);
+            console.log(`[WEBHOOK] Email sent successfully to ${session.customer_details.email}`);
           } catch (emailError: unknown) {
             const errorMessage = emailError instanceof Error ? emailError.message : "Unknown error";
-            console.error(`[STRIPE WEBHOOK] Email sending failed: ${errorMessage}`);
+            console.error(`[WEBHOOK] Email sending failed: ${errorMessage}`);
             // Don't fail the webhook if email fails - card is already created
             // Log the error but continue
           }
         } else {
           if (card.email_sent) {
-            console.log(`[STRIPE WEBHOOK] Email already sent for this card, skipping`);
+            console.log(`[WEBHOOK] Email already sent for this card, skipping`);
           } else if (!session.customer_details?.email) {
-            console.log(`[STRIPE WEBHOOK] No customer email available, skipping email`);
+            console.log(`[WEBHOOK] No customer email available, skipping email`);
           }
         }
       } catch (cardError: unknown) {
         const errorMessage = cardError instanceof Error ? cardError.message : "Unknown error";
-        console.error(`[STRIPE WEBHOOK] Card creation failed: ${errorMessage}`);
+        console.error(`[WEBHOOK] Card creation failed: ${errorMessage}`);
         // Don't throw - return 200 to prevent retries for data errors
         // Log the error but continue
       }
@@ -159,11 +160,10 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     default:
-      console.log(`[STRIPE WEBHOOK] Unhandled event type: ${event.type}, Event ID: ${event.id}`);
+      console.log(`[WEBHOOK] Unhandled event type: ${event.type}, Event ID: ${event.id}`);
   }
 
-  // 12. Final success log
-  console.log(`[STRIPE WEBHOOK] Webhook processing completed successfully`);
+  // 12. Final success log - always return 200 after verification
+  console.log(`[WEBHOOK] Webhook processing completed successfully`);
   return NextResponse.json({ received: true }, { status: 200 });
 }
-
