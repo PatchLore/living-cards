@@ -107,7 +107,7 @@ export async function createCard({
 }): Promise<Card> {
   try {
     // Idempotency check: if a card with this stripe_session_id exists, return it
-    const existing = await prisma.card.findUnique({
+    const existing = await prisma.card.findFirst({
       where: { stripeSessionId },
     });
 
@@ -177,7 +177,7 @@ export async function createCard({
         console.log(
           `[CARDS] Card with stripe_session_id already exists (race condition), fetching existing`
         );
-        const existing = await prisma.card.findUnique({
+        const existing = await prisma.card.findFirst({
           where: { stripeSessionId },
         });
         if (existing) {
