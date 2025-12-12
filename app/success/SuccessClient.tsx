@@ -33,7 +33,7 @@ export default function SuccessClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [data, setData] = useState<SessionData | null>(null);
-  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareId, setShareId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!sessionId) {
@@ -80,8 +80,8 @@ export default function SuccessClient() {
           });
 
           const shareJson = await shareRes.json();
-          if (shareJson.ok && shareJson.url) {
-            setShareUrl(shareJson.url);
+          if (shareJson.ok && shareJson.shareId) {
+            setShareId(shareJson.shareId);
           }
         } catch (e) {
           console.warn("Failed to create share link", e);
@@ -107,15 +107,14 @@ export default function SuccessClient() {
   const videoSrc = `/cards/${videoFileName}.mp4`;
 
   const copyShareLink = async () => {
-    if (!shareUrl) {
-      alert("Share link not ready yet. Please try again in a moment.");
-      return;
-    }
+    if (!shareId) return;
+    
+    const shareUrl = `${window.location.origin}/c/${shareId}`;
     try {
       await navigator.clipboard.writeText(shareUrl);
       alert("Share link copied!");
     } catch {
-      alert("Failed to copy link.");
+      // Silently fail - no error message per requirements
     }
   };
 
@@ -159,9 +158,14 @@ export default function SuccessClient() {
 
           <button
             onClick={copyShareLink}
-            className="px-6 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-md hover:bg-slate-900 transition"
+            disabled={!shareId}
+            className={`px-6 py-3 rounded-xl font-medium shadow-md transition ${
+              shareId
+                ? "bg-slate-800 text-white hover:bg-slate-900 cursor-pointer"
+                : "bg-slate-400 text-white cursor-not-allowed"
+            }`}
           >
-            Copy Share Link
+            {shareId ? "Copy Share Link" : "Preparing share link…"}
           </button>
         </div>
 
