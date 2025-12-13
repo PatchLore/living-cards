@@ -39,6 +39,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 Request a Managed Sending Service
               </a>
             </div>
+            <div className="mt-4 pt-4 border-t border-slate-700/50">
+              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-500">
+                <a href="/terms" className="hover:text-slate-400 transition">
+                  Terms & Conditions
+                </a>
+                <span className="text-slate-600">•</span>
+                <a href="/privacy" className="hover:text-slate-400 transition">
+                  Privacy Policy
+                </a>
+              </div>
+            </div>
           </div>
         </footer>
         <Analytics />
