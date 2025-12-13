@@ -4,6 +4,23 @@ import CopyButton from "./CopyButton";
 
 export const runtime = "nodejs";
 
+export async function generateMetadata({ params }: { params: Promise<{ shareId: string }> }) {
+  const { shareId } = await params;
+  const card = await getCardByShareId(shareId);
+
+  if (!card) {
+    return {
+      title: "Card Not Found | CardRoots",
+      description: "The requested digital card could not be found.",
+    };
+  }
+
+  return {
+    title: `Your Living Card for ${card.recipient_name} | CardRoots`,
+    description: `A beautiful digital card with a personal message. Every card plants a real tree.`,
+  };
+}
+
 // Same mapping as /card/[cardKey]/page.tsx
 const CARD_VIDEO_MAP: Record<string, string> = {
   "starlit-christmas-tree": "christmas_tree.mp4",

@@ -4,8 +4,8 @@ import { Analytics } from "@vercel/analytics/react";
 import UrgencyBanner from "../components/UrgencyBanner";
 
 export const metadata = {
-  title: "Living Tree Cards",
-  description: "Send a digital card that plants a tree 🌱",
+  title: "Digital Christmas Cards That Plant a Tree | CardRoots",
+  description: "Send beautiful animated Christmas cards that plant real trees. Eco-friendly digital cards delivered instantly. A thoughtful sustainable gift.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

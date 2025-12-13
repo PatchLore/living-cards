@@ -1,5 +1,10 @@
 import React from "react";
 
+export const metadata = {
+  title: "Corporate & Bulk Orders | CardRoots",
+  description: "Send 50+ eco-friendly digital cards with custom branding. Bulk orders and managed sending service available.",
+};
+
 export default function CorporatePage() {
   return (
     <main className="min-h-screen bg-slate-50 py-16 px-6">

@@ -1,7 +1,5 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Metadata } from "next";
+import CardViewerClient from "./CardViewerClient";
 
 // Map card keys → actual video filenames
 const CARD_VIDEO_MAP: Record<string, string> = {
@@ -19,115 +17,91 @@ const CARD_VIDEO_MAP: Record<string, string> = {
   "warm-wishes": "warm_wishes.mp4",
 };
 
-export default function CardViewerPage({ params }: any) {
-  const { cardKey } = params;
-  const search = useSearchParams();
+// Card metadata mapping for SEO
+const CARD_METADATA: Record<string, { title: string; occasion: string; description: string }> = {
+  "starlit-christmas-tree": {
+    title: "Starlit Christmas Tree",
+    occasion: "Christmas",
+    description: "A calm animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "christmas-night-moonlight": {
+    title: "Christmas Night Moonlight",
+    occasion: "Christmas",
+    description: "A serene animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "snowy-cottage-evening": {
+    title: "Snowy Cottage Evening",
+    occasion: "Christmas",
+    description: "A peaceful animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "winter-forest-tree": {
+    title: "Winter Forest Tree",
+    occasion: "Christmas",
+    description: "A quiet animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "golden-christmas-tree-rise": {
+    title: "Golden Christmas Tree Rise",
+    occasion: "Christmas",
+    description: "A radiant animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "santas-moonlit-ride": {
+    title: "Santa's Moonlit Ride",
+    occasion: "Christmas",
+    description: "A nostalgic animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "birthday-rose-bloom": {
+    title: "Birthday Rose Bloom",
+    occasion: "Birthday",
+    description: "A delicate animated birthday card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "elegant-floral-birthday": {
+    title: "Elegant Floral Birthday",
+    occasion: "Birthday",
+    description: "A graceful animated birthday card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "thank-you-florals": {
+    title: "Thank You Florals",
+    occasion: "Thank You",
+    description: "A minimal animated thank you card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "heart-of-light": {
+    title: "Heart of Light",
+    occasion: "Love",
+    description: "A luminous animated love card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "golden-heart-glow": {
+    title: "Golden Heart Glow",
+    occasion: "Love",
+    description: "A radiant animated love card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "warm-wishes": {
+    title: "Warm Wishes",
+    occasion: "General",
+    description: "A warm animated card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+};
 
-  const [recipient, setRecipient] = useState("");
-  const [message, setMessage] = useState("");
+export async function generateMetadata({ params }: { params: Promise<{ cardKey: string }> }): Promise<Metadata> {
+  const { cardKey } = await params;
+  const cardMeta = CARD_METADATA[cardKey];
 
-  useEffect(() => {
-    const r = search.get("recipient") || "";
-    const m = search.get("message") || "";
-
-    setRecipient(r);
-    setMessage(m);
-  }, [search]);
-
-  const videoFile = CARD_VIDEO_MAP[cardKey];
-
-  if (!videoFile) {
-    return (
-      <main className="min-h-screen flex items-center justify-center text-center p-10">
-        <div>
-          <h1 className="text-3xl font-semibold text-slate-800 mb-3">
-            Card Not Found
-          </h1>
-          <p className="text-slate-600 mb-6">
-            The card you're trying to view doesn't exist.
-          </p>
-          <a
-            href="/"
-            className="px-5 py-3 rounded-xl bg-slate-800 text-white hover:bg-slate-900 transition"
-          >
-            Return Home
-          </a>
-        </div>
-      </main>
-    );
+  if (!cardMeta) {
+    return {
+      title: "Card Not Found | CardRoots",
+      description: "The requested digital card could not be found.",
+    };
   }
 
-  const videoSrc = `/cards/${videoFile}`;
+  const title = `${cardMeta.title} — Plants a Real Tree | CardRoots`;
+  
+  return {
+    title,
+    description: cardMeta.description,
+  };
+}
 
-  return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 px-6">
-      <section className="max-w-3xl mx-auto text-center space-y-4">
-        <h1 className="text-4xl font-semibold text-slate-800">
-          Your Digital Card 💌
-        </h1>
-        <p className="text-lg text-slate-600">
-          Enjoy your beautifully animated card — ready to share.
-        </p>
-      </section>
-
-      <section className="max-w-3xl mx-auto mt-10 bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
-        <video
-          src={videoSrc}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full rounded-2xl shadow-lg mb-6"
-        />
-
-        {(recipient || message) && (
-          <div className="text-center space-y-2 mb-8">
-            {recipient && (
-              <p className="text-xl font-semibold text-slate-800">
-                To: {recipient}
-              </p>
-            )}
-            {message && (
-              <p className="text-slate-700 whitespace-pre-wrap">{message}</p>
-            )}
-          </div>
-        )}
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
-            href={videoSrc}
-            download={`${cardKey}.mp4`}
-            className="px-6 py-3 rounded-xl bg-amber-500 text-white font-medium shadow-md hover:bg-amber-600 transition"
-          >
-            Download Video
-          </a>
-
-          <button
-            onClick={async () => {
-              const shareURL = window.location.href;
-              try {
-                await navigator.clipboard.writeText(shareURL);
-                alert("Share link copied!");
-              } catch {
-                alert("Failed to copy link.");
-              }
-            }}
-            className="px-6 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-md hover:bg-slate-900 transition"
-          >
-            Copy Share Link
-          </button>
-        </div>
-
-        <div className="mt-10 text-center">
-          <a
-            href="/"
-            className="text-slate-600 hover:text-slate-800 font-medium transition"
-          >
-            Send another card →
-          </a>
-        </div>
-      </section>
-    </main>
-  );
+export default async function CardViewerPage({ params }: { params: Promise<{ cardKey: string }> }) {
+  const { cardKey } = await params;
+  return <CardViewerClient cardKey={cardKey} />;
 }
 
