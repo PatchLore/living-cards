@@ -193,6 +193,9 @@ export default function Home() {
 
       {/* Hero */}
       <section className="max-w-5xl mx-auto text-center space-y-6 mb-12">
+        <p className="text-lg font-medium text-slate-600">
+          Send a Christmas card that plants a real tree 🌱
+        </p>
         <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight text-slate-800">
           Limited Edition Digital Cards That Plant a Tree
         </h1>
