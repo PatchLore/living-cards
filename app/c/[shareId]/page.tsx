@@ -7,6 +7,8 @@ export const runtime = "nodejs";
 export async function generateMetadata({ params }: { params: Promise<{ shareId: string }> }) {
   const { shareId } = await params;
   const card = await getCardByShareId(shareId);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
+  const url = `${siteUrl}/c/${shareId}`;
 
   if (!card) {
     return {
@@ -15,9 +17,38 @@ export async function generateMetadata({ params }: { params: Promise<{ shareId: 
     };
   }
 
+  const title = `Your Living Card for ${card.recipient_name} | CardRoots`;
+  const description = `A beautiful digital card with a personal message. Every card plants a real tree.`;
+  const videoFile = CARD_VIDEO_MAP[card.card_key];
+  const imageUrl = videoFile ? `${siteUrl}/cards/${videoFile}` : `${siteUrl}/og-image.jpg`;
+
   return {
-    title: `Your Living Card for ${card.recipient_name} | CardRoots`,
-    description: `A beautiful digital card with a personal message. Every card plants a real tree.`,
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      type: "website",
+      url,
+      title,
+      description,
+      siteName: "CardRoots",
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: `Digital card for ${card.recipient_name}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
   };
 }
 

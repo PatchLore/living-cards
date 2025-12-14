@@ -1,8 +1,26 @@
 import React from "react";
+import { Metadata } from "next";
 
-export const metadata = {
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
+
+export const metadata: Metadata = {
   title: "Corporate & Bulk Orders | CardRoots",
   description: "Send 50+ eco-friendly digital cards with custom branding. Bulk orders and managed sending service available.",
+  alternates: {
+    canonical: `${siteUrl}/corporate`,
+  },
+  openGraph: {
+    type: "website",
+    url: `${siteUrl}/corporate`,
+    title: "Corporate & Bulk Orders | CardRoots",
+    description: "Send 50+ eco-friendly digital cards with custom branding. Bulk orders and managed sending service available.",
+    siteName: "CardRoots",
+  },
+  twitter: {
+    card: "summary",
+    title: "Corporate & Bulk Orders | CardRoots",
+    description: "Send 50+ eco-friendly digital cards with custom branding. Bulk orders and managed sending service available.",
+  },
 };
 
 export default function CorporatePage() {

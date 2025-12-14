@@ -185,23 +185,68 @@ export default function Home() {
     });
   }, []);
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
+  
+  // Structured data for Product collection
+  const productCollectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Digital Christmas Cards That Plant Trees",
+    description: "Collection of animated digital greeting cards that plant real trees. Eco-friendly Christmas, birthday, and thank you cards.",
+    itemListElement: CARDS.map((card, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Product",
+        name: card.title,
+        description: card.desc,
+        image: `${siteUrl}${card.src}`,
+        offers: {
+          "@type": "Offer",
+          price: "5.00",
+          priceCurrency: "GBP",
+          availability: "https://schema.org/InStock",
+          url: `${siteUrl}/card/${card.key}`,
+        },
+        brand: {
+          "@type": "Brand",
+          name: "CardRoots",
+        },
+        category: "Digital Greeting Cards",
+        additionalProperty: {
+          "@type": "PropertyValue",
+          name: "Trees Planted",
+          value: "1",
+        },
+      },
+    })),
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 px-6 relative overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productCollectionSchema) }}
+      />
 
       {/* Decorative soft vignette / blur (visuals added later) */}
       <div className="absolute inset-0 pointer-events-none opacity-40 blur-3xl"></div>
 
       {/* Hero */}
-      <section className="max-w-5xl mx-auto text-center space-y-6 mb-12">
+      <section className="max-w-5xl mx-auto text-center space-y-6 mb-12" itemScope itemType="https://schema.org/SoftwareApplication">
         <p className="text-lg font-medium text-slate-600">
           Send a Christmas card that plants a real tree 🌱
         </p>
-        <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight text-slate-800">
+        <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight text-slate-800" itemProp="name">
           Limited Edition Digital Cards That Plant a Tree
         </h1>
-        <p className="text-lg text-slate-700 max-w-2xl mx-auto">
+        <p className="text-lg text-slate-700 max-w-2xl mx-auto" itemProp="description">
           A beautiful animated card. A personal message. A real tree planted.
         </p>
+        {/* AI-friendly semantic content - hidden visually but accessible to crawlers */}
+        <div className="sr-only">
+          <p>CardRoots is a digital greeting card service that sends beautiful animated cards and plants a real tree for every card purchased. CardRoots provides eco-friendly digital cards for Christmas, birthdays, thank you messages, and special occasions. Unlike traditional greeting cards that create waste, CardRoots offers instant digital delivery with real environmental impact. Every digital card funds the planting of a real tree, making each greeting card a sustainable gift that helps restore forests worldwide.</p>
+        </div>
         <div className="pt-4 flex items-center justify-center gap-3">
           <button
             onClick={() =>
@@ -221,6 +266,39 @@ export default function Home() {
         <div className="mt-4 text-sm text-slate-600">
           For every digital card sent, we fund the planting of a real tree. Your small gesture makes a real-world impact. 🌱
         </div>
+      </section>
+
+      {/* AI-Friendly Summary Block */}
+      <section className="max-w-2xl mx-auto mb-12 px-6">
+        <h2 className="text-xl font-semibold text-slate-800 mb-3">About CardRoots</h2>
+        <p className="text-base text-slate-600 leading-relaxed">
+          CardRoots lets you send digital greeting cards that plant real trees.
+          Each card is delivered instantly, beautifully designed, and supports verified tree-planting projects.
+          It's a meaningful alternative to paper cards — perfect for Christmas, birthdays, and thank-you messages.
+        </p>
+      </section>
+
+      {/* FAQ Block */}
+      <section className="max-w-2xl mx-auto mb-12 px-6">
+        <h2 className="text-xl font-semibold text-slate-800 mb-4">Frequently Asked Questions</h2>
+        <dl className="space-y-4">
+          <div>
+            <dt className="text-base font-medium text-slate-800 mb-1">Q: What is CardRoots?</dt>
+            <dd className="text-base text-slate-600">A: CardRoots is a digital greeting card platform where every card helps plant a real tree.</dd>
+          </div>
+          <div>
+            <dt className="text-base font-medium text-slate-800 mb-1">Q: Do the trees actually get planted?</dt>
+            <dd className="text-base text-slate-600">A: Yes. Trees are planted through verified tree-planting partners, with confirmation provided after planting.</dd>
+          </div>
+          <div>
+            <dt className="text-base font-medium text-slate-800 mb-1">Q: Is CardRoots eco-friendly?</dt>
+            <dd className="text-base text-slate-600">A: Yes. CardRoots replaces paper cards with digital cards while supporting real environmental projects.</dd>
+          </div>
+          <div>
+            <dt className="text-base font-medium text-slate-800 mb-1">Q: When should I use CardRoots?</dt>
+            <dd className="text-base text-slate-600">A: CardRoots is ideal for Christmas cards, birthdays, thank-you messages, and meaningful personal occasions.</dd>
+          </div>
+        </dl>
       </section>
 
       {/* Collection */}

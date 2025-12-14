@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import CardViewerClient from "./CardViewerClient";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
+
 // Map card keys → actual video filenames
 const CARD_VIDEO_MAP: Record<string, string> = {
   "starlit-christmas-tree": "christmas_tree.mp4",
@@ -93,15 +95,87 @@ export async function generateMetadata({ params }: { params: Promise<{ cardKey: 
   }
 
   const title = `${cardMeta.title} — Plants a Real Tree | CardRoots`;
+  const url = `${siteUrl}/card/${cardKey}`;
+  const imageUrl = `${siteUrl}${CARD_VIDEO_MAP[cardKey] ? `/cards/${CARD_VIDEO_MAP[cardKey]}` : '/og-image.jpg'}`;
   
   return {
     title,
     description: cardMeta.description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      type: "website",
+      url,
+      title,
+      description: cardMeta.description,
+      siteName: "CardRoots",
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${cardMeta.title} - Digital Card That Plants a Tree`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: cardMeta.description,
+      images: [imageUrl],
+    },
   };
 }
 
 export default async function CardViewerPage({ params }: { params: Promise<{ cardKey: string }> }) {
   const { cardKey } = await params;
-  return <CardViewerClient cardKey={cardKey} />;
+  const cardMeta = CARD_METADATA[cardKey];
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
+  
+  // Structured data for Product
+  const productSchema = cardMeta ? {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: cardMeta.title,
+    description: cardMeta.description,
+    image: `${siteUrl}${CARD_VIDEO_MAP[cardKey] ? `/cards/${CARD_VIDEO_MAP[cardKey]}` : '/og-image.jpg'}`,
+    brand: {
+      "@type": "Brand",
+      name: "CardRoots",
+    },
+    category: `${cardMeta.occasion} Digital Cards`,
+    offers: {
+      "@type": "Offer",
+      price: "5.00",
+      priceCurrency: "GBP",
+      availability: "https://schema.org/InStock",
+      url: `${siteUrl}/card/${cardKey}`,
+    },
+    additionalProperty: [
+      {
+        "@type": "PropertyValue",
+        name: "Trees Planted",
+        value: "1",
+      },
+      {
+        "@type": "PropertyValue",
+        name: "Occasion",
+        value: cardMeta.occasion,
+      },
+    ],
+  } : null;
+
+  return (
+    <>
+      {productSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+        />
+      )}
+      <CardViewerClient cardKey={cardKey} />
+    </>
+  );
 }
 
