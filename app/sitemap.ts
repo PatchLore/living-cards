@@ -1,27 +1,38 @@
-import { MetadataRoute } from "next";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
+import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = siteUrl.replace(/\/$/, "");
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
+  const cleanBaseUrl = baseUrl.replace(/\/$/, "");
 
   // Static pages
   const staticPages = [
     {
-      url: baseUrl,
+      url: cleanBaseUrl,
       lastModified: new Date(),
-      changeFrequency: "weekly" as const,
+      changeFrequency: "daily" as const,
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/corporate`,
+      url: `${cleanBaseUrl}/corporate`,
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
-      priority: 0.8,
+      priority: 0.6,
+    },
+    {
+      url: `${cleanBaseUrl}/terms`,
+      lastModified: new Date(),
+      changeFrequency: "yearly" as const,
+      priority: 0.2,
+    },
+    {
+      url: `${cleanBaseUrl}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: "yearly" as const,
+      priority: 0.2,
     },
   ];
 
-  // Card pages
+  // Card pages (important for SEO)
   const cardPages = [
     "starlit-christmas-tree",
     "christmas-night-moonlight",
@@ -36,7 +47,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "golden-heart-glow",
     "warm-wishes",
   ].map((cardKey) => ({
-    url: `${baseUrl}/card/${cardKey}`,
+    url: `${cleanBaseUrl}/card/${cardKey}`,
     lastModified: new Date(),
     changeFrequency: "monthly" as const,
     priority: 0.9,
