@@ -299,6 +299,56 @@ function LazyVideo({
   );
 }
 
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error("Homepage render error:", error);
+  }
+
+  render() {
+    if (!this.state.hasError) return this.props.children;
+
+    return (
+      <main className="min-h-screen bg-[#FAFAF9] text-[#1A1A1A] px-4 sm:px-6 pb-16 md:pb-20">
+        <section className="max-w-7xl mx-auto py-16">
+          <h1 className="text-[32px] font-semibold mb-4">Cards are loading…</h1>
+          <p className="text-[16px] text-[#1A1A1A]/70 mb-6">
+            If this doesn’t resolve, please refresh the page.
+          </p>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {CARDS.map((card) => (
+              <div
+                key={`fallback-error-${card.key}`}
+                className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"
+              >
+                {card.poster && (
+                  <img
+                    src={card.poster}
+                    alt={card.title}
+                    className="w-full h-40 object-cover"
+                    loading="lazy"
+                  />
+                )}
+                <div className="px-3 py-3 text-sm font-medium text-[#1A1A1A] truncate">
+                  {card.title}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+    );
+  }
+}
+
 export default function Home() {
   const [recipient, setRecipient] = useState("");
   const [message, setMessage] = useState("");
@@ -313,7 +363,10 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [cardsReady, setCardsReady] = useState(false);
   const [heroStartIndex, setHeroStartIndex] = useState(0);
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(() => {
+    if (typeof navigator === "undefined") return false;
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  });
 
   const collectionRef = useRef<HTMLElement | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
@@ -393,6 +446,7 @@ export default function Home() {
   }, [selectedCard]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     try {
       const dismissed = localStorage.getItem("dismiss-seasonal-banner");
       if (dismissed === "1") setShowSeasonalBanner(false);
@@ -402,6 +456,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     const ua = navigator.userAgent;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
     setIsMobileDevice(isMobile);
@@ -619,7 +674,8 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAFAF9] text-[#1A1A1A] px-4 sm:px-6 pb-16 md:pb-20">
+    <ErrorBoundary>
+      <main className="min-h-screen bg-[#FAFAF9] text-[#1A1A1A] px-4 sm:px-6 pb-16 md:pb-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productCollectionSchema) }}
@@ -794,16 +850,25 @@ export default function Home() {
                   key={`${card.key}-${heroStartIndex}`}
                   className="rounded-2xl overflow-hidden border border-[#E0E0E0] bg-white shadow-md animate-fade-in"
                 >
-                  <LazyVideo
-                    className="w-full h-32 md:h-40 object-cover"
-                    src={card.src}
-                    webmSrc={card.webmSrc}
-                    poster={card.poster}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
+                  {isMobileDevice ? (
+                    <img
+                      src={card.poster}
+                      alt={card.title}
+                      className="w-full h-32 md:h-40 object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <LazyVideo
+                      className="w-full h-32 md:h-40 object-cover"
+                      src={card.src}
+                      webmSrc={card.webmSrc}
+                      poster={card.poster}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    />
+                  )}
                 </div>
               ))}
             </div>
@@ -1047,24 +1112,33 @@ export default function Home() {
                           Limited Edition - Only {card.available} cards available
                         </div>
                         <div className="rounded-2xl overflow-hidden mb-4">
-                          <LazyVideo
-                            className="w-full h-60 md:h-64 object-cover"
-                            src={card.src}
-                            webmSrc={card.webmSrc}
-                            poster={card.poster}
-                            tapToPlay={false}
-                            disablePointerEvents={isMobileDevice}
-                            loop
-                            muted
-                            playsInline
-                            onMouseEnter={handlePreviewPlay(card.key)}
-                            onMouseLeave={handlePreviewPause}
-                            onFocus={handlePreviewPlay(card.key)}
-                            onBlur={handlePreviewPause}
-                            onTouchStart={
-                              isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
-                            }
-                          />
+                          {isMobileDevice ? (
+                            <img
+                              src={card.poster}
+                              alt={card.title}
+                              className="w-full h-60 md:h-64 object-cover"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <LazyVideo
+                              className="w-full h-60 md:h-64 object-cover"
+                              src={card.src}
+                              webmSrc={card.webmSrc}
+                              poster={card.poster}
+                              tapToPlay={false}
+                              disablePointerEvents={isMobileDevice}
+                              loop
+                              muted
+                              playsInline
+                              onMouseEnter={handlePreviewPlay(card.key)}
+                              onMouseLeave={handlePreviewPause}
+                              onFocus={handlePreviewPlay(card.key)}
+                              onBlur={handlePreviewPause}
+                              onTouchStart={
+                                isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
+                              }
+                            />
+                          )}
                         </div>
                         <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
                           {card.title}
@@ -1141,24 +1215,33 @@ export default function Home() {
                     Limited Edition - Only {card.available} cards available
                   </div>
                   <div className="rounded-2xl overflow-hidden mb-4">
-                    <LazyVideo
-                      className="w-full h-60 md:h-64 object-cover"
-                      src={card.src}
-                      webmSrc={card.webmSrc}
-                      poster={card.poster}
-                      tapToPlay={false}
-                      disablePointerEvents={isMobileDevice}
-                      loop
-                      muted
-                      playsInline
-                      onMouseEnter={handlePreviewPlay(card.key)}
-                      onMouseLeave={handlePreviewPause}
-                      onFocus={handlePreviewPlay(card.key)}
-                      onBlur={handlePreviewPause}
-                      onTouchStart={
-                        isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
-                      }
-                    />
+                    {isMobileDevice ? (
+                      <img
+                        src={card.poster}
+                        alt={card.title}
+                        className="w-full h-60 md:h-64 object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <LazyVideo
+                        className="w-full h-60 md:h-64 object-cover"
+                        src={card.src}
+                        webmSrc={card.webmSrc}
+                        poster={card.poster}
+                        tapToPlay={false}
+                        disablePointerEvents={isMobileDevice}
+                        loop
+                        muted
+                        playsInline
+                        onMouseEnter={handlePreviewPlay(card.key)}
+                        onMouseLeave={handlePreviewPause}
+                        onFocus={handlePreviewPlay(card.key)}
+                        onBlur={handlePreviewPause}
+                        onTouchStart={
+                          isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
+                        }
+                      />
+                    )}
                   </div>
                   <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
                     {card.title}
@@ -1354,16 +1437,25 @@ export default function Home() {
             <div className="p-6 space-y-4">
               <p className="text-[16px] text-[#1A1A1A]/70">{quickViewCard.desc}</p>
               <div className="rounded-2xl overflow-hidden bg-slate-100">
-                <video
-                  className={`w-full object-cover ${showFullPreview ? "h-96" : "h-64"}`}
-                  src={quickViewCard.src}
-                  poster={quickViewCard.poster}
-                  autoPlay
-                  loop={!showFullPreview}
-                  muted
-                  playsInline
-                  controls={showFullPreview}
-                />
+                {isMobileDevice ? (
+                  <img
+                    src={quickViewCard.poster}
+                    alt={quickViewCard.title}
+                    className={`w-full object-cover ${showFullPreview ? "h-96" : "h-64"}`}
+                    loading="lazy"
+                  />
+                ) : (
+                  <video
+                    className={`w-full object-cover ${showFullPreview ? "h-96" : "h-64"}`}
+                    src={quickViewCard.src}
+                    poster={quickViewCard.poster}
+                    autoPlay
+                    loop={!showFullPreview}
+                    muted
+                    playsInline
+                    controls={showFullPreview}
+                  />
+                )}
               </div>
               <div>
                 <div className="text-[24px] font-semibold text-[#2D6A4F]">£5</div>
@@ -1397,11 +1489,12 @@ export default function Home() {
         </div>
       )}
 
-      <ExitIntentModal
-        headline="Wait! Plant your first tree"
-        subheadline="Get a discount and track your tree planting impact."
-        offer="Get 10% off your first card"
-      />
-    </main>
+        <ExitIntentModal
+          headline="Wait! Plant your first tree"
+          subheadline="Get a discount and track your tree planting impact."
+          offer="Get 10% off your first card"
+        />
+      </main>
+    </ErrorBoundary>
   );
 }
