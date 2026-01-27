@@ -1227,7 +1227,7 @@ export default function Home() {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={handleCheckout}
+                    onClick={() => handleCheckout()}
                     className="h-12 px-6 rounded-full bg-[#2D6A4F] text-white font-semibold shadow-md hover:bg-[#52B788] transition"
                   >
                     Continue to Payment
