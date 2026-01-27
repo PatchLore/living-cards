@@ -22,6 +22,19 @@ body {
   background-image: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 50%);
 }
 
+.hero-carousel-track {
+  animation: hero-carousel-scroll 18s linear infinite;
+}
+
+@keyframes hero-carousel-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 
 .card-panel {
   @apply bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-xl p-6;

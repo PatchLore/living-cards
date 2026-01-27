@@ -1,7 +1,6 @@
 import "./globals.css";
 import React from "react";
 import { Analytics } from "@vercel/analytics/react";
-import UrgencyBanner from "../components/UrgencyBanner";
 import { Metadata } from "next";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
@@ -118,9 +117,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <div className="snow-overlay"></div>
         <div className="snow-overlay-layer3"></div>
-
-        {/* Seasonal urgency banner (dismissible client component) */}
-        <UrgencyBanner />
 
         {/* Main content above snow */}
         <div className="relative z-[40]">

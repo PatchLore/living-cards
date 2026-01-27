@@ -1,13 +1,19 @@
- "use client";
+"use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { track } from "@vercel/analytics";
+import dynamic from "next/dynamic";
 
 type CardItem = {
   key: string;
   title: string;
   desc: string;
   src: string;
+  webmSrc?: string;
+  poster?: string;
   label?: string;
+  available: number;
+  badges?: string[];
 };
 
 const CARDS: CardItem[] = [
@@ -18,6 +24,8 @@ const CARDS: CardItem[] = [
     desc: "A bright starlit scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/christmas_tree.mp4",
     label: "Limited Edition",
+    available: 42,
+    badges: ["Bestseller"],
   },
   {
     key: "christmas-night-moonlight",
@@ -25,6 +33,8 @@ const CARDS: CardItem[] = [
     desc: "A serene moonlit scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/moonlight.mp4",
     label: "Limited Edition",
+    available: 38,
+    badges: ["Most Popular"],
   },
   {
     key: "snowy-cottage-evening",
@@ -32,6 +42,8 @@ const CARDS: CardItem[] = [
     desc: "A peaceful winter scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/Christmas2.mp4",
     label: "Limited Edition",
+    available: 36,
+    badges: ["Bestseller"],
   },
   {
     key: "winter-forest-tree",
@@ -39,6 +51,8 @@ const CARDS: CardItem[] = [
     desc: "A quiet forest scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/XmasTree.mp4",
     label: "Limited Edition",
+    available: 33,
+    badges: ["Most Popular"],
   },
   {
     key: "golden-christmas-tree-rise",
@@ -46,6 +60,8 @@ const CARDS: CardItem[] = [
     desc: "A radiant golden scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/Christmas1.mp4",
     label: "Limited Edition",
+    available: 29,
+    badges: ["Bestseller"],
   },
   {
     key: "santas-moonlit-ride",
@@ -53,6 +69,8 @@ const CARDS: CardItem[] = [
     desc: "A nostalgic winter scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/Santa.mp4",
     label: "Limited Edition",
+    available: 24,
+    badges: ["Most Popular"],
   },
   // Birthday Cards
   {
@@ -61,6 +79,8 @@ const CARDS: CardItem[] = [
     desc: "A delicate floral scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/rose.mp4",
     label: "Limited Edition",
+    available: 35,
+    badges: ["Bestseller"],
   },
   {
     key: "elegant-floral-birthday",
@@ -68,6 +88,8 @@ const CARDS: CardItem[] = [
     desc: "A graceful watercolor scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/Birthday2.mp4",
     label: "Limited Edition",
+    available: 31,
+    badges: ["Most Popular"],
   },
   // Thank You Cards
   {
@@ -76,6 +98,8 @@ const CARDS: CardItem[] = [
     desc: "A minimal floral scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/Thankyou2.mp4",
     label: "Limited Edition",
+    available: 27,
+    badges: ["Bestseller"],
   },
   // Love / Heart Cards
   {
@@ -84,6 +108,8 @@ const CARDS: CardItem[] = [
     desc: "A luminous golden scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/heart1.mp4",
     label: "Limited Edition",
+    available: 22,
+    badges: ["Most Popular"],
   },
   {
     key: "golden-heart-glow",
@@ -91,6 +117,8 @@ const CARDS: CardItem[] = [
     desc: "A radiant glowing scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/heart2.mp4",
     label: "Limited Edition",
+    available: 19,
+    badges: ["Bestseller"],
   },
   // General Cards
   {
@@ -99,18 +127,174 @@ const CARDS: CardItem[] = [
     desc: "A warm glowing scene unfolds with gentle motion, soft light, and subtle atmosphere, creating a calm and beautifully refined moment.",
     src: "/cards/warm_wishes.mp4",
     label: "Limited Edition",
+    available: 25,
+    badges: ["Most Popular"],
   },
 ];
+
+const heroPreviewCards: CardItem[] = CARDS.slice(0, 3);
+const ExitIntentModal = dynamic(() => import("../components/ExitIntentModal"), { ssr: false });
+
+type LazyVideoProps = {
+  src: string;
+  webmSrc?: string;
+  poster?: string;
+  className?: string;
+  autoPlay?: boolean;
+  loop?: boolean;
+  muted?: boolean;
+  playsInline?: boolean;
+  onMouseEnter?: React.MouseEventHandler<HTMLVideoElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLVideoElement>;
+  onFocus?: React.FocusEventHandler<HTMLVideoElement>;
+  onBlur?: React.FocusEventHandler<HTMLVideoElement>;
+  onTouchStart?: React.TouchEventHandler<HTMLVideoElement>;
+};
+
+type StatValue = number | null;
+
+type Testimonial = {
+  quote: string;
+  name: string;
+  title: string;
+  photo?: string;
+};
+
+type Logo = {
+  src: string;
+  alt: string;
+};
+
+function LazyVideo({
+  src,
+  webmSrc,
+  poster,
+  className,
+  autoPlay,
+  loop,
+  muted,
+  playsInline,
+  onMouseEnter,
+  onMouseLeave,
+  onFocus,
+  onBlur,
+  onTouchStart,
+}: LazyVideoProps) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(videoRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const requestLoad = () => {
+    if (!shouldLoad) setShouldLoad(true);
+  };
+
+  return (
+    <div className="relative">
+      {!isLoaded && (
+        <div
+          className="absolute inset-0 rounded-2xl bg-slate-200/70 animate-pulse"
+          aria-hidden
+        />
+      )}
+      <video
+        ref={videoRef}
+        className={className}
+        poster={poster}
+        autoPlay={shouldLoad && autoPlay}
+        loop={loop}
+        muted={muted}
+        playsInline={playsInline}
+        preload={shouldLoad ? "metadata" : "none"}
+        onLoadedData={() => setIsLoaded(true)}
+        onMouseEnter={(event) => {
+          requestLoad();
+          onMouseEnter?.(event);
+        }}
+        onMouseLeave={(event) => {
+          onMouseLeave?.(event);
+        }}
+        onFocus={(event) => {
+          requestLoad();
+          onFocus?.(event);
+        }}
+        onBlur={(event) => {
+          onBlur?.(event);
+        }}
+        onTouchStart={(event) => {
+          requestLoad();
+          onTouchStart?.(event);
+        }}
+      >
+        {shouldLoad && webmSrc && <source src={webmSrc} type="video/webm" />}
+        {shouldLoad && <source src={src} type="video/mp4" />}
+      </video>
+    </div>
+  );
+}
 
 export default function Home() {
   const [recipient, setRecipient] = useState("");
   const [message, setMessage] = useState("");
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<string>("All Cards");
+  const [quickViewCard, setQuickViewCard] = useState<CardItem | null>(null);
+  const [showFullPreview, setShowFullPreview] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [showMobileCta, setShowMobileCta] = useState(false);
+  const [faqQuery, setFaqQuery] = useState("");
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
 
   const collectionRef = useRef<HTMLElement | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
 
   const selectedCardItem = CARDS.find((c) => c.key === selectedCard) ?? null;
+
+  const stats = {
+    treesPlanted: null as StatValue,
+    cardsSent: null as StatValue,
+    monthlyTreesPlanted: null as StatValue,
+  };
+
+  const testimonials: Testimonial[] = [];
+  const partnerLogos: Logo[] = [];
+  const impactImages: { src: string; alt: string }[] = [];
+  const faqItems = [
+    {
+      question: "What is CardRoots?",
+      answer: "CardRoots is a digital greeting card platform where every card helps plant a real tree.",
+    },
+    {
+      question: "How do I personalize my message?",
+      answer: "Choose a card, click Personalize, and add your recipient name and message before checkout.",
+    },
+    {
+      question: "Can I schedule delivery for later?",
+      answer: "Scheduling is not available yet, but we can add it based on demand. Contact us for updates.",
+    },
+    {
+      question: "Do you offer refunds?",
+      answer: "If there’s an issue with delivery or your card, contact support and we’ll make it right.",
+    },
+    {
+      question: "How do I know my tree was actually planted?",
+      answer: "We work with verified planting partners and can provide confirmation once available.",
+    },
+  ];
 
   useEffect(() => {
     if (selectedCard && formRef.current) {
@@ -121,11 +305,81 @@ export default function Home() {
     }
   }, [selectedCard]);
 
+  useEffect(() => {
+    if (!quickViewCard) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setQuickViewCard(null);
+        setShowFullPreview(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [quickViewCard]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowMobileCta(window.scrollY > 520);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const thresholds = [25, 50, 75];
+    const fired = new Set<number>();
+    const handleScrollDepth = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight <= 0) return;
+      const percent = Math.round((scrollTop / docHeight) * 100);
+      thresholds.forEach((threshold) => {
+        if (percent >= threshold && !fired.has(threshold)) {
+          fired.add(threshold);
+          trackEvent("scroll_depth", { percent: threshold });
+        }
+      });
+    };
+    handleScrollDepth();
+    window.addEventListener("scroll", handleScrollDepth, { passive: true });
+    return () => window.removeEventListener("scroll", handleScrollDepth);
+  }, []);
+
+  const trackEvent = (name: string, data?: Record<string, string | number>) => {
+    try {
+      track(name, data);
+    } catch {
+      // ignore tracking failures
+    }
+  };
+
+  const handlePreviewPlay =
+    (cardKey: string) => (event: React.SyntheticEvent<HTMLVideoElement>) => {
+      const video = event.currentTarget;
+      video.play().catch(() => undefined);
+      trackEvent("video_preview_play", { cardKey });
+    };
+
+  const handlePreviewPause = (event: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = event.currentTarget;
+    video.pause();
+    video.currentTime = 0;
+  };
+
+  const formatStat = (value: StatValue, fallback: string) =>
+    value === null ? fallback : value.toLocaleString("en-GB");
+
+  const filteredFaqs = faqItems.filter((item) =>
+    item.question.toLowerCase().includes(faqQuery.toLowerCase())
+  );
+
   const handleCheckout = async () => {
     if (!selectedCard) {
       alert("Please select a card first.");
       return;
     }
+    trackEvent("checkout_start", { cardKey: selectedCard });
 
     try {
       const res = await fetch("/api/checkout", {
@@ -185,6 +439,13 @@ export default function Home() {
     });
   }, []);
 
+  const filters = ["All Cards", "Christmas", "Birthday", "Thank You", "Love"];
+
+  const filteredCards = React.useMemo(() => {
+    if (activeFilter === "All Cards") return sortedCards;
+    return sortedCards.filter((card) => getCategory(card.key) === activeFilter);
+  }, [activeFilter, sortedCards]);
+
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
   
   // Structured data for Product collection
@@ -223,7 +484,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 px-6 relative overflow-hidden">
+    <main className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 px-6 relative">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productCollectionSchema) }}
@@ -232,122 +493,324 @@ export default function Home() {
       {/* Decorative soft vignette / blur (visuals added later) */}
       <div className="absolute inset-0 pointer-events-none opacity-40 blur-3xl"></div>
 
-      {/* Hero */}
-      <section className="max-w-5xl mx-auto text-center space-y-6 mb-12" itemScope itemType="https://schema.org/SoftwareApplication">
-        <p className="text-lg font-medium text-slate-600">
-          Send a Christmas card that plants a real tree 🌱
-        </p>
-        <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight text-slate-800" itemProp="name">
-          Limited Edition Digital Cards That Plant a Tree
-        </h1>
-        <p className="text-lg text-slate-700 max-w-2xl mx-auto" itemProp="description">
-          A beautiful animated card. A personal message. A real tree planted.
-        </p>
-        {/* AI-friendly semantic content - hidden visually but accessible to crawlers */}
-        <div className="sr-only">
-          <p>CardRoots is a digital greeting card service that sends beautiful animated cards and plants a real tree for every card purchased. CardRoots provides eco-friendly digital cards for Christmas, birthdays, thank you messages, and special occasions. Unlike traditional greeting cards that create waste, CardRoots offers instant digital delivery with real environmental impact. Every digital card funds the planting of a real tree, making each greeting card a sustainable gift that helps restore forests worldwide.</p>
-        </div>
-        <div className="pt-4 flex items-center justify-center gap-3">
+      <header className="sticky top-0 z-30 -mx-6 mb-10 bg-white/90 backdrop-blur-xl border-b border-slate-200/70">
+        <div className="max-w-6xl mx-auto px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="text-sm font-semibold text-slate-800">CardRoots</div>
+          <nav className="hidden sm:flex items-center gap-4 text-sm font-medium text-slate-700">
+            <button
+              onClick={() => {
+                document.getElementById("how-it-works")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+                trackEvent("nav_how_it_works");
+              }}
+              className="hover:text-slate-900 transition"
+            >
+              How It Works
+            </button>
+            <button
+              onClick={() => {
+                collectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                trackEvent("nav_browse_cards");
+              }}
+              className="hover:text-slate-900 transition"
+            >
+              Browse Cards
+            </button>
+            <a
+              href="/corporate"
+              className="hover:text-slate-900 transition"
+              onClick={() => trackEvent("nav_for_business")}
+            >
+              For Business
+            </a>
+          </nav>
           <button
-            onClick={() =>
-              collectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
-            }
-            className="inline-flex items-center px-6 py-3 rounded-2xl bg-amber-500/90 hover:bg-amber-500 text-white font-medium shadow-md transition"
+            className="sm:hidden inline-flex items-center gap-2 text-sm font-medium text-slate-700"
+            onClick={() => setIsNavOpen((prev) => !prev)}
+            aria-expanded={isNavOpen}
+            aria-controls="mobile-nav"
           >
-            Browse Limited Collection
+            Menu
+            <span className="text-lg">{isNavOpen ? "✕" : "☰"}</span>
           </button>
-          <a
-            href="/corporate"
-            className="inline-flex items-center px-4 py-2 rounded-2xl bg-slate-800/80 hover:bg-slate-700 border border-slate-500 text-slate-100 font-medium transition"
+        </div>
+        {isNavOpen && (
+          <div
+            id="mobile-nav"
+            className="sm:hidden px-6 pb-4 flex flex-col gap-3 text-sm font-medium text-slate-700"
           >
-            For Business / Bulk Orders
-          </a>
+            <button
+              onClick={() => {
+                document.getElementById("how-it-works")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+                setIsNavOpen(false);
+                trackEvent("nav_how_it_works");
+              }}
+              className="text-left"
+            >
+              How It Works
+            </button>
+            <button
+              onClick={() => {
+                collectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                setIsNavOpen(false);
+                trackEvent("nav_browse_cards");
+              }}
+              className="text-left"
+            >
+              Browse Cards
+            </button>
+            <a
+              href="/corporate"
+              className="text-left"
+              onClick={() => trackEvent("nav_for_business")}
+            >
+              For Business
+            </a>
+          </div>
+        )}
+      </header>
+
+      {/* Hero */}
+      <section
+        className="max-w-6xl mx-auto mb-16 flex flex-col lg:flex-row items-center gap-10"
+        itemScope
+        itemType="https://schema.org/SoftwareApplication"
+      >
+        <div className="flex-1 text-center lg:text-left space-y-6">
+          <p className="text-sm font-semibold tracking-wide text-amber-600 uppercase">
+            Eco-friendly digital greetings
+          </p>
+          <h1
+            className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-slate-900"
+            itemProp="name"
+          >
+            Send Beautiful Digital Cards That Plant Real Trees
+          </h1>
+          <p
+            className="text-lg text-slate-700 max-w-xl mx-auto lg:mx-0"
+            itemProp="description"
+          >
+            Choose an animated card, write a heartfelt message, and fund the planting of a real tree
+            with every send.
+          </p>
+          {/* AI-friendly semantic content - hidden visually but accessible to crawlers */}
+          <div className="sr-only">
+            <p>
+              CardRoots is a digital greeting card service that sends beautiful animated cards and
+              plants a real tree for every card purchased. CardRoots provides eco-friendly digital
+              cards for Christmas, birthdays, thank you messages, and special occasions. Unlike
+              traditional greeting cards that create waste, CardRoots offers instant digital
+              delivery with real environmental impact. Every digital card funds the planting of a
+              real tree, making each greeting card a sustainable gift that helps restore forests
+              worldwide.
+            </p>
+          </div>
+          <div className="pt-2 flex flex-col sm:flex-row items-center sm:items-stretch gap-3">
+            <button
+              onClick={() => {
+                collectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                trackEvent("cta_browse_hero");
+              }}
+              className="inline-flex items-center justify-center px-7 py-3.5 rounded-2xl bg-amber-500/90 hover:bg-amber-500 text-white font-medium shadow-md shadow-amber-500/30 transition-transform transform hover:-translate-y-0.5"
+            >
+              Browse Our Cards
+            </button>
+            <a
+              href="/corporate"
+              className="inline-flex items-center justify-center px-5 py-3.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-600 text-slate-100 font-medium transition"
+              onClick={() => trackEvent("cta_business_hero")}
+            >
+              For Business / Bulk Orders
+            </a>
+          </div>
+          <p className="text-sm text-slate-600">
+            {formatStat(stats.treesPlanted, "X,XXX")} trees planted |{" "}
+            {formatStat(stats.cardsSent, "X,XXX")} cards sent
+          </p>
         </div>
-        <div className="mt-4 text-sm text-slate-600">
-          For every digital card sent, we fund the planting of a real tree. Your small gesture makes a real-world impact. 🌱
+
+        <div className="flex-1 w-full">
+          <div className="relative">
+            <div className="absolute -inset-6 bg-gradient-to-tr from-emerald-200/40 via-amber-100/30 to-sky-200/40 blur-2xl rounded-3xl pointer-events-none" />
+            <div className="relative rounded-3xl bg-white/70 backdrop-blur-xl border border-white/60 shadow-xl overflow-hidden">
+              <div className="flex gap-4 p-4 hero-carousel-track motion-reduce:animate-none">
+                {[...heroPreviewCards, ...heroPreviewCards].map((card, index) => (
+                  <div
+                    key={`${card.key}-${index}`}
+                    className="group min-w-[9.5rem] sm:min-w-[11rem] lg:min-w-[12rem] rounded-2xl overflow-hidden border border-slate-200/70 bg-slate-950/90 shadow-md transition-transform duration-500"
+                  >
+                    <LazyVideo
+                      className="w-full h-32 sm:h-40 object-cover transition-transform duration-700 group-hover:scale-105"
+                      src={card.src}
+                      webmSrc={card.webmSrc}
+                      poster={card.poster}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* AI-Friendly Summary Block */}
-      <section className="max-w-2xl mx-auto mb-12 px-6">
-        <h2 className="text-xl font-semibold text-slate-800 mb-3">About CardRoots</h2>
-        <p className="text-base text-slate-600 leading-relaxed">
-          CardRoots lets you send digital greeting cards that plant real trees.
-          Each card is delivered instantly, beautifully designed, and supports verified tree-planting projects.
-          It's a meaningful alternative to paper cards — perfect for Christmas, birthdays, and thank-you messages.
-        </p>
-      </section>
-
-      {/* FAQ Block */}
-      <section className="max-w-2xl mx-auto mb-12 px-6">
-        <h2 className="text-xl font-semibold text-slate-800 mb-4">Frequently Asked Questions</h2>
-        <dl className="space-y-4">
-          <div>
-            <dt className="text-base font-medium text-slate-800 mb-1">Q: What is CardRoots?</dt>
-            <dd className="text-base text-slate-600">A: CardRoots is a digital greeting card platform where every card helps plant a real tree.</dd>
-          </div>
-          <div>
-            <dt className="text-base font-medium text-slate-800 mb-1">Q: Do the trees actually get planted?</dt>
-            <dd className="text-base text-slate-600">A: Yes. Trees are planted through verified tree-planting partners, with confirmation provided after planting.</dd>
-          </div>
-          <div>
-            <dt className="text-base font-medium text-slate-800 mb-1">Q: Is CardRoots eco-friendly?</dt>
-            <dd className="text-base text-slate-600">A: Yes. CardRoots replaces paper cards with digital cards while supporting real environmental projects.</dd>
-          </div>
-          <div>
-            <dt className="text-base font-medium text-slate-800 mb-1">Q: When should I use CardRoots?</dt>
-            <dd className="text-base text-slate-600">A: CardRoots is ideal for Christmas cards, birthdays, thank-you messages, and meaningful personal occasions.</dd>
-          </div>
-        </dl>
+      <section id="how-it-works" className="max-w-6xl mx-auto mb-16">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-semibold text-slate-900">How It Works</h2>
+          <p className="text-sm text-slate-600 mt-2">
+            Choose a card, personalize your message, and deliver instantly via email.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              title: "Choose Card",
+              description: "Browse curated animated designs for every occasion.",
+            },
+            {
+              title: "Personalize Message",
+              description: "Add your message and preview the full animation.",
+            },
+            {
+              title: "Tree Gets Planted",
+              description: "Each card funds a real tree planted in verified projects.",
+            },
+          ].map((step, index) => (
+            <div
+              key={step.title}
+              className="bg-white/90 border border-slate-200 rounded-2xl p-6 shadow-sm"
+            >
+              <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 font-semibold flex items-center justify-center mb-4">
+                {index + 1}
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">{step.title}</h3>
+              <p className="text-sm text-slate-600">{step.description}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Collection */}
       <section
         id="collection"
         ref={collectionRef}
-        className="max-w-6xl mx-auto mb-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+        className="max-w-6xl mx-auto mb-16"
       >
-        {sortedCards.map((card) => (
-          <article
-            key={card.key}
-            className="rounded-3xl bg-white border border-slate-200 p-4 shadow-lg hover:shadow-2xl hover:scale-[1.02] transition transform"
-          >
-            <div className="text-xs uppercase tracking-wide text-amber-600 font-semibold mb-2">
-              {card.label}
-            </div>
-            <div className="rounded-2xl overflow-hidden mb-4">
-              <video
-                className="w-full h-56 object-cover"
-                src={card.src}
-                autoPlay
-                loop
-                muted
-                playsInline
-              />
-            </div>
-            <h3 className="text-lg font-semibold text-slate-800 mb-1">{card.title}</h3>
-            <p className="text-sm text-slate-700 mb-2">{card.desc}</p>
-            <div className="text-sm text-slate-800 font-medium mb-3">£5 — Includes 1 tree planted 🌱</div>
-            <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-2xl font-semibold text-slate-900">Browse the collection</h2>
+            <p className="text-sm text-slate-600">
+              Pick an animated card and personalize it in minutes.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {filters.map((filter) => (
               <button
-                onClick={() => setSelectedCard(card.key)}
-                className="px-4 py-2 rounded-lg bg-slate-800 text-white hover:bg-slate-900 transition"
-              >
-                Select This Card
-              </button>
-              <button
+                key={filter}
                 onClick={() => {
-                  setSelectedCard(card.key);
-                  // also scroll to form
-                  formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  setActiveFilter(filter);
+                  trackEvent("filter_select", { filter });
                 }}
-                className="px-3 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
+                className={`px-4 py-2 rounded-full text-sm font-medium border transition ${
+                  activeFilter === filter
+                    ? "bg-slate-900 text-white border-slate-900"
+                    : "bg-white text-slate-700 border-slate-200 hover:border-slate-300"
+                }`}
               >
-                Personalize
+                {filter}
               </button>
-            </div>
-          </article>
-        ))}
+            ))}
+          </div>
+        </div>
+
+        <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory sm:overflow-visible sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-8">
+          {filteredCards.map((card) => (
+            <article
+              key={card.key}
+              className="min-w-[16rem] sm:min-w-0 snap-start rounded-3xl bg-white border border-slate-200 p-4 shadow-lg hover:shadow-2xl hover:scale-[1.02] transition transform"
+            >
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                {card.label && (
+                  <span className="text-[11px] uppercase tracking-wide text-amber-700 font-semibold bg-amber-100/70 px-2 py-1 rounded-full">
+                    {card.label}
+                  </span>
+                )}
+                {card.badges?.map((badge) => (
+                  <span
+                    key={badge}
+                    className="text-[11px] uppercase tracking-wide text-emerald-700 font-semibold bg-emerald-100/70 px-2 py-1 rounded-full"
+                  >
+                    {badge}
+                  </span>
+                ))}
+              </div>
+              <div className="text-xs text-slate-600 font-medium mb-3">
+                Limited Edition - Only {card.available} cards available
+              </div>
+              <div className="rounded-2xl overflow-hidden mb-4">
+                <LazyVideo
+                  className="w-full h-56 object-cover"
+                  src={card.src}
+                  webmSrc={card.webmSrc}
+                  poster={card.poster}
+                  loop
+                  muted
+                  playsInline
+                  onMouseEnter={handlePreviewPlay(card.key)}
+                  onMouseLeave={handlePreviewPause}
+                  onFocus={handlePreviewPlay(card.key)}
+                  onBlur={handlePreviewPause}
+                  onTouchStart={handlePreviewPlay(card.key)}
+                />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-800 mb-1">{card.title}</h3>
+              <p className="text-sm text-slate-700 mb-2">{card.desc}</p>
+              <div className="text-sm text-slate-800 font-medium mb-3">
+                £5 — Includes 1 tree planted 🌱
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={() => {
+                    setSelectedCard(card.key);
+                    trackEvent("select_card", { cardKey: card.key });
+                  }}
+                  className="px-4 py-2 rounded-lg bg-slate-800 text-white hover:bg-slate-900 transition"
+                >
+                  Select This Card
+                </button>
+                <button
+                  onClick={() => {
+                    setQuickViewCard(card);
+                    setShowFullPreview(false);
+                    trackEvent("quick_view_open", { cardKey: card.key });
+                  }}
+                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
+                >
+                  Quick View
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedCard(card.key);
+                    // also scroll to form
+                    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    trackEvent("personalize_start", { cardKey: card.key });
+                  }}
+                  className="px-3 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
+                >
+                  Personalize
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
 
         {/* Placeholder tiles for future cards */}
         {/*
@@ -358,6 +821,120 @@ export default function Home() {
           <p className="text-sm text-slate-700 mb-4">More curated cards arriving this season.</p>
         </article>
         */}
+      </section>
+
+      {/* FAQ Block */}
+      <section className="max-w-3xl mx-auto mb-12 px-6">
+        <h2 className="text-2xl font-semibold text-slate-800 mb-4">Frequently Asked Questions</h2>
+        <div className="mb-4">
+          <input
+            type="text"
+            value={faqQuery}
+            onChange={(event) => setFaqQuery(event.target.value)}
+            placeholder="Search FAQs"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-700 bg-white"
+            aria-label="Search FAQs"
+          />
+        </div>
+        <div className="space-y-3">
+          {filteredFaqs.map((item) => {
+            const isOpen = openFaq === item.question;
+            return (
+              <div key={item.question} className="border border-slate-200 rounded-2xl bg-white">
+                <button
+                  className="w-full text-left px-5 py-4 flex items-center justify-between text-slate-800 font-medium"
+                  onClick={() => setOpenFaq(isOpen ? null : item.question)}
+                  aria-expanded={isOpen}
+                >
+                  <span>{item.question}</span>
+                  <span className="text-lg">{isOpen ? "−" : "+"}</span>
+                </button>
+                {isOpen && (
+                  <div className="px-5 pb-4 text-sm text-slate-600">{item.answer}</div>
+                )}
+              </div>
+            );
+          })}
+          {filteredFaqs.length === 0 && (
+            <div className="text-sm text-slate-500">No results found. Try a different search.</div>
+          )}
+        </div>
+      </section>
+
+      <section className="max-w-6xl mx-auto mb-16">
+        <div className="bg-white/90 border border-slate-200 rounded-3xl p-8 shadow-sm">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+            <div>
+              <h2 className="text-2xl font-semibold text-slate-900">Trust & Impact</h2>
+              <p className="text-sm text-slate-600 mt-2">
+                {formatStat(stats.monthlyTreesPlanted, "X")} trees planted this month
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {[
+                "Tree Planting Certificate Included",
+                "Verified Planting Projects",
+                "Secure Checkout",
+              ].map((badge) => (
+                <span
+                  key={badge}
+                  className="text-[11px] uppercase tracking-wide text-slate-700 font-semibold bg-slate-100 px-3 py-1.5 rounded-full"
+                >
+                  {badge}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {testimonials.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              {testimonials.map((testimonial) => (
+                <figure
+                  key={testimonial.name}
+                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                >
+                  <blockquote className="text-sm text-slate-700">
+                    “{testimonial.quote}”
+                  </blockquote>
+                  <figcaption className="mt-4 text-sm font-semibold text-slate-900">
+                    {testimonial.name}
+                    <span className="block text-xs font-normal text-slate-600">
+                      {testimonial.title}
+                    </span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          )}
+
+          {partnerLogos.length > 0 && (
+            <div className="mb-8">
+              <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-3">
+                Verified partners
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {partnerLogos.map((logo) => (
+                  <div
+                    key={logo.alt}
+                    className="h-14 rounded-xl border border-slate-200 bg-white flex items-center justify-center"
+                  >
+                    <img src={logo.src} alt={logo.alt} className="max-h-8" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {impactImages.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {impactImages.map((image) => (
+                <div key={image.alt} className="rounded-2xl overflow-hidden border border-slate-200">
+                  <img src={image.src} alt={image.alt} className="w-full h-56 object-cover" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Personalization Form (hidden until a card is selected) */}
@@ -412,6 +989,112 @@ export default function Home() {
           </section>
         )}
       </div>
+
+      {showMobileCta && (
+        <div className="fixed bottom-4 left-4 right-4 z-40 sm:hidden">
+          <button
+            onClick={() => {
+              collectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+              trackEvent("mobile_cta_view_all");
+            }}
+            className="w-full bg-slate-900 text-white py-3 rounded-2xl shadow-lg"
+          >
+            View All {filteredCards.length} Cards
+          </button>
+        </div>
+      )}
+
+      {quickViewCard && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-6 py-10 bg-slate-900/70 backdrop-blur-sm">
+          <div className="relative w-full max-w-4xl rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">{quickViewCard.title}</h3>
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  {quickViewCard.label && (
+                    <span className="text-[11px] uppercase tracking-wide text-amber-700 font-semibold bg-amber-100/70 px-2 py-1 rounded-full">
+                      {quickViewCard.label}
+                    </span>
+                  )}
+                  {quickViewCard.badges?.map((badge) => (
+                    <span
+                      key={badge}
+                      className="text-[11px] uppercase tracking-wide text-emerald-700 font-semibold bg-emerald-100/70 px-2 py-1 rounded-full"
+                    >
+                      {badge}
+                    </span>
+                  ))}
+                </div>
+                <p className="text-sm text-slate-600 mt-2">
+                  Limited Edition - Only {quickViewCard.available} cards available
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setQuickViewCard(null);
+                  setShowFullPreview(false);
+                }}
+                className="text-slate-500 hover:text-slate-800 transition"
+                aria-label="Close quick view"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-slate-700">{quickViewCard.desc}</p>
+              <div className="rounded-2xl overflow-hidden bg-slate-100">
+                <video
+                  className={`w-full object-cover ${showFullPreview ? "h-96" : "h-64"}`}
+                  src={quickViewCard.src}
+                  autoPlay
+                  loop={!showFullPreview}
+                  muted
+                  playsInline
+                  controls={showFullPreview}
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={() => {
+                    setSelectedCard(quickViewCard.key);
+                    trackEvent("select_card", { cardKey: quickViewCard.key });
+                  }}
+                  className="px-4 py-2 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition"
+                >
+                  Select This Card
+                </button>
+                <button
+                  onClick={() => {
+                    setShowFullPreview((prev) => !prev);
+                    trackEvent("preview_full_toggle", { cardKey: quickViewCard.key });
+                  }}
+                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
+                >
+                  {showFullPreview ? "Back to Quick View" : "Preview Full Card"}
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedCard(quickViewCard.key);
+                    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    setQuickViewCard(null);
+                    setShowFullPreview(false);
+                    trackEvent("personalize_start", { cardKey: quickViewCard.key });
+                  }}
+                  className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition"
+                >
+                  Personalize
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ExitIntentModal
+        headline="Wait! Plant your first tree"
+        subheadline="Get a discount and track your tree planting impact."
+        offer="Get 10% off your first card"
+      />
     </main>
   );
 }

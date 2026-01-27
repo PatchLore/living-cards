@@ -59,6 +59,14 @@ export default function CardViewerClient({ cardKey }: { cardKey: string }) {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 px-6">
+      <div className="max-w-3xl mx-auto mb-6">
+        <a
+          href="/#collection"
+          className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition"
+        >
+          ← Back to Cards
+        </a>
+      </div>
       <section className="max-w-3xl mx-auto text-center space-y-4">
         <h1 className="text-4xl font-semibold text-slate-800">
           Your Digital Card 💌
