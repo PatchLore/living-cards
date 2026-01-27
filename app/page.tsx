@@ -244,7 +244,7 @@ function LazyVideo({
 
   return (
     <div className="relative">
-      {!isLoaded && (
+      {shouldLoad && !isLoaded && (
         <div
           className="absolute inset-0 rounded-2xl bg-slate-200/70 animate-pulse"
           aria-hidden
@@ -311,7 +311,7 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [cardsReady, setCardsReady] = useState(false);
   const [heroStartIndex, setHeroStartIndex] = useState(0);
-  const [isMobileSafari, setIsMobileSafari] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
 
   const collectionRef = useRef<HTMLElement | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
@@ -401,9 +401,8 @@ export default function Home() {
 
   useEffect(() => {
     const ua = navigator.userAgent;
-    const isIOS = /iPhone|iPad|iPod/i.test(ua);
-    const isSafari = /Safari/i.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/i.test(ua);
-    setIsMobileSafari(isIOS && isSafari);
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+    setIsMobileDevice(isMobile);
   }, []);
 
   useEffect(() => {
@@ -1009,7 +1008,7 @@ export default function Home() {
                           src={card.src}
                           webmSrc={card.webmSrc}
                           poster={card.poster}
-                          tapToPlay={isMobileSafari}
+                          tapToPlay={isMobileDevice}
                           loop
                           muted
                           playsInline
@@ -1018,7 +1017,7 @@ export default function Home() {
                           onFocus={handlePreviewPlay(card.key)}
                           onBlur={handlePreviewPause}
                           onTouchStart={
-                            isMobileSafari ? undefined : handlePreviewPlay(card.key, true)
+                            isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
                           }
                         />
                       </div>
@@ -1093,7 +1092,7 @@ export default function Home() {
                     src={card.src}
                     webmSrc={card.webmSrc}
                     poster={card.poster}
-                    tapToPlay={isMobileSafari}
+                    tapToPlay={isMobileDevice}
                     loop
                     muted
                     playsInline
@@ -1101,7 +1100,7 @@ export default function Home() {
                     onMouseLeave={handlePreviewPause}
                     onFocus={handlePreviewPlay(card.key)}
                     onBlur={handlePreviewPause}
-                    onTouchStart={isMobileSafari ? undefined : handlePreviewPlay(card.key, true)}
+                    onTouchStart={isMobileDevice ? undefined : handlePreviewPlay(card.key, true)}
                   />
                 </div>
                 <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
