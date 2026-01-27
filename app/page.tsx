@@ -156,6 +156,7 @@ type LazyVideoProps = {
   className?: string;
   autoPlay?: boolean;
   tapToPlay?: boolean;
+  disablePointerEvents?: boolean;
   loop?: boolean;
   muted?: boolean;
   playsInline?: boolean;
@@ -183,6 +184,7 @@ function LazyVideo({
   className,
   autoPlay,
   tapToPlay,
+  disablePointerEvents,
   loop,
   muted,
   playsInline,
@@ -252,7 +254,7 @@ function LazyVideo({
       )}
       <video
         ref={videoRef}
-        className={className}
+        className={`${className ?? ""} ${disablePointerEvents ? "pointer-events-none" : ""}`}
         poster={poster}
         autoPlay={shouldLoad && autoPlay}
         loop={loop}
@@ -489,12 +491,13 @@ export default function Home() {
     item.question.toLowerCase().includes(faqQuery.toLowerCase())
   );
 
-  const handleCheckout = async () => {
-    if (!selectedCard) {
+  const handleCheckout = async (cardKeyOverride?: string) => {
+    const cardKey = cardKeyOverride ?? selectedCard;
+    if (!cardKey) {
       alert("Please select a card first.");
       return;
     }
-    trackEvent("checkout_start", { cardKey: selectedCard });
+    trackEvent("checkout_start", { cardKey });
 
     try {
       const res = await fetch("/api/checkout", {
@@ -503,7 +506,7 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cardKey: selectedCard,
+          cardKey: cardKey,
           recipient: recipient,
           message: message,
         }),
@@ -569,7 +572,6 @@ export default function Home() {
     key: card.key,
     title: card.title,
     poster: card.poster,
-    href: `/card/${card.key}`,
   }));
 
   const christmasCards = sortedCards.filter((card) => getCategory(card.key) === "Christmas");
@@ -944,14 +946,15 @@ export default function Home() {
 
         <div className="ios-fallback">
           <div className="text-sm text-[#1A1A1A]/60 mb-4">
-            Tap any card to preview on mobile.
+            Tap any card to purchase.
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {fallbackCards.map((card) => (
-              <a
+              <button
                 key={`fallback-${card.key}`}
-                href={card.href}
-                className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm transition hover:shadow-md"
+                type="button"
+                onClick={() => handleCheckout(card.key)}
+                className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm transition hover:shadow-md text-left"
               >
                 <img
                   src={card.poster}
@@ -962,7 +965,7 @@ export default function Home() {
                 <div className="px-3 py-3 text-sm font-medium text-[#1A1A1A] truncate">
                   {card.title}
                 </div>
-              </a>
+              </button>
             ))}
           </div>
         </div>
@@ -1005,9 +1008,17 @@ export default function Home() {
                         key={card.key}
                         className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
                         style={{ animationDelay: `${(sectionIndex * 6 + index) * 50}ms` }}
+                      onClick={(event) => {
+                        if (!isMobileDevice) return;
+                        const target = event.target as HTMLElement;
+                        if (target.closest("button")) return;
+                        handleCheckout(card.key);
+                      }}
                       >
                         <button
-                          onClick={() => {
+                        data-quick-view
+                        onClick={(event) => {
+                          event.stopPropagation();
                             setQuickViewCard(card);
                             setShowFullPreview(false);
                             trackEvent("quick_view_open", { cardKey: card.key });
@@ -1035,16 +1046,14 @@ export default function Home() {
                         <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
                           Limited Edition - Only {card.available} cards available
                         </div>
-                        <a
-                          href={`/card/${card.key}`}
-                          className="block rounded-2xl overflow-hidden mb-4"
-                        >
+                        <div className="rounded-2xl overflow-hidden mb-4">
                           <LazyVideo
                             className="w-full h-60 md:h-64 object-cover"
                             src={card.src}
                             webmSrc={card.webmSrc}
                             poster={card.poster}
-                            tapToPlay={isMobileDevice}
+                            tapToPlay={false}
+                            disablePointerEvents={isMobileDevice}
                             loop
                             muted
                             playsInline
@@ -1056,13 +1065,10 @@ export default function Home() {
                               isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
                             }
                           />
-                        </a>
-                        <a
-                          href={`/card/${card.key}`}
-                          className="block text-[24px] font-semibold text-[#1A1A1A] mb-2"
-                        >
+                        </div>
+                        <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
                           {card.title}
-                        </a>
+                        </h4>
                         <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
                           {card.desc}
                         </p>
@@ -1072,8 +1078,9 @@ export default function Home() {
                             Includes 1 tree planted 🌱
                           </div>
                         </div>
-                        <button
-                          onClick={() => {
+                      <button
+                        onClick={(event) => {
+                          event.stopPropagation();
                             setSelectedCard(card.key);
                             formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                             trackEvent("personalize_start", { cardKey: card.key });
@@ -1095,9 +1102,17 @@ export default function Home() {
                   key={card.key}
                   className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
+                onClick={(event) => {
+                  if (!isMobileDevice) return;
+                  const target = event.target as HTMLElement;
+                  if (target.closest("button")) return;
+                  handleCheckout(card.key);
+                }}
                 >
                   <button
-                    onClick={() => {
+                  data-quick-view
+                  onClick={(event) => {
+                    event.stopPropagation();
                       setQuickViewCard(card);
                       setShowFullPreview(false);
                       trackEvent("quick_view_open", { cardKey: card.key });
@@ -1125,16 +1140,14 @@ export default function Home() {
                   <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
                     Limited Edition - Only {card.available} cards available
                   </div>
-                  <a
-                    href={`/card/${card.key}`}
-                    className="block rounded-2xl overflow-hidden mb-4"
-                  >
+                  <div className="rounded-2xl overflow-hidden mb-4">
                     <LazyVideo
                       className="w-full h-60 md:h-64 object-cover"
                       src={card.src}
                       webmSrc={card.webmSrc}
                       poster={card.poster}
-                      tapToPlay={isMobileDevice}
+                      tapToPlay={false}
+                      disablePointerEvents={isMobileDevice}
                       loop
                       muted
                       playsInline
@@ -1146,13 +1159,10 @@ export default function Home() {
                         isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
                       }
                     />
-                  </a>
-                  <a
-                    href={`/card/${card.key}`}
-                    className="block text-[24px] font-semibold text-[#1A1A1A] mb-2"
-                  >
+                  </div>
+                  <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
                     {card.title}
-                  </a>
+                  </h4>
                   <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
                     {card.desc}
                   </p>
@@ -1163,7 +1173,8 @@ export default function Home() {
                     </div>
                   </div>
                   <button
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.stopPropagation();
                       setSelectedCard(card.key);
                       formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                       trackEvent("personalize_start", { cardKey: card.key });
