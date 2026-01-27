@@ -215,7 +215,6 @@ function LazyVideo({
         loop={loop}
         muted={muted}
         playsInline={playsInline}
-        loading="lazy"
         preload={shouldLoad ? "metadata" : "none"}
         onLoadedData={() => setIsLoaded(true)}
         onMouseEnter={(event) => {
