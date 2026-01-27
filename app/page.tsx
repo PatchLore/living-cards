@@ -378,6 +378,9 @@ type MobilePreviewModalProps = {
 
 function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalProps) {
   const [videoFailed, setVideoFailed] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playError, setPlayError] = useState(false);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -402,7 +405,7 @@ function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalPro
         </button>
       </div>
       <div className="flex-1 flex flex-col justify-center">
-        <div className="rounded-2xl overflow-hidden bg-black/30">
+        <div className="relative rounded-2xl overflow-hidden bg-black/30">
           {videoFailed ? (
             <img
               src={card.poster}
@@ -412,6 +415,7 @@ function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalPro
             />
           ) : (
             <video
+              ref={videoRef}
               className="w-full h-[60vh] object-cover"
               src={card.src}
               poster={card.poster}
@@ -420,9 +424,42 @@ function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalPro
               controls
               preload="metadata"
               onError={() => setVideoFailed(true)}
+              onPlay={() => {
+                setIsPlaying(true);
+                setPlayError(false);
+              }}
+              onPause={() => setIsPlaying(false)}
+              onEnded={() => setIsPlaying(false)}
             />
           )}
+          {!videoFailed && !isPlaying && (
+            <button
+              type="button"
+              onClick={async () => {
+                const player = videoRef.current;
+                if (!player) return;
+                try {
+                  await player.play();
+                  setIsPlaying(true);
+                  setPlayError(false);
+                } catch {
+                  setPlayError(true);
+                }
+              }}
+              className="absolute inset-0 flex items-center justify-center text-white"
+              aria-label="Play preview video"
+            >
+              <span className="w-16 h-16 rounded-full bg-black/60 border border-white/70 flex items-center justify-center text-2xl">
+                ▶
+              </span>
+            </button>
+          )}
         </div>
+        {playError && (
+          <p className="mt-3 text-sm text-white/80 text-center">
+            Tap again to start the preview.
+          </p>
+        )}
         <button
           type="button"
           onClick={() => onCheckout(card.key)}
