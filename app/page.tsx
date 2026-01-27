@@ -184,17 +184,32 @@ function LazyVideo({
 
   useEffect(() => {
     if (!videoRef.current) return;
-    const observer = new IntersectionObserver(
+    let observer: IntersectionObserver | null = null;
+    const fallbackTimer = setTimeout(() => {
+      setShouldLoad(true);
+    }, 1500);
+
+    if (typeof IntersectionObserver === "undefined") {
+      setShouldLoad(true);
+      return () => clearTimeout(fallbackTimer);
+    }
+
+    observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setShouldLoad(true);
-          observer.disconnect();
+          observer?.disconnect();
+          clearTimeout(fallbackTimer);
         }
       },
-      { rootMargin: "200px" }
+      { rootMargin: "100px", threshold: 0.1 }
     );
+
     observer.observe(videoRef.current);
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(fallbackTimer);
+      observer?.disconnect();
+    };
   }, []);
 
   const requestLoad = () => {
@@ -219,6 +234,7 @@ function LazyVideo({
         playsInline={playsInline}
         preload={shouldLoad ? "metadata" : "none"}
         onLoadedData={() => setIsLoaded(true)}
+        onError={() => setIsLoaded(true)}
         onMouseEnter={(event) => {
           requestLoad();
           onMouseEnter?.(event);
@@ -907,11 +923,11 @@ export default function Home() {
                   </h3>
                   <div className="flex-1 h-px bg-slate-200" />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+                <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
                   {section.cards.map((card, index) => (
                     <article
                       key={card.key}
-                      className="group relative w-full rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
+                      className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
                       style={{ animationDelay: `${(sectionIndex * 6 + index) * 50}ms` }}
                     >
                       <button
@@ -988,11 +1004,11 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
             {filteredCards.map((card, index) => (
               <article
                 key={card.key}
-                className="group relative w-full rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
+                className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <button
