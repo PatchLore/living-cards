@@ -132,7 +132,9 @@ const CARDS: CardItem[] = [
   },
 ];
 
-const heroPreviewCards: CardItem[] = CARDS.slice(0, 3);
+const heroPreviewCards: CardItem[] = CARDS.filter((card) =>
+  ["heart-of-light", "golden-heart-glow", "warm-wishes"].includes(card.key)
+);
 const ExitIntentModal = dynamic(() => import("../components/ExitIntentModal"), { ssr: false });
 
 type LazyVideoProps = {
@@ -714,10 +716,6 @@ export default function Home() {
             </div>
             <p className="text-sm text-[#2D6A4F] font-medium">
               Join thousands planting trees, one card at a time 🌱
-            </p>
-            <p className="text-sm text-[#1A1A1A]/70">
-              {formatStat(stats.treesPlanted, "X,XXX")} trees planted |{" "}
-              {formatStat(stats.cardsSent, "X,XXX")} cards sent
             </p>
           </div>
 
