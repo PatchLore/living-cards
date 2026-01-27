@@ -907,11 +907,11 @@ export default function Home() {
                   </h3>
                   <div className="flex-1 h-px bg-slate-200" />
                 </div>
-                <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory sm:overflow-visible sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-x-6 sm:gap-y-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
                   {section.cards.map((card, index) => (
                     <article
                       key={card.key}
-                      className="group relative min-w-[280px] sm:min-w-0 w-full lg:min-w-[400px] snap-start rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
+                      className="group relative w-full rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
                       style={{ animationDelay: `${(sectionIndex * 6 + index) * 50}ms` }}
                     >
                       <button
@@ -979,7 +979,7 @@ export default function Home() {
                         }}
                         className="w-full h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition"
                       >
-                        Choose & Personalize
+                        Select This Card
                       </button>
                     </article>
                   ))}
@@ -988,11 +988,11 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory sm:overflow-visible sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-x-6 sm:gap-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
             {filteredCards.map((card, index) => (
               <article
                 key={card.key}
-                className="group relative min-w-[280px] sm:min-w-0 w-full lg:min-w-[400px] snap-start rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
+                className="group relative w-full rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <button
@@ -1060,7 +1060,7 @@ export default function Home() {
                   }}
                   className="w-full h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition"
                 >
-                  Choose & Personalize
+                  Select This Card
                 </button>
               </article>
             ))}
