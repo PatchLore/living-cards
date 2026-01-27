@@ -1242,7 +1242,6 @@ export default function Home() {
                   muted
                   playsInline
                   controls={showFullPreview}
-                  loading="lazy"
                 />
               </div>
               <div>
