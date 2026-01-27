@@ -558,7 +558,7 @@ export default function Home() {
       {showSeasonalBanner && (
         <div className="w-full bg-[#D4AF37] text-[#1A1A1A] text-sm px-4 py-2 flex items-center justify-between">
           <div className="max-w-7xl mx-auto w-full flex items-center justify-center gap-3">
-            Order now for Christmas delivery — instant digital cards delivered worldwide.
+            Instant digital delivery worldwide — send in minutes.
           </div>
           <button
             aria-label="Dismiss banner"
@@ -964,7 +964,7 @@ export default function Home() {
                       <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
                         {card.title}
                       </h4>
-                      <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6]">
+                      <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
                         {card.desc}
                       </p>
                       <div className="mb-4">
@@ -1045,7 +1045,7 @@ export default function Home() {
                 <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
                   {card.title}
                 </h4>
-                <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6]">
+                <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
                   {card.desc}
                 </p>
                 <div className="mb-4">
