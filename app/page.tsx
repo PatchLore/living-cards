@@ -1310,7 +1310,6 @@ export default function Home() {
             ))}
           </div>
         )}
-        </div>
       </section>
 
       {/* Personalization Form (hidden until a card is selected) */}
