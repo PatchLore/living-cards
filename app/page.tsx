@@ -349,6 +349,92 @@ class ErrorBoundary extends React.Component<
   }
 }
 
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const media = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const update = () => setIsMobile(media.matches);
+    update();
+
+    if (media.addEventListener) {
+      media.addEventListener("change", update);
+      return () => media.removeEventListener("change", update);
+    }
+
+    media.addListener(update);
+    return () => media.removeListener(update);
+  }, [breakpoint]);
+
+  return isMobile;
+}
+
+type MobilePreviewModalProps = {
+  card: CardItem;
+  onClose: () => void;
+  onCheckout: (cardKey: string) => void;
+};
+
+function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalProps) {
+  const [videoFailed, setVideoFailed] = useState(false);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[60] bg-black/80 flex flex-col px-5 py-6">
+      <div className="flex items-center justify-between text-white mb-4">
+        <h2 className="text-lg font-semibold">{card.title}</h2>
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-10 h-10 rounded-full bg-white/10 text-white text-lg"
+          aria-label="Close preview"
+        >
+          ✕
+        </button>
+      </div>
+      <div className="flex-1 flex flex-col justify-center">
+        <div className="rounded-2xl overflow-hidden bg-black/30">
+          {videoFailed ? (
+            <img
+              src={card.poster}
+              alt={card.title}
+              className="w-full h-[60vh] object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <video
+              className="w-full h-[60vh] object-cover"
+              src={card.src}
+              poster={card.poster}
+              playsInline
+              muted
+              controls
+              preload="metadata"
+              onError={() => setVideoFailed(true)}
+            />
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => onCheckout(card.key)}
+          className="mt-6 h-12 w-full rounded-full bg-[#2D6A4F] text-white font-semibold"
+        >
+          Buy / View Product
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [recipient, setRecipient] = useState("");
   const [message, setMessage] = useState("");
@@ -363,10 +449,8 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [cardsReady, setCardsReady] = useState(false);
   const [heroStartIndex, setHeroStartIndex] = useState(0);
-  const [isMobileDevice, setIsMobileDevice] = useState(() => {
-    if (typeof navigator === "undefined") return false;
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  });
+  const [mobilePreviewCard, setMobilePreviewCard] = useState<CardItem | null>(null);
+  const isMobileDevice = useIsMobile();
 
   const collectionRef = useRef<HTMLElement | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
@@ -453,13 +537,6 @@ export default function Home() {
     } catch {
       // ignore
     }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const ua = navigator.userAgent;
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
-    setIsMobileDevice(isMobile);
   }, []);
 
   useEffect(() => {
@@ -622,12 +699,6 @@ export default function Home() {
   const heroCards = heroPreviewCards.map((_, index) => {
     return heroPreviewCards[(heroStartIndex + index) % heroPreviewCards.length];
   });
-
-  const fallbackCards = CARDS.map((card) => ({
-    key: card.key,
-    title: card.title,
-    poster: card.poster,
-  }));
 
   const christmasCards = sortedCards.filter((card) => getCategory(card.key) === "Christmas");
   const birthdayCards = sortedCards.filter((card) => getCategory(card.key) === "Birthday");
@@ -1009,34 +1080,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="ios-fallback">
-          <div className="text-sm text-[#1A1A1A]/60 mb-4">
-            Tap any card to purchase.
-          </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {fallbackCards.map((card) => (
-              <button
-                key={`fallback-${card.key}`}
-                type="button"
-                onClick={() => handleCheckout(card.key)}
-                className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm transition hover:shadow-md text-left"
-              >
-                <img
-                  src={card.poster}
-                  alt={card.title}
-                  className="w-full h-40 object-cover"
-                  loading="lazy"
-                />
-                <div className="px-3 py-3 text-sm font-medium text-[#1A1A1A] truncate">
-                  {card.title}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="ios-hidden">
-          {!cardsReady ? (
+        {!cardsReady ? (
             <div>
               <p className="text-sm text-[#1A1A1A]/60 mb-4">Loading your cards...</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
@@ -1053,7 +1097,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          ) : activeFilter === "All Cards" ? (
+        ) : activeFilter === "All Cards" ? (
             <div className="space-y-12">
               {[
                 { title: "Christmas Cards", cards: christmasCards },
@@ -1069,7 +1113,7 @@ export default function Home() {
                   </div>
                   <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
                     {section.cards.map((card, index) => (
-                      <article
+                    <article
                         key={card.key}
                         className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
                         style={{ animationDelay: `${(sectionIndex * 6 + index) * 50}ms` }}
@@ -1077,9 +1121,10 @@ export default function Home() {
                         if (!isMobileDevice) return;
                         const target = event.target as HTMLElement;
                         if (target.closest("button")) return;
-                        handleCheckout(card.key);
+                        setMobilePreviewCard(card);
                       }}
                       >
+                      {!isMobileDevice && (
                         <button
                         data-quick-view
                         onClick={(event) => {
@@ -1092,7 +1137,8 @@ export default function Home() {
                           aria-label="Quick view"
                         >
                           👁
-                        </button>
+                      </button>
+                      )}
                         <div className="flex flex-wrap items-center gap-2 mb-3">
                           {card.label && (
                             <span className="text-[11px] uppercase tracking-wide text-[#D4AF37] font-semibold bg-[#F5EED6] px-2 py-1 rounded-full">
@@ -1126,7 +1172,6 @@ export default function Home() {
                               webmSrc={card.webmSrc}
                               poster={card.poster}
                               tapToPlay={false}
-                              disablePointerEvents={isMobileDevice}
                               loop
                               muted
                               playsInline
@@ -1134,9 +1179,6 @@ export default function Home() {
                               onMouseLeave={handlePreviewPause}
                               onFocus={handlePreviewPlay(card.key)}
                               onBlur={handlePreviewPause}
-                              onTouchStart={
-                                isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
-                              }
                             />
                           )}
                         </div>
@@ -1169,7 +1211,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          ) : (
+        ) : (
             <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
               {filteredCards.map((card, index) => (
                 <article
@@ -1180,9 +1222,10 @@ export default function Home() {
                   if (!isMobileDevice) return;
                   const target = event.target as HTMLElement;
                   if (target.closest("button")) return;
-                  handleCheckout(card.key);
+                  setMobilePreviewCard(card);
                 }}
                 >
+                {!isMobileDevice && (
                   <button
                   data-quick-view
                   onClick={(event) => {
@@ -1195,7 +1238,8 @@ export default function Home() {
                     aria-label="Quick view"
                   >
                     👁
-                  </button>
+                </button>
+                )}
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     {card.label && (
                       <span className="text-[11px] uppercase tracking-wide text-[#D4AF37] font-semibold bg-[#F5EED6] px-2 py-1 rounded-full">
@@ -1229,7 +1273,6 @@ export default function Home() {
                         webmSrc={card.webmSrc}
                         poster={card.poster}
                         tapToPlay={false}
-                        disablePointerEvents={isMobileDevice}
                         loop
                         muted
                         playsInline
@@ -1237,9 +1280,6 @@ export default function Home() {
                         onMouseLeave={handlePreviewPause}
                         onFocus={handlePreviewPlay(card.key)}
                         onBlur={handlePreviewPause}
-                        onTouchStart={
-                          isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
-                        }
                       />
                     )}
                   </div>
@@ -1325,9 +1365,16 @@ export default function Home() {
               </div>
             </div>
           </section>
-        )}
-      </div>
+          )}
 
+        {mobilePreviewCard && isMobileDevice && (
+          <MobilePreviewModal
+            card={mobilePreviewCard}
+            onClose={() => setMobilePreviewCard(null)}
+            onCheckout={(cardKey) => handleCheckout(cardKey)}
+          />
+        )}
+      
       <section className="max-w-7xl mx-auto mb-12 md:mb-20">
         <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm text-center">
           <h2 className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A]">
