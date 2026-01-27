@@ -569,6 +569,7 @@ export default function Home() {
     key: card.key,
     title: card.title,
     poster: card.poster,
+    href: `/card/${card.key}`,
   }));
 
   const christmasCards = sortedCards.filter((card) => getCategory(card.key) === "Christmas");
@@ -947,9 +948,10 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {fallbackCards.map((card) => (
-              <div
+              <a
                 key={`fallback-${card.key}`}
-                className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"
+                href={card.href}
+                className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm transition hover:shadow-md"
               >
                 <img
                   src={card.poster}
@@ -960,7 +962,7 @@ export default function Home() {
                 <div className="px-3 py-3 text-sm font-medium text-[#1A1A1A] truncate">
                   {card.title}
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
@@ -1033,7 +1035,10 @@ export default function Home() {
                         <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
                           Limited Edition - Only {card.available} cards available
                         </div>
-                        <div className="rounded-2xl overflow-hidden mb-4">
+                        <a
+                          href={`/card/${card.key}`}
+                          className="block rounded-2xl overflow-hidden mb-4"
+                        >
                           <LazyVideo
                             className="w-full h-60 md:h-64 object-cover"
                             src={card.src}
@@ -1051,10 +1056,13 @@ export default function Home() {
                               isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
                             }
                           />
-                        </div>
-                        <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
+                        </a>
+                        <a
+                          href={`/card/${card.key}`}
+                          className="block text-[24px] font-semibold text-[#1A1A1A] mb-2"
+                        >
                           {card.title}
-                        </h4>
+                        </a>
                         <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
                           {card.desc}
                         </p>
@@ -1117,7 +1125,10 @@ export default function Home() {
                   <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
                     Limited Edition - Only {card.available} cards available
                   </div>
-                  <div className="rounded-2xl overflow-hidden mb-4">
+                  <a
+                    href={`/card/${card.key}`}
+                    className="block rounded-2xl overflow-hidden mb-4"
+                  >
                     <LazyVideo
                       className="w-full h-60 md:h-64 object-cover"
                       src={card.src}
@@ -1131,12 +1142,17 @@ export default function Home() {
                       onMouseLeave={handlePreviewPause}
                       onFocus={handlePreviewPlay(card.key)}
                       onBlur={handlePreviewPause}
-                      onTouchStart={isMobileDevice ? undefined : handlePreviewPlay(card.key, true)}
+                      onTouchStart={
+                        isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
+                      }
                     />
-                  </div>
-                  <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
+                  </a>
+                  <a
+                    href={`/card/${card.key}`}
+                    className="block text-[24px] font-semibold text-[#1A1A1A] mb-2"
+                  >
                     {card.title}
-                  </h4>
+                  </a>
                   <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
                     {card.desc}
                   </p>
