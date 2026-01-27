@@ -23,6 +23,7 @@ const CARDS: CardItem[] = [
     title: "Starlit Christmas Tree",
     desc: "A sparkling tree under a starlit winter sky.",
     src: "/cards/christmas_tree.mp4",
+    poster: "/cards/posters/christmas_tree.jpg",
     label: "Limited Edition",
     available: 42,
     badges: ["Bestseller"],
@@ -32,6 +33,7 @@ const CARDS: CardItem[] = [
     title: "Christmas Night Moonlight",
     desc: "A moonlit winter night with soft glow and snowfall.",
     src: "/cards/moonlight.mp4",
+    poster: "/cards/posters/moonlight.jpg",
     label: "Limited Edition",
     available: 38,
     badges: ["Most Popular"],
@@ -41,6 +43,7 @@ const CARDS: CardItem[] = [
     title: "Snowy Cottage Evening",
     desc: "Cozy cottage lights on a calm snowy evening.",
     src: "/cards/Christmas2.mp4",
+    poster: "/cards/posters/Christmas2.jpg",
     label: "Limited Edition",
     available: 36,
     badges: ["Bestseller"],
@@ -50,6 +53,7 @@ const CARDS: CardItem[] = [
     title: "Winter Forest Tree",
     desc: "A tranquil forest scene with a glowing evergreen.",
     src: "/cards/XmasTree.mp4",
+    poster: "/cards/posters/XmasTree.jpg",
     label: "Limited Edition",
     available: 33,
     badges: ["Most Popular"],
@@ -59,6 +63,7 @@ const CARDS: CardItem[] = [
     title: "Golden Christmas Tree Rise",
     desc: "Golden festive light rising through the winter air.",
     src: "/cards/Christmas1.mp4",
+    poster: "/cards/posters/Christmas1.jpg",
     label: "Limited Edition",
     available: 29,
     badges: ["Bestseller"],
@@ -68,6 +73,7 @@ const CARDS: CardItem[] = [
     title: "Santa's Moonlit Ride",
     desc: "Santa’s sleigh gliding across a quiet night sky.",
     src: "/cards/Santa.mp4",
+    poster: "/cards/posters/Santa.jpg",
     label: "Limited Edition",
     available: 24,
     badges: ["Most Popular"],
@@ -78,6 +84,7 @@ const CARDS: CardItem[] = [
     title: "Birthday Rose Bloom",
     desc: "A blooming rose animation for elegant birthday wishes.",
     src: "/cards/rose.mp4",
+    poster: "/cards/posters/rose.jpg",
     label: "Limited Edition",
     available: 35,
     badges: ["Bestseller"],
@@ -87,6 +94,7 @@ const CARDS: CardItem[] = [
     title: "Elegant Floral Birthday",
     desc: "Soft watercolor florals with celebratory motion.",
     src: "/cards/Birthday2.mp4",
+    poster: "/cards/posters/Birthday2.jpg",
     label: "Limited Edition",
     available: 31,
     badges: ["Most Popular"],
@@ -97,6 +105,7 @@ const CARDS: CardItem[] = [
     title: "Thank You Florals",
     desc: "Minimal florals that say thank you with warmth.",
     src: "/cards/Thankyou2.mp4",
+    poster: "/cards/posters/Thankyou2.jpg",
     label: "Limited Edition",
     available: 27,
     badges: ["Bestseller"],
@@ -107,6 +116,7 @@ const CARDS: CardItem[] = [
     title: "Heart of Light",
     desc: "A luminous heart animation for love and gratitude.",
     src: "/cards/heart1.mp4",
+    poster: "/cards/posters/heart1.jpg",
     label: "Limited Edition",
     available: 22,
     badges: ["Most Popular"],
@@ -116,6 +126,7 @@ const CARDS: CardItem[] = [
     title: "Golden Heart Glow",
     desc: "A radiant heart glow with romantic warmth.",
     src: "/cards/heart2.mp4",
+    poster: "/cards/posters/heart2.jpg",
     label: "Limited Edition",
     available: 19,
     badges: ["Bestseller"],
@@ -126,6 +137,7 @@ const CARDS: CardItem[] = [
     title: "Warm Wishes",
     desc: "A gentle warm glow for any heartfelt message.",
     src: "/cards/warm_wishes.mp4",
+    poster: "/cards/posters/warm_wishes.jpg",
     label: "Limited Edition",
     available: 25,
     badges: ["Most Popular"],
@@ -544,7 +556,7 @@ export default function Home() {
         "@type": "Product",
         name: card.title,
         description: card.desc,
-        image: `${siteUrl}${card.src}`,
+        image: `${siteUrl}${card.poster ?? card.src}`,
         offers: {
           "@type": "Offer",
           price: "5.00",
@@ -1251,6 +1263,7 @@ export default function Home() {
                 <video
                   className={`w-full object-cover ${showFullPreview ? "h-96" : "h-64"}`}
                   src={quickViewCard.src}
+                  poster={quickViewCard.poster}
                   autoPlay
                   loop={!showFullPreview}
                   muted
