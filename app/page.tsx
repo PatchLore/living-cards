@@ -380,6 +380,7 @@ function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalPro
   const [videoFailed, setVideoFailed] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playError, setPlayError] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -390,6 +391,57 @@ function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalPro
       document.body.style.overflow = prev;
     };
   }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleLoadedMetadata = () => {
+      setIsVideoReady(true);
+    };
+
+    const handleCanPlay = () => {
+      setIsVideoReady(true);
+    };
+
+    video.setAttribute("webkit-playsinline", "true");
+    video.setAttribute("x5-playsinline", "true");
+    video.addEventListener("loadedmetadata", handleLoadedMetadata);
+    video.addEventListener("canplay", handleCanPlay);
+    video.load();
+
+    return () => {
+      video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      video.removeEventListener("canplay", handleCanPlay);
+    };
+  }, [card.src]);
+
+  const handlePlay = async () => {
+    const player = videoRef.current;
+    if (!player) return;
+
+    try {
+      if (!isVideoReady) {
+        await new Promise((resolve) => {
+          const checkReady = () => {
+            if (player.readyState >= 2) {
+              resolve(undefined);
+            } else {
+              setTimeout(checkReady, 100);
+            }
+          };
+          checkReady();
+        });
+      }
+
+      await player.play();
+      setIsPlaying(true);
+      setPlayError(false);
+    } catch (err) {
+      console.error("Video play error:", err);
+      setPlayError(true);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[60] bg-black/80 flex flex-col px-5 py-6">
@@ -421,32 +473,25 @@ function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalPro
               poster={card.poster}
               playsInline
               muted
-              controls
-              preload="metadata"
-              onError={() => setVideoFailed(true)}
+              preload="auto"
+              onError={(e) => {
+                console.error("Video error:", e);
+                setVideoFailed(true);
+              }}
               onPlay={() => {
                 setIsPlaying(true);
                 setPlayError(false);
               }}
               onPause={() => setIsPlaying(false)}
               onEnded={() => setIsPlaying(false)}
+              style={{ WebkitPlaysinline: true } as React.CSSProperties}
             />
           )}
           {!videoFailed && !isPlaying && (
             <button
               type="button"
-              onClick={async () => {
-                const player = videoRef.current;
-                if (!player) return;
-                try {
-                  await player.play();
-                  setIsPlaying(true);
-                  setPlayError(false);
-                } catch {
-                  setPlayError(true);
-                }
-              }}
-              className="absolute inset-0 flex items-center justify-center text-white"
+              onClick={handlePlay}
+              className="absolute inset-0 flex items-center justify-center text-white z-10"
               aria-label="Play preview video"
             >
               <span className="w-16 h-16 rounded-full bg-black/60 border border-white/70 flex items-center justify-center text-2xl">
@@ -457,7 +502,7 @@ function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalPro
         </div>
         {playError && (
           <p className="mt-3 text-sm text-white/80 text-center">
-            Tap again to start the preview.
+            Tap the play button to start the preview.
           </p>
         )}
         <button
