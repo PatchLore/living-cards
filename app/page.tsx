@@ -1365,7 +1365,8 @@ export default function Home() {
               </div>
             </div>
           </section>
-          )}
+        )}
+      </div>
 
         {mobilePreviewCard && isMobileDevice && (
           <MobilePreviewModal
@@ -1374,7 +1375,7 @@ export default function Home() {
             onCheckout={(cardKey) => handleCheckout(cardKey)}
           />
         )}
-      
+
       <section className="max-w-7xl mx-auto mb-12 md:mb-20">
         <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm text-center">
           <h2 className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A]">
