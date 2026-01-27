@@ -105,7 +105,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
-      <body className="min-h-screen bg-slate-900 relative">
+      <body className="min-h-screen bg-[#FAFAF9] relative">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
@@ -120,31 +120,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Main content above snow */}
         <div className="relative z-[40]">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {children}
           </div>
         </div>
 
         {/* Footer trust / drop-service prompt */}
         <footer className="relative z-[40] mt-8">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-slate-400">
-            Every card plants a tree — helping restore forests and support sustainable projects worldwide. 🌱
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-[#1A1A1A]/70">
+            Every card plants a tree — helping restore forests and support sustainable projects worldwide.
             <div className="mt-2">
               Sending 100+ holiday cards?{" "}
               <a
                 href="mailto:info@cardroots.com?subject=Managed%20Sending%20Service%20Enquiry"
-                className="underline text-blue-300"
+                className="underline text-[#2D6A4F]"
               >
                 Request a Managed Sending Service
               </a>
             </div>
             <div className="mt-4 pt-4 border-t border-slate-700/50">
-              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-500">
-                <a href="/terms" className="hover:text-slate-400 transition">
+              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-[#1A1A1A]/60">
+                <a href="/terms" className="hover:text-[#1A1A1A] transition">
                   Terms & Conditions
                 </a>
                 <span className="text-slate-600">•</span>
-                <a href="/privacy" className="hover:text-slate-400 transition">
+                <a href="/privacy" className="hover:text-[#1A1A1A] transition">
                   Privacy Policy
                 </a>
               </div>

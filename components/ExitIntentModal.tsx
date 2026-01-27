@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { track } from "@vercel/analytics";
+import Image from "next/image";
 
 type ExitIntentModalProps = {
   headline: string;
@@ -19,6 +20,7 @@ export default function ExitIntentModal({
   const [isOpen, setIsOpen] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     try {
@@ -59,10 +61,29 @@ export default function ExitIntentModal({
               </div>
             ) : (
               <form
-                onSubmit={(event) => {
+                onSubmit={async (event) => {
                   event.preventDefault();
-                  setSubmitted(true);
-                  track("exit_intent_submit");
+                  setErrorMessage("");
+                  const form = event.currentTarget;
+                  const formData = new FormData(form);
+                  const email = String(formData.get("email") || "");
+                  try {
+                    const res = await fetch("/api/exit-intent", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({ email }),
+                    });
+                    if (!res.ok) {
+                      throw new Error("Request failed");
+                    }
+                    setSubmitted(true);
+                    track("exit_intent_submit");
+                  } catch {
+                    setErrorMessage("Unable to submit. Please try again.");
+                    track("exit_intent_submit_failed");
+                  }
                 }}
                 className="space-y-3"
               >
@@ -70,14 +91,18 @@ export default function ExitIntentModal({
                   type="email"
                   required
                   placeholder="Email address"
+                  name="email"
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-700"
                 />
                 <button
                   type="submit"
-                  className="w-full bg-slate-900 text-white py-3 rounded-xl"
+                  className="w-full bg-[#2D6A4F] hover:bg-[#52B788] text-white py-3 rounded-xl transition"
                 >
                   Get 10% off + track your tree impact
                 </button>
+                {errorMessage && (
+                  <div className="text-xs text-rose-600">{errorMessage}</div>
+                )}
               </form>
             )}
             <button
@@ -96,9 +121,15 @@ export default function ExitIntentModal({
               No thanks, continue browsing
             </button>
           </div>
-          <div className="hidden md:block">
+          <div className="hidden md:block relative min-h-[320px]">
             {imageSrc ? (
-              <img src={imageSrc} alt="Forest scene" className="w-full h-full object-cover" />
+              <Image
+                src={imageSrc}
+                alt="Forest scene"
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-emerald-200 via-amber-100 to-sky-200" />
             )}
