@@ -565,6 +565,12 @@ export default function Home() {
     return heroPreviewCards[(heroStartIndex + index) % heroPreviewCards.length];
   });
 
+  const fallbackCards = CARDS.map((card) => ({
+    key: card.key,
+    title: card.title,
+    poster: card.poster,
+  }));
+
   const christmasCards = sortedCards.filter((card) => getCategory(card.key) === "Christmas");
   const birthdayCards = sortedCards.filter((card) => getCategory(card.key) === "Birthday");
   const thankYouLoveCards = sortedCards.filter((card) => {
@@ -935,200 +941,226 @@ export default function Home() {
           </div>
         </div>
 
-        {!cardsReady ? (
-          <div>
-            <p className="text-sm text-[#1A1A1A]/60 mb-4">Loading your cards...</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div
-                  key={`skeleton-${index}`}
-                  className="w-full lg:min-w-[400px] rounded-3xl border border-slate-200 bg-white p-5 shadow-sm animate-pulse"
-                >
-                  <div className="h-56 rounded-2xl bg-slate-200 mb-4" />
-                  <div className="h-5 w-2/3 bg-slate-200 mb-3" />
-                  <div className="h-4 w-full bg-slate-200 mb-2" />
-                  <div className="h-10 w-full bg-slate-200 mt-4" />
-                </div>
-              ))}
-            </div>
+        <div className="ios-fallback">
+          <div className="text-sm text-[#1A1A1A]/60 mb-4">
+            Tap any card to preview on mobile.
           </div>
-        ) : activeFilter === "All Cards" ? (
-          <div className="space-y-12">
-            {[
-              { title: "Christmas Cards", cards: christmasCards },
-              { title: "Birthday & Celebration Cards", cards: birthdayCards },
-              { title: "Thank You & Love Cards", cards: thankYouLoveCards },
-            ].map((section, sectionIndex) => (
-              <div key={section.title}>
-                <div className="flex items-center gap-4 mb-6">
-                  <h3 className="text-[24px] font-semibold text-[#1A1A1A]">
-                    {section.title}
-                  </h3>
-                  <div className="flex-1 h-px bg-slate-200" />
-                </div>
-                <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
-                  {section.cards.map((card, index) => (
-                    <article
-                      key={card.key}
-                      className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
-                      style={{ animationDelay: `${(sectionIndex * 6 + index) * 50}ms` }}
-                    >
-                      <button
-                        onClick={() => {
-                          setQuickViewCard(card);
-                          setShowFullPreview(false);
-                          trackEvent("quick_view_open", { cardKey: card.key });
-                        }}
-                        className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-[#2D6A4F] hover:bg-[#E7F3EC] transition"
-                        aria-label="Quick view"
-                      >
-                        👁
-                      </button>
-                      <div className="flex flex-wrap items-center gap-2 mb-3">
-                        {card.label && (
-                          <span className="text-[11px] uppercase tracking-wide text-[#D4AF37] font-semibold bg-[#F5EED6] px-2 py-1 rounded-full">
-                            {card.label}
-                          </span>
-                        )}
-                        {card.badges?.map((badge) => (
-                          <span
-                            key={badge}
-                            className="text-[11px] uppercase tracking-wide text-[#2D6A4F] font-semibold bg-[#E7F3EC] px-2 py-1 rounded-full"
-                          >
-                            {badge}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
-                        Limited Edition - Only {card.available} cards available
-                      </div>
-                      <div className="rounded-2xl overflow-hidden mb-4">
-                        <LazyVideo
-                          className="w-full h-60 md:h-64 object-cover"
-                          src={card.src}
-                          webmSrc={card.webmSrc}
-                          poster={card.poster}
-                          tapToPlay={isMobileDevice}
-                          loop
-                          muted
-                          playsInline
-                          onMouseEnter={handlePreviewPlay(card.key)}
-                          onMouseLeave={handlePreviewPause}
-                          onFocus={handlePreviewPlay(card.key)}
-                          onBlur={handlePreviewPause}
-                          onTouchStart={
-                            isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
-                          }
-                        />
-                      </div>
-                      <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
-                        {card.title}
-                      </h4>
-                      <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
-                        {card.desc}
-                      </p>
-                      <div className="mb-4">
-                        <div className="text-[24px] font-semibold text-[#2D6A4F]">£5</div>
-                        <div className="text-sm text-[#1A1A1A]/70">
-                          Includes 1 tree planted 🌱
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setSelectedCard(card.key);
-                          formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                          trackEvent("personalize_start", { cardKey: card.key });
-                        }}
-                        className="w-full h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition"
-                      >
-                        Select This Card
-                      </button>
-                    </article>
-                  ))}
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {fallbackCards.map((card) => (
+              <div
+                key={`fallback-${card.key}`}
+                className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm"
+              >
+                <img
+                  src={card.poster}
+                  alt={card.title}
+                  className="w-full h-40 object-cover"
+                  loading="lazy"
+                />
+                <div className="px-3 py-3 text-sm font-medium text-[#1A1A1A] truncate">
+                  {card.title}
                 </div>
               </div>
             ))}
           </div>
-        ) : (
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
-            {filteredCards.map((card, index) => (
-              <article
-                key={card.key}
-                className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                <button
-                  onClick={() => {
-                    setQuickViewCard(card);
-                    setShowFullPreview(false);
-                    trackEvent("quick_view_open", { cardKey: card.key });
-                  }}
-                  className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-[#2D6A4F] hover:bg-[#E7F3EC] transition"
-                  aria-label="Quick view"
-                >
-                  👁
-                </button>
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  {card.label && (
-                    <span className="text-[11px] uppercase tracking-wide text-[#D4AF37] font-semibold bg-[#F5EED6] px-2 py-1 rounded-full">
-                      {card.label}
-                    </span>
-                  )}
-                  {card.badges?.map((badge) => (
-                    <span
-                      key={badge}
-                      className="text-[11px] uppercase tracking-wide text-[#2D6A4F] font-semibold bg-[#E7F3EC] px-2 py-1 rounded-full"
-                    >
-                      {badge}
-                    </span>
-                  ))}
-                </div>
-                <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
-                  Limited Edition - Only {card.available} cards available
-                </div>
-                <div className="rounded-2xl overflow-hidden mb-4">
-                  <LazyVideo
-                    className="w-full h-60 md:h-64 object-cover"
-                    src={card.src}
-                    webmSrc={card.webmSrc}
-                    poster={card.poster}
-                    tapToPlay={isMobileDevice}
-                    loop
-                    muted
-                    playsInline
-                    onMouseEnter={handlePreviewPlay(card.key)}
-                    onMouseLeave={handlePreviewPause}
-                    onFocus={handlePreviewPlay(card.key)}
-                    onBlur={handlePreviewPause}
-                    onTouchStart={isMobileDevice ? undefined : handlePreviewPlay(card.key, true)}
-                  />
-                </div>
-                <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
-                  {card.title}
-                </h4>
-                <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
-                  {card.desc}
-                </p>
-                <div className="mb-4">
-                  <div className="text-[24px] font-semibold text-[#2D6A4F]">£5</div>
-                  <div className="text-sm text-[#1A1A1A]/70">
-                    Includes 1 tree planted 🌱
+        </div>
+
+        <div className="ios-hidden">
+          {!cardsReady ? (
+            <div>
+              <p className="text-sm text-[#1A1A1A]/60 mb-4">Loading your cards...</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div
+                    key={`skeleton-${index}`}
+                    className="w-full lg:min-w-[400px] rounded-3xl border border-slate-200 bg-white p-5 shadow-sm animate-pulse"
+                  >
+                    <div className="h-56 rounded-2xl bg-slate-200 mb-4" />
+                    <div className="h-5 w-2/3 bg-slate-200 mb-3" />
+                    <div className="h-4 w-full bg-slate-200 mb-2" />
+                    <div className="h-10 w-full bg-slate-200 mt-4" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : activeFilter === "All Cards" ? (
+            <div className="space-y-12">
+              {[
+                { title: "Christmas Cards", cards: christmasCards },
+                { title: "Birthday & Celebration Cards", cards: birthdayCards },
+                { title: "Thank You & Love Cards", cards: thankYouLoveCards },
+              ].map((section, sectionIndex) => (
+                <div key={section.title}>
+                  <div className="flex items-center gap-4 mb-6">
+                    <h3 className="text-[24px] font-semibold text-[#1A1A1A]">
+                      {section.title}
+                    </h3>
+                    <div className="flex-1 h-px bg-slate-200" />
+                  </div>
+                  <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+                    {section.cards.map((card, index) => (
+                      <article
+                        key={card.key}
+                        className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
+                        style={{ animationDelay: `${(sectionIndex * 6 + index) * 50}ms` }}
+                      >
+                        <button
+                          onClick={() => {
+                            setQuickViewCard(card);
+                            setShowFullPreview(false);
+                            trackEvent("quick_view_open", { cardKey: card.key });
+                          }}
+                          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-[#2D6A4F] hover:bg-[#E7F3EC] transition"
+                          aria-label="Quick view"
+                        >
+                          👁
+                        </button>
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          {card.label && (
+                            <span className="text-[11px] uppercase tracking-wide text-[#D4AF37] font-semibold bg-[#F5EED6] px-2 py-1 rounded-full">
+                              {card.label}
+                            </span>
+                          )}
+                          {card.badges?.map((badge) => (
+                            <span
+                              key={badge}
+                              className="text-[11px] uppercase tracking-wide text-[#2D6A4F] font-semibold bg-[#E7F3EC] px-2 py-1 rounded-full"
+                            >
+                              {badge}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
+                          Limited Edition - Only {card.available} cards available
+                        </div>
+                        <div className="rounded-2xl overflow-hidden mb-4">
+                          <LazyVideo
+                            className="w-full h-60 md:h-64 object-cover"
+                            src={card.src}
+                            webmSrc={card.webmSrc}
+                            poster={card.poster}
+                            tapToPlay={isMobileDevice}
+                            loop
+                            muted
+                            playsInline
+                            onMouseEnter={handlePreviewPlay(card.key)}
+                            onMouseLeave={handlePreviewPause}
+                            onFocus={handlePreviewPlay(card.key)}
+                            onBlur={handlePreviewPause}
+                            onTouchStart={
+                              isMobileDevice ? undefined : handlePreviewPlay(card.key, true)
+                            }
+                          />
+                        </div>
+                        <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
+                          {card.title}
+                        </h4>
+                        <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
+                          {card.desc}
+                        </p>
+                        <div className="mb-4">
+                          <div className="text-[24px] font-semibold text-[#2D6A4F]">£5</div>
+                          <div className="text-sm text-[#1A1A1A]/70">
+                            Includes 1 tree planted 🌱
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setSelectedCard(card.key);
+                            formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                            trackEvent("personalize_start", { cardKey: card.key });
+                          }}
+                          className="w-full h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition"
+                        >
+                          Select This Card
+                        </button>
+                      </article>
+                    ))}
                   </div>
                 </div>
-                <button
-                  onClick={() => {
-                    setSelectedCard(card.key);
-                    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    trackEvent("personalize_start", { cardKey: card.key });
-                  }}
-                  className="w-full h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition"
+              ))}
+            </div>
+          ) : (
+            <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+              {filteredCards.map((card, index) => (
+                <article
+                  key={card.key}
+                  className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  Select This Card
-                </button>
-              </article>
-            ))}
-          </div>
-        )}
+                  <button
+                    onClick={() => {
+                      setQuickViewCard(card);
+                      setShowFullPreview(false);
+                      trackEvent("quick_view_open", { cardKey: card.key });
+                    }}
+                    className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-[#2D6A4F] hover:bg-[#E7F3EC] transition"
+                    aria-label="Quick view"
+                  >
+                    👁
+                  </button>
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    {card.label && (
+                      <span className="text-[11px] uppercase tracking-wide text-[#D4AF37] font-semibold bg-[#F5EED6] px-2 py-1 rounded-full">
+                        {card.label}
+                      </span>
+                    )}
+                    {card.badges?.map((badge) => (
+                      <span
+                        key={badge}
+                        className="text-[11px] uppercase tracking-wide text-[#2D6A4F] font-semibold bg-[#E7F3EC] px-2 py-1 rounded-full"
+                      >
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
+                    Limited Edition - Only {card.available} cards available
+                  </div>
+                  <div className="rounded-2xl overflow-hidden mb-4">
+                    <LazyVideo
+                      className="w-full h-60 md:h-64 object-cover"
+                      src={card.src}
+                      webmSrc={card.webmSrc}
+                      poster={card.poster}
+                      tapToPlay={isMobileDevice}
+                      loop
+                      muted
+                      playsInline
+                      onMouseEnter={handlePreviewPlay(card.key)}
+                      onMouseLeave={handlePreviewPause}
+                      onFocus={handlePreviewPlay(card.key)}
+                      onBlur={handlePreviewPause}
+                      onTouchStart={isMobileDevice ? undefined : handlePreviewPlay(card.key, true)}
+                    />
+                  </div>
+                  <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
+                    {card.title}
+                  </h4>
+                  <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
+                    {card.desc}
+                  </p>
+                  <div className="mb-4">
+                    <div className="text-[24px] font-semibold text-[#2D6A4F]">£5</div>
+                    <div className="text-sm text-[#1A1A1A]/70">
+                      Includes 1 tree planted 🌱
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSelectedCard(card.key);
+                      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      trackEvent("personalize_start", { cardKey: card.key });
+                    }}
+                    className="w-full h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition"
+                  >
+                    Select This Card
+                  </button>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       {/* Personalization Form (hidden until a card is selected) */}

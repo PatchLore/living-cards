@@ -44,6 +44,30 @@ body {
   }
 }
 
+.ios-fallback {
+  display: none;
+}
+
+.ios-hidden {
+  display: block;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .ios-fallback {
+    display: block;
+  }
+
+  .ios-hidden {
+    display: none;
+  }
+
+  .animate-fade-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 
 .card-panel {
   @apply bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-xl p-6;
