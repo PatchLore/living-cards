@@ -16,13 +16,9 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!process.env.NEXT_PUBLIC_SITE_URL) {
-    console.error("❌ [CHECKOUT] NEXT_PUBLIC_SITE_URL is missing!");
-    return NextResponse.json(
-      { error: "NEXT_PUBLIC_SITE_URL is not configured" },
-      { status: 500 }
-    );
-  }
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
   try {
     // Parse POST body
@@ -42,8 +38,12 @@ export async function POST(req: Request) {
       apiVersion: "2023-10-16" as any,
     });
 
-    const successUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/cancel`;
+    // Success/cancel: optional STRIPE_SUCCESS_URL / STRIPE_CANCEL_URL (full URL), else build from baseUrl
+    const successBase = process.env.STRIPE_SUCCESS_URL?.replace(/\/$/, "") || `${baseUrl}/success`;
+    const successUrl = successBase.includes("?")
+      ? `${successBase}&session_id={CHECKOUT_SESSION_ID}`
+      : `${successBase}?session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = process.env.STRIPE_CANCEL_URL?.replace(/\/$/, "") || `${baseUrl}/cancel`;
 
     console.log("🔍 [CHECKOUT] Creating session with:", {
       priceId: process.env.STRIPE_PRICE_ID,
@@ -53,6 +53,7 @@ export async function POST(req: Request) {
     });
 
     // Create Stripe checkout session
+    // Price amount (£5.00) and currency (GBP) are set on the Price in Stripe Dashboard (STRIPE_PRICE_ID)
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
