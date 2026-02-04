@@ -274,9 +274,11 @@ function LazyVideo({
   onTouchStart,
 }: LazyVideoProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const isHoveredRef = useRef(false);
   const [shouldLoad, setShouldLoad] = useState(!!eagerLoad);
   const [isLoaded, setIsLoaded] = useState(false);
   const [shouldPlayOnLoad, setShouldPlayOnLoad] = useState(false);
+  const [playOnHover, setPlayOnHover] = useState(false);
 
   useEffect(() => {
     if (eagerLoad || !videoRef.current) return;
@@ -323,6 +325,23 @@ function LazyVideo({
     setShouldPlayOnLoad(false);
   }, [shouldLoad, shouldPlayOnLoad]);
 
+  // When user hovers, we requestLoad() but state updates async — so play() runs before <source> exists. Play once video is ready (and only if still hovered).
+  useEffect(() => {
+    if (!shouldLoad || !playOnHover || !videoRef.current) return;
+    const v = videoRef.current;
+    if (v.readyState >= 2) {
+      if (isHoveredRef.current) v.play().catch(() => undefined);
+      setPlayOnHover(false);
+      return;
+    }
+    const onCanPlay = () => {
+      if (isHoveredRef.current) v.play().catch(() => undefined);
+      setPlayOnHover(false);
+    };
+    v.addEventListener("canplay", onCanPlay, { once: true });
+    return () => v.removeEventListener("canplay", onCanPlay);
+  }, [shouldLoad, playOnHover]);
+
   return (
     <div className="relative">
       {shouldLoad && !isLoaded && (
@@ -349,17 +368,25 @@ function LazyVideo({
         }}
         onError={() => setIsLoaded(true)}
         onMouseEnter={(event) => {
+          isHoveredRef.current = true;
           requestLoad();
+          setPlayOnHover(true);
           onMouseEnter?.(event);
         }}
         onMouseLeave={(event) => {
+          isHoveredRef.current = false;
+          setPlayOnHover(false);
           onMouseLeave?.(event);
         }}
         onFocus={(event) => {
+          isHoveredRef.current = true;
           requestLoad();
+          setPlayOnHover(true);
           onFocus?.(event);
         }}
         onBlur={(event) => {
+          isHoveredRef.current = false;
+          setPlayOnHover(false);
           onBlur?.(event);
         }}
         onTouchStart={(event) => {
