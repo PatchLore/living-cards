@@ -313,7 +313,8 @@ function LazyVideo({
 
   return (
     <div className="relative">
-      {shouldLoad && !isLoaded && (
+      {/* Only show loading overlay when no poster — otherwise it would cover the poster and show blank until video loads */}
+      {shouldLoad && !isLoaded && !poster && (
         <div
           className="absolute inset-0 rounded-2xl bg-slate-200/70 animate-pulse"
           aria-hidden
