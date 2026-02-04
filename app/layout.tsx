@@ -3,19 +3,23 @@ import React from "react";
 import { Analytics } from "@vercel/analytics/react";
 import { Metadata } from "next";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
+const canonicalUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
+const baseUrl = canonicalUrl.replace(/\/$/, "");
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(baseUrl),
   title: {
-    default: "Digital Christmas Cards That Plant a Tree | CardRoots",
+    default: "Digital Valentine Cards That Plant a Tree | CardRoots",
     template: "%s | CardRoots",
   },
-  description: "Send beautiful animated Christmas cards that plant real trees. Eco-friendly digital cards delivered instantly. A thoughtful sustainable gift.",
-  keywords: ["digital Christmas cards", "eco-friendly Christmas cards", "digital cards that plant a tree", "sustainable gifts", "animated greeting cards", "environmental gifts"],
+  description: "Send last-minute Valentine's Day cards that plant real trees. Instant digital delivery worldwide. Eco-friendly alternative to paper cards.",
+  keywords: ["digital Valentine cards", "Valentine's Day cards", "eco-friendly cards", "digital cards that plant a tree", "sustainable gifts", "animated greeting cards"],
   authors: [{ name: "CardRoots" }],
   creator: "CardRoots",
   publisher: "CardRoots",
+  alternates: {
+    canonical: baseUrl,
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -24,24 +28,24 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_GB",
-    url: siteUrl,
+    url: baseUrl,
     siteName: "CardRoots",
-    title: "Digital Christmas Cards That Plant a Tree | CardRoots",
-    description: "Send beautiful animated Christmas cards that plant real trees. Eco-friendly digital cards delivered instantly. A thoughtful sustainable gift.",
+    title: "Digital Valentine Cards That Plant a Tree | CardRoots",
+    description: "Send last-minute Valentine's Day cards that plant real trees. Instant digital delivery worldwide. Eco-friendly alternative to paper cards.",
     images: [
       {
-        url: `${siteUrl}/og-image.jpg`,
+        url: `${baseUrl}/og-image.jpg`,
         width: 1200,
         height: 630,
-        alt: "CardRoots - Digital Cards That Plant Real Trees",
+        alt: "CardRoots - Digital Valentine Cards That Plant Real Trees",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Digital Christmas Cards That Plant a Tree | CardRoots",
-    description: "Send beautiful animated Christmas cards that plant real trees. Eco-friendly digital cards delivered instantly.",
-    images: [`${siteUrl}/og-image.jpg`],
+    title: "Digital Valentine Cards That Plant a Tree | CardRoots",
+    description: "Send last-minute Valentine's Day cards that plant real trees. Instant digital delivery worldwide. Eco-friendly alternative to paper cards.",
+    images: [`${baseUrl}/og-image.jpg`],
   },
   robots: {
     index: true,
@@ -61,18 +65,19 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
-  
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
+  const baseUrl = siteUrl.replace(/\/$/, "");
+
   // Structured data for Organization
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "CardRoots",
-    url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
-    description: "CardRoots sends beautiful animated digital cards that plant real trees. Eco-friendly digital greeting cards delivered instantly.",
+    url: baseUrl,
+    logo: `${baseUrl}/logo.png`,
     sameAs: [
-      // Add social media links when available
+      "https://twitter.com/cardroots",
+      "https://instagram.com/cardroots",
     ],
     contactPoint: {
       "@type": "ContactPoint",
@@ -94,8 +99,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       priceCurrency: "GBP",
       description: "Digital card that plants a real tree",
     },
-    description: "Send beautiful animated digital cards that plant real trees. Eco-friendly digital greeting cards for Christmas, birthdays, and special occasions.",
-    url: siteUrl,
+    description: "Send beautiful animated digital cards that plant real trees. Eco-friendly digital greeting cards for Valentine's Day, Christmas, birthdays, and special occasions.",
+    url: baseUrl,
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "5",

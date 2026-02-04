@@ -7,15 +7,22 @@ import Image from "next/image";
 type ExitIntentModalProps = {
   headline: string;
   subheadline: string;
-  offer: string;
+  offer?: string;
   imageSrc?: string;
+  /** When true, show only headline, subheadline, and CTA button (no email form) */
+  ctaOnly?: boolean;
+  ctaText?: string;
+  onCtaClick?: () => void;
 };
 
 export default function ExitIntentModal({
   headline,
   subheadline,
-  offer,
+  offer = "",
   imageSrc,
+  ctaOnly = false,
+  ctaText,
+  onCtaClick,
 }: ExitIntentModalProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -43,6 +50,23 @@ export default function ExitIntentModal({
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [dismissed]);
 
+  const handleDismiss = () => {
+    setIsOpen(false);
+    setDismissed(true);
+    try {
+      localStorage.setItem("exit-intent-dismissed", "1");
+    } catch {
+      // ignore
+    }
+    track("exit_intent_dismiss");
+  };
+
+  const handleCtaClick = () => {
+    onCtaClick?.();
+    handleDismiss();
+    track("exit_intent_cta_click");
+  };
+
   if (dismissed || !isOpen) return null;
 
   return (
@@ -50,12 +74,30 @@ export default function ExitIntentModal({
       <div className="w-full max-w-3xl rounded-3xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="p-8">
-            <p className="text-xs uppercase tracking-wide text-amber-600 font-semibold mb-3">
-              {offer}
-            </p>
+            {offer ? (
+              <p className="text-xs uppercase tracking-wide text-amber-600 font-semibold mb-3">
+                {offer}
+              </p>
+            ) : null}
             <h3 className="text-2xl font-semibold text-slate-900 mb-3">{headline}</h3>
             <p className="text-sm text-slate-600 mb-5">{subheadline}</p>
-            {submitted ? (
+            {ctaOnly ? (
+              <div className="space-y-4">
+                <button
+                  type="button"
+                  onClick={handleCtaClick}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold transition"
+                >
+                  {ctaText ?? "Browse Valentine Cards"}
+                </button>
+                <button
+                  onClick={handleDismiss}
+                  className="block w-full text-center text-xs text-slate-500 hover:text-slate-700"
+                >
+                  No thanks, continue browsing
+                </button>
+              </div>
+            ) : submitted ? (
               <div className="text-sm text-emerald-700 font-medium">
                 Thanks! We will send your discount shortly.
               </div>
@@ -105,21 +147,14 @@ export default function ExitIntentModal({
                 )}
               </form>
             )}
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                setDismissed(true);
-                try {
-                  localStorage.setItem("exit-intent-dismissed", "1");
-                } catch {
-                  // ignore
-                }
-                track("exit_intent_dismiss");
-              }}
-              className="mt-4 text-xs text-slate-500 hover:text-slate-700"
-            >
-              No thanks, continue browsing
-            </button>
+            {!ctaOnly && (
+              <button
+                onClick={handleDismiss}
+                className="mt-4 text-xs text-slate-500 hover:text-slate-700"
+              >
+                No thanks, continue browsing
+              </button>
+            )}
           </div>
           <div className="hidden md:block relative min-h-[320px]">
             {imageSrc ? (
@@ -131,21 +166,12 @@ export default function ExitIntentModal({
                 className="object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-emerald-200 via-amber-100 to-sky-200" />
+              <div className="w-full h-full bg-gradient-to-br from-pink-100 via-rose-50 to-amber-100" />
             )}
           </div>
         </div>
         <button
-          onClick={() => {
-            setIsOpen(false);
-            setDismissed(true);
-            try {
-              localStorage.setItem("exit-intent-dismissed", "1");
-            } catch {
-              // ignore
-            }
-            track("exit_intent_dismiss");
-          }}
+          onClick={handleDismiss}
           className="absolute top-4 right-4 text-slate-500 hover:text-slate-700"
           aria-label="Dismiss exit intent"
         >

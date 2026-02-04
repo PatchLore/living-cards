@@ -3,8 +3,13 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// Map card keys → actual video filenames
+// Map card keys → actual video filenames (must match server CARD_VIDEO_MAP)
 const CARD_VIDEO_MAP: Record<string, string> = {
+  "valentine-rose": "Valentine1.mp4",
+  "valentine-heart-glow": "Valentine2.mp4",
+  "valentine-blossom": "Valantine3.mp4",
+  "valentine-love-light": "Valantine4.mp4",
+  "valentine-forever": "Valantine5.mp4",
   "starlit-christmas-tree": "christmas_tree.mp4",
   "christmas-night-moonlight": "moonlight.mp4",
   "snowy-cottage-evening": "Christmas2.mp4",
@@ -19,7 +24,13 @@ const CARD_VIDEO_MAP: Record<string, string> = {
   "warm-wishes": "warm_wishes.mp4",
 };
 
-export default function CardViewerClient({ cardKey }: { cardKey: string }) {
+export default function CardViewerClient({
+  cardKey,
+  backToHash,
+}: {
+  cardKey: string;
+  backToHash?: string;
+}) {
   const search = useSearchParams();
   const [recipient, setRecipient] = useState("");
   const [message, setMessage] = useState("");
@@ -61,8 +72,9 @@ export default function CardViewerClient({ cardKey }: { cardKey: string }) {
     <main className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 px-6">
       <div className="max-w-3xl mx-auto mb-6">
         <a
-          href="/#collection"
+          href={backToHash ? `/#${backToHash}` : "/#collection"}
           className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition"
+          aria-label="Back to card collection"
         >
           ← Back to Cards
         </a>
@@ -84,6 +96,7 @@ export default function CardViewerClient({ cardKey }: { cardKey: string }) {
           muted
           playsInline
           className="w-full rounded-2xl shadow-lg mb-6"
+          aria-label="Animated digital card playback"
         />
 
         {(recipient || message) && (
@@ -104,11 +117,13 @@ export default function CardViewerClient({ cardKey }: { cardKey: string }) {
             href={videoSrc}
             download={`${cardKey}.mp4`}
             className="px-6 py-3 rounded-xl bg-amber-500 text-white font-medium shadow-md hover:bg-amber-600 transition"
+            aria-label="Download card video"
           >
             Download Video
           </a>
 
           <button
+            type="button"
             onClick={async () => {
               const shareURL = window.location.href;
               try {
@@ -119,6 +134,7 @@ export default function CardViewerClient({ cardKey }: { cardKey: string }) {
               }
             }}
             className="px-6 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-md hover:bg-slate-900 transition"
+            aria-label="Copy share link to clipboard"
           >
             Copy Share Link
           </button>

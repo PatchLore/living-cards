@@ -54,6 +54,11 @@ export async function generateMetadata({ params }: { params: Promise<{ shareId: 
 
 // Same mapping as /card/[cardKey]/page.tsx
 const CARD_VIDEO_MAP: Record<string, string> = {
+  "valentine-rose": "Valentine1.mp4",
+  "valentine-heart-glow": "Valentine2.mp4",
+  "valentine-blossom": "Valantine3.mp4",
+  "valentine-love-light": "Valantine4.mp4",
+  "valentine-forever": "Valantine5.mp4",
   "starlit-christmas-tree": "christmas_tree.mp4",
   "christmas-night-moonlight": "moonlight.mp4",
   "snowy-cottage-evening": "Christmas2.mp4",
@@ -112,7 +117,7 @@ export default async function PrettySharePage(props: any) {
     if (key.includes("thank-you") || key.includes("gratitude") || key.includes("florals")) {
       return "A heartfelt thank you 🌸";
     }
-    if (key.includes("heart") || key.includes("love") || key.includes("valentines")) {
+    if (key.includes("heart") || key.includes("love") || key.includes("valentine")) {
       return "Sent with love ❤️";
     }
     return "A message sent with care ✨";

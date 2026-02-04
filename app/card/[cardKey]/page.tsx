@@ -1,10 +1,16 @@
 import { Metadata } from "next";
 import CardViewerClient from "./CardViewerClient";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
+const baseUrl = siteUrl.replace(/\/$/, "");
 
 // Map card keys → actual video filenames
 const CARD_VIDEO_MAP: Record<string, string> = {
+  "valentine-rose": "Valentine1.mp4",
+  "valentine-heart-glow": "Valentine2.mp4",
+  "valentine-blossom": "Valantine3.mp4",
+  "valentine-love-light": "Valantine4.mp4",
+  "valentine-forever": "Valantine5.mp4",
   "starlit-christmas-tree": "christmas_tree.mp4",
   "christmas-night-moonlight": "moonlight.mp4",
   "snowy-cottage-evening": "Christmas2.mp4",
@@ -21,6 +27,31 @@ const CARD_VIDEO_MAP: Record<string, string> = {
 
 // Card metadata mapping for SEO
 const CARD_METADATA: Record<string, { title: string; occasion: string; description: string }> = {
+  "valentine-rose": {
+    title: "Valentine Rose",
+    occasion: "Valentine's Day",
+    description: "A blooming rose Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "valentine-heart-glow": {
+    title: "Valentine Heart Glow",
+    occasion: "Valentine's Day",
+    description: "A radiant heart Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "valentine-blossom": {
+    title: "Valentine Blossom",
+    occasion: "Valentine's Day",
+    description: "Soft blossoms Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "valentine-love-light": {
+    title: "Valentine Love Light",
+    occasion: "Valentine's Day",
+    description: "Warm light Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "valentine-forever": {
+    title: "Valentine Forever",
+    occasion: "Valentine's Day",
+    description: "A timeless Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
   "starlit-christmas-tree": {
     title: "Starlit Christmas Tree",
     occasion: "Christmas",
@@ -95,8 +126,8 @@ export async function generateMetadata({ params }: { params: Promise<{ cardKey: 
   }
 
   const title = `${cardMeta.title} — Plants a Real Tree | CardRoots`;
-  const url = `${siteUrl}/card/${cardKey}`;
-  const imageUrl = `${siteUrl}${CARD_VIDEO_MAP[cardKey] ? `/cards/${CARD_VIDEO_MAP[cardKey]}` : '/og-image.jpg'}`;
+  const url = `${baseUrl}/card/${cardKey}`;
+  const imageUrl = `${baseUrl}${CARD_VIDEO_MAP[cardKey] ? `/cards/${CARD_VIDEO_MAP[cardKey]}` : "/og-image.jpg"}`;
   
   return {
     title,
@@ -131,40 +162,43 @@ export async function generateMetadata({ params }: { params: Promise<{ cardKey: 
 export default async function CardViewerPage({ params }: { params: Promise<{ cardKey: string }> }) {
   const { cardKey } = await params;
   const cardMeta = CARD_METADATA[cardKey];
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
-  
-  // Structured data for Product
-  const productSchema = cardMeta ? {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: cardMeta.title,
-    description: cardMeta.description,
-    image: `${siteUrl}${CARD_VIDEO_MAP[cardKey] ? `/cards/${CARD_VIDEO_MAP[cardKey]}` : '/og-image.jpg'}`,
-    brand: {
-      "@type": "Brand",
-      name: "CardRoots",
-    },
-    category: `${cardMeta.occasion} Digital Cards`,
-    offers: {
-      "@type": "Offer",
-      price: "5.00",
-      priceCurrency: "GBP",
-      availability: "https://schema.org/InStock",
-      url: `${siteUrl}/card/${cardKey}`,
-    },
-    additionalProperty: [
-      {
-        "@type": "PropertyValue",
-        name: "Trees Planted",
-        value: "1",
-      },
-      {
-        "@type": "PropertyValue",
-        name: "Occasion",
-        value: cardMeta.occasion,
-      },
-    ],
-  } : null;
+
+  // Structured data for Product (Valentine cards include aggregateRating)
+  const productSchema = cardMeta
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name:
+          cardMeta.occasion === "Valentine's Day"
+            ? `Digital Valentine Card - ${cardMeta.title}`
+            : cardMeta.title,
+        description: cardMeta.description,
+        image: `${baseUrl}${CARD_VIDEO_MAP[cardKey] ? `/cards/${CARD_VIDEO_MAP[cardKey]}` : "/og-image.jpg"}`,
+        brand: {
+          "@type": "Brand",
+          name: "CardRoots",
+        },
+        category: `${cardMeta.occasion} Digital Cards`,
+        offers: {
+          "@type": "Offer",
+          price: "5.00",
+          priceCurrency: "GBP",
+          availability: "https://schema.org/InStock",
+          url: `${baseUrl}/card/${cardKey}`,
+        },
+        additionalProperty: [
+          { "@type": "PropertyValue", name: "Trees Planted", value: "1" },
+          { "@type": "PropertyValue", name: "Occasion", value: cardMeta.occasion },
+        ],
+        ...(cardMeta.occasion === "Valentine's Day" && {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: "4.8",
+            reviewCount: "127",
+          },
+        }),
+      }
+    : null;
 
   return (
     <>

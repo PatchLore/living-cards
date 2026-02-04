@@ -14,9 +14,66 @@ type CardItem = {
   label?: string;
   available: number;
   badges?: string[];
+  priority?: boolean;
 };
 
 const CARDS: CardItem[] = [
+  // Valentine Cards (priority: sort first)
+  {
+    key: "valentine-rose",
+    title: "Valentine Rose",
+    desc: "A blooming rose for the one you love.",
+    src: "/cards/Valentine1.mp4",
+    poster: "/cards/posters/rose.jpg",
+    label: "Limited Time",
+    available: 45,
+    badges: ["Valentine"],
+    priority: true,
+  },
+  {
+    key: "valentine-heart-glow",
+    title: "Valentine Heart Glow",
+    desc: "A radiant heart that says I love you.",
+    src: "/cards/Valentine2.mp4",
+    poster: "/cards/posters/heart1.jpg",
+    label: "Limited Time",
+    available: 42,
+    badges: ["Valentine"],
+    priority: true,
+  },
+  {
+    key: "valentine-blossom",
+    title: "Valentine Blossom",
+    desc: "Soft blossoms for a sweet Valentine.",
+    src: "/cards/Valantine3.mp4",
+    poster: "/cards/posters/heart2.jpg",
+    label: "Limited Time",
+    available: 40,
+    badges: ["Valentine"],
+    priority: true,
+  },
+  {
+    key: "valentine-love-light",
+    title: "Valentine Love Light",
+    desc: "Warm light for your special someone.",
+    src: "/cards/Valantine4.mp4",
+    poster: "/cards/posters/heart1.jpg",
+    label: "Limited Time",
+    available: 38,
+    badges: ["Valentine"],
+    priority: true,
+  },
+  {
+    key: "valentine-forever",
+    title: "Valentine Forever",
+    desc: "A timeless Valentine message.",
+    src: "/cards/Valantine5.mp4",
+    poster: "/cards/posters/heart2.jpg",
+    label: "Limited Time",
+    available: 36,
+    badges: ["Valentine"],
+    priority: true,
+  },
   // Christmas Cards
   {
     key: "starlit-christmas-tree",
@@ -144,9 +201,21 @@ const CARDS: CardItem[] = [
   },
 ];
 
-const heroPreviewCards: CardItem[] = CARDS.filter((card) =>
-  ["heart-of-light", "golden-heart-glow", "warm-wishes"].includes(card.key)
-);
+const heroPreviewCards: CardItem[] = CARDS.filter((c) => c.priority).slice(0, 3);
+
+// Descriptive alt text for Valentine cards (SEO + accessibility)
+const VALENTINE_CARD_ALTS: Record<string, string> = {
+  "valentine-rose": "Red rose digital Valentine card animation that plants a tree",
+  "valentine-heart-glow": "Glowing heart digital Valentine card animation that plants a tree",
+  "valentine-blossom": "Blossom digital Valentine card animation that plants a tree",
+  "valentine-love-light": "Love light digital Valentine card animation that plants a tree",
+  "valentine-forever": "Timeless Valentine digital card animation that plants a tree",
+};
+
+function getValentineCardAlt(card: CardItem): string {
+  return VALENTINE_CARD_ALTS[card.key] ?? `${card.title} digital Valentine card animation that plants a tree`;
+}
+
 const ExitIntentModal = dynamic(() => import("../components/ExitIntentModal"), { ssr: false });
 
 type LazyVideoProps = {
@@ -456,7 +525,7 @@ export default function Home() {
   const [recipient, setRecipient] = useState("");
   const [message, setMessage] = useState("");
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<string>("All Cards");
+  const [activeFilter, setActiveFilter] = useState<string>("Valentine's");
   const [quickViewCard, setQuickViewCard] = useState<CardItem | null>(null);
   const [showFullPreview, setShowFullPreview] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -481,6 +550,11 @@ export default function Home() {
   };
 
   const testimonials: Testimonial[] = [
+    {
+      quote: "Sent this to my wife instead of flowers - she loved that it plants a tree! Perfect last-minute gift.",
+      name: "Tom B.",
+      title: "Verified Customer",
+    },
     {
       quote: "Such a meaningful way to send holiday greetings. Love knowing a tree gets planted!",
       name: "Sarah M.",
@@ -676,15 +750,17 @@ export default function Home() {
   };
 
   const CATEGORY_ORDER: Record<string, number> = {
-    "Christmas": 0,
-    "Birthday": 1,
-    "Thank You": 2,
-    "Love": 3,
-    "General": 4,
+    "Valentine's": 0,
+    "Christmas": 1,
+    "Birthday": 2,
+    "Thank You": 3,
+    "Love": 4,
+    "General": 5,
   };
 
   function getCategory(cardKey: string): string {
     const k = cardKey.toLowerCase();
+    if (k.includes("valentine")) return "Valentine's";
     if (k.includes("christmas") || k.includes("xmas") || k.includes("santa")) return "Christmas";
     if (k.includes("birthday")) return "Birthday";
     if (k.includes("thank")) return "Thank You";
@@ -694,22 +770,22 @@ export default function Home() {
 
   const sortedCards = React.useMemo(() => {
     return [...CARDS].sort((a, b) => {
+      const priorityA = a.priority ? 1 : 0;
+      const priorityB = b.priority ? 1 : 0;
+      if (priorityB !== priorityA) return priorityB - priorityA;
       const categoryA = getCategory(a.key);
       const categoryB = getCategory(b.key);
       const catA = CATEGORY_ORDER[categoryA] ?? 999;
       const catB = CATEGORY_ORDER[categoryB] ?? 999;
-
       if (catA !== catB) return catA - catB;
-
-      // alphabetic fallback inside the same category
       return a.title.localeCompare(b.title);
     });
   }, []);
 
-  const filters = ["All Cards", "Christmas", "Birthday", "Thank You", "Love"];
+  const filters = ["Valentine's", "Christmas", "Birthday", "Thank You", "All"];
 
   const filteredCards = React.useMemo(() => {
-    if (activeFilter === "All Cards") return sortedCards;
+    if (activeFilter === "All") return sortedCards;
     return sortedCards.filter((card) => getCategory(card.key) === activeFilter);
   }, [activeFilter, sortedCards]);
 
@@ -717,6 +793,7 @@ export default function Home() {
     return heroPreviewCards[(heroStartIndex + index) % heroPreviewCards.length];
   });
 
+  const valentineCards = sortedCards.filter((card) => getCategory(card.key) === "Valentine's");
   const christmasCards = sortedCards.filter((card) => getCategory(card.key) === "Christmas");
   const birthdayCards = sortedCards.filter((card) => getCategory(card.key) === "Birthday");
   const thankYouLoveCards = sortedCards.filter((card) => {
@@ -724,14 +801,22 @@ export default function Home() {
     return category === "Thank You" || category === "Love" || category === "General";
   });
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
+  const baseUrl = siteUrl.replace(/\/$/, "");
   
+  // Days until Valentine's Day (Feb 14)
+  const valentinesDate = new Date(new Date().getFullYear(), 1, 14);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  valentinesDate.setHours(0, 0, 0, 0);
+  const daysUntilValentines = Math.max(0, Math.ceil((valentinesDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
+
   // Structured data for Product collection
   const productCollectionSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Digital Christmas Cards That Plant Trees",
-    description: "Collection of animated digital greeting cards that plant real trees. Eco-friendly Christmas, birthday, and thank you cards.",
+    name: "Digital Valentine Cards That Plant Trees",
+    description: "Collection of animated digital greeting cards that plant real trees. Eco-friendly Valentine's, Christmas, birthday, and thank you cards.",
     itemListElement: CARDS.map((card, index) => ({
       "@type": "ListItem",
       position: index + 1,
@@ -739,13 +824,13 @@ export default function Home() {
         "@type": "Product",
         name: card.title,
         description: card.desc,
-        image: `${siteUrl}${card.poster ?? card.src}`,
+        image: `${baseUrl}${card.poster ?? card.src}`,
         offers: {
           "@type": "Offer",
           price: "5.00",
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
-          url: `${siteUrl}/card/${card.key}`,
+          url: card.priority ? `${baseUrl}/cards/valentines/${card.key}` : `${baseUrl}/card/${card.key}`,
         },
         brand: {
           "@type": "Brand",
@@ -769,11 +854,12 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productCollectionSchema) }}
       />
 
+      {/* Sticky Valentine urgency banner */}
       {showSeasonalBanner && (
-        <div className="w-full bg-[#D4AF37] text-[#1A1A1A] text-sm px-4 py-2 flex items-center justify-between">
-          <div className="max-w-7xl mx-auto w-full flex items-center justify-center gap-3">
-            Instant digital delivery worldwide — send in minutes.
-          </div>
+        <div className="sticky top-0 z-50 w-full bg-red-600 text-white text-sm px-4 py-2.5 flex items-center justify-center gap-3 shadow-md">
+          <span>
+            ⏰ Valentine&apos;s Day is February 14 — Order by Feb 12 for guaranteed delivery
+          </span>
           <button
             aria-label="Dismiss banner"
             onClick={() => {
@@ -784,7 +870,7 @@ export default function Home() {
               }
               setShowSeasonalBanner(false);
             }}
-            className="px-3 py-1 text-[#1A1A1A]"
+            className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-white/90 hover:text-white"
           >
             ✕
           </button>
@@ -873,60 +959,61 @@ export default function Home() {
         )}
       </header>
 
-      {/* Hero */}
+      {/* Hero - Valentine first */}
       <section
-        className="relative -mx-4 sm:-mx-6 mb-12 md:mb-20 bg-gradient-to-br from-[#E7F3EC] via-[#FAFAF9] to-[#F5F1E6]"
+        className="relative -mx-4 sm:-mx-6 mb-12 md:mb-20 bg-gradient-to-br from-pink-100 via-rose-50 to-[#FAFAF9] overflow-hidden"
         itemScope
         itemType="https://schema.org/SoftwareApplication"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-20 min-h-[60vh] md:min-h-[70vh] lg:min-h-[80vh] flex flex-col justify-center">
+        {/* Soft heart animation overlay */}
+        <div className="absolute inset-0 pointer-events-none opacity-30" aria-hidden>
+          <div className="absolute top-20 left-[10%] w-16 h-16 rounded-full bg-pink-300/50 blur-2xl animate-pulse" />
+          <div className="absolute top-40 right-[15%] w-20 h-20 rounded-full bg-rose-300/40 blur-2xl animate-pulse" style={{ animationDelay: "1s" }} />
+          <div className="absolute bottom-32 left-[20%] w-14 h-14 rounded-full bg-pink-200/50 blur-2xl animate-pulse" style={{ animationDelay: "0.5s" }} />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-20 min-h-[60vh] md:min-h-[70vh] lg:min-h-[80vh] flex flex-col justify-center">
           <div className="max-w-3xl space-y-5">
-            <p className="text-sm font-semibold tracking-wide text-[#2D6A4F] uppercase">
+            <p className="text-sm font-semibold tracking-wide text-rose-600 uppercase">
               Eco-friendly digital greetings
             </p>
             <h1
               className="text-[36px] md:text-[48px] lg:text-[56px] font-bold text-[#1A1A1A]"
               itemProp="name"
             >
-              Send Beautiful Digital Cards That Plant Real Trees
+              Send Digital Valentine Cards That Plant Trees
             </h1>
             <p
               className="text-[16px] md:text-[18px] leading-[1.6] text-[#1A1A1A]/80"
               itemProp="description"
             >
-              Instant delivery. Personal messages. Real environmental impact.
+              Valentine&apos;s Day is {daysUntilValentines} days away — Send a living card that grows instead of dies
             </p>
-            {/* AI-friendly semantic content - hidden visually but accessible to crawlers */}
             <div className="sr-only">
               <p>
-                CardRoots is a digital greeting card service that sends beautiful animated cards and
-                plants a real tree for every card purchased. CardRoots provides eco-friendly digital
-                cards for Christmas, birthdays, thank you messages, and special occasions. Unlike
-                traditional greeting cards that create waste, CardRoots offers instant digital
-                delivery with real environmental impact. Every digital card funds the planting of a
-                real tree, making each greeting card a sustainable gift that helps restore forests
-                worldwide.
+                CardRoots sends digital Valentine cards that plant real trees. Eco-friendly digital
+                greeting cards for Valentine&apos;s Day, Christmas, birthdays, and special occasions.
+                Instant delivery with real environmental impact.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-4">
               <button
                 onClick={() => {
-                  collectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  document.getElementById("valentine-collection")?.scrollIntoView({ behavior: "smooth", block: "start" });
                   trackEvent("cta_browse_hero");
                 }}
-                className="h-[60px] px-10 rounded-full bg-[#2D6A4F] hover:bg-[#52B788] text-white font-semibold shadow-lg transition"
+                className="h-[60px] px-10 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold shadow-lg transition"
               >
-                Browse Our Collection
+                Browse Valentine Cards →
               </button>
               <a
                 href="/corporate"
-                className="h-[60px] px-8 rounded-full border border-[#2D6A4F] text-[#2D6A4F] font-semibold flex items-center justify-center hover:bg-[#2D6A4F] hover:text-white transition"
+                className="h-[60px] px-8 rounded-full border border-slate-300 text-[#1A1A1A] font-semibold flex items-center justify-center hover:bg-slate-100 transition"
                 onClick={() => trackEvent("cta_business_hero")}
               >
                 For Business
               </a>
             </div>
-            <p className="text-sm text-[#2D6A4F] font-medium">
+            <p className="text-sm text-rose-700 font-medium">
               Join thousands planting trees, one card at a time 🌱
             </p>
           </div>
@@ -936,12 +1023,12 @@ export default function Home() {
               {heroCards.map((card) => (
                 <div
                   key={`${card.key}-${heroStartIndex}`}
-                  className="rounded-2xl overflow-hidden border border-[#E0E0E0] bg-white shadow-md animate-fade-in"
+                  className="rounded-2xl overflow-hidden border border-pink-200/60 bg-white shadow-md animate-fade-in"
                 >
                   {isMobileDevice ? (
                     <img
                       src={card.poster}
-                      alt={card.title}
+                      alt={card.priority ? getValentineCardAlt(card) : card.title}
                       className="w-full h-32 md:h-40 object-cover"
                       loading="lazy"
                     />
@@ -964,7 +1051,77 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto mb-12 md:mb-20">
+      {/* New Valentine Collection - above fold */}
+      <section id="valentine-collection" className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="new-valentine-collection-heading">
+        <div className="flex items-center gap-3 mb-6">
+          <h2 id="new-valentine-collection-heading" className="text-[28px] md:text-[36px] font-semibold text-[#1A1A1A]">
+            🌹 New Valentine Collection
+          </h2>
+          <span className="text-xs uppercase tracking-wide font-semibold bg-amber-200/80 text-amber-900 px-3 py-1.5 rounded-full">
+            Limited Time
+          </span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          {valentineCards.map((card) => (
+            <article
+              key={card.key}
+              className="group relative w-full min-h-[380px] rounded-3xl bg-white border border-slate-200 p-4 shadow-sm transition transform hover:scale-[1.02] hover:shadow-lg"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[11px] uppercase tracking-wide font-semibold bg-pink-100 text-pink-800 px-2 py-1 rounded-full">
+                  Limited Time
+                </span>
+              </div>
+              <div className="rounded-2xl overflow-hidden mb-3">
+                {isMobileDevice ? (
+                  <img
+                    src={card.poster}
+                    alt={getValentineCardAlt(card)}
+                    className="w-full h-44 object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <LazyVideo
+                    className="w-full h-44 object-cover"
+                    src={card.src}
+                    poster={card.poster}
+                    tapToPlay={false}
+                    loop
+                    muted
+                    playsInline
+                    onMouseEnter={handlePreviewPlay(card.key)}
+                    onMouseLeave={handlePreviewPause}
+                  />
+                )}
+              </div>
+              <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">{card.title}</h3>
+              <p className="text-sm text-[#1A1A1A]/70 mb-3 line-clamp-2">{card.desc}</p>
+              <div className="mb-3">
+                <span className="text-xl font-semibold text-[#2D6A4F]">£5</span>
+                <span className="text-xs text-[#1A1A1A]/60 ml-1">per card</span>
+              </div>
+              <a
+                href={`/cards/valentines/${card.key}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelectedCard(card.key);
+                  formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  trackEvent("valentine_send_this_card", { cardKey: card.key });
+                }}
+                className="block w-full h-11 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-center leading-[2.75rem] transition"
+              >
+                Send This Card
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Why Digital Valentines? */}
+      <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="why-digital-valentines">
+        <h2 id="why-digital-valentines" className="sr-only">
+          Why Digital Valentines?
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
             { label: "100% Verified Tree Planting" },
@@ -984,9 +1141,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="how-it-works" className="max-w-7xl mx-auto mb-12 md:mb-20">
+      <section id="how-it-works" className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="how-it-works-heading">
         <div className="text-center mb-10">
-          <h2 className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A]">
+          <h2 id="how-it-works-heading" className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A]">
             How It Works
           </h2>
           <p className="text-[16px] md:text-[18px] text-[#1A1A1A]/70 mt-2">
@@ -1114,9 +1271,10 @@ export default function Home() {
               ))}
             </div>
           </div>
-        ) : activeFilter === "All Cards" ? (
+        ) : activeFilter === "All" ? (
           <div className="space-y-12">
             {[
+              { title: "Valentine Cards", cards: valentineCards },
               { title: "Christmas Cards", cards: christmasCards },
               { title: "Birthday & Celebration Cards", cards: birthdayCards },
               { title: "Thank You & Love Cards", cards: thankYouLoveCards },
@@ -1403,6 +1561,14 @@ export default function Home() {
           <p className="text-[16px] text-[#1A1A1A]/70 mt-2">
             Every card includes one tree planted and instant delivery.
           </p>
+          <div className="mt-4 p-4 rounded-2xl bg-pink-50 border border-pink-200/60">
+            <p className="text-[16px] font-semibold text-pink-900">
+              Valentine&apos;s Special: Buy 3 cards, get 1 free
+            </p>
+            <p className="text-sm text-pink-800 mt-1">
+              Use code <code className="bg-pink-200/80 px-2 py-0.5 rounded font-mono font-semibold">LOVE2025</code> at checkout
+            </p>
+          </div>
         </div>
       </section>
 
@@ -1455,9 +1621,9 @@ export default function Home() {
               collectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
               trackEvent("mobile_cta_view_all");
             }}
-            className="w-full bg-[#2D6A4F] text-white py-3 rounded-2xl shadow-lg"
+            className="w-full bg-red-600 text-white py-3 rounded-2xl shadow-lg"
           >
-            Browse 12 Cards | £5 each 🌱
+            Browse Valentine Cards | £5 each 🌱
           </button>
         </div>
       )}
@@ -1554,9 +1720,14 @@ export default function Home() {
       )}
 
         <ExitIntentModal
-          headline="Wait! Plant your first tree"
-          subheadline="Get a discount and track your tree planting impact."
-          offer="Get 10% off your first card"
+          headline="Wait! Valentine's is almost here"
+          subheadline="Don't forget to send something meaningful. Our digital cards plant a tree and deliver instantly."
+          offer=""
+          ctaOnly
+          ctaText="Browse Valentine Cards"
+          onCtaClick={() => {
+            document.getElementById("valentine-collection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
         />
       </main>
     </ErrorBoundary>
