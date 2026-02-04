@@ -236,6 +236,8 @@ type LazyVideoProps = {
   loop?: boolean;
   muted?: boolean;
   playsInline?: boolean;
+  /** When true, load video source immediately so poster doesn't show first (no hover-to-reveal). */
+  eagerLoad?: boolean;
   onMouseEnter?: React.MouseEventHandler<HTMLVideoElement>;
   onMouseLeave?: React.MouseEventHandler<HTMLVideoElement>;
   onFocus?: React.FocusEventHandler<HTMLVideoElement>;
@@ -264,6 +266,7 @@ function LazyVideo({
   loop,
   muted,
   playsInline,
+  eagerLoad,
   onMouseEnter,
   onMouseLeave,
   onFocus,
@@ -271,12 +274,12 @@ function LazyVideo({
   onTouchStart,
 }: LazyVideoProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [shouldLoad, setShouldLoad] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(!!eagerLoad);
   const [isLoaded, setIsLoaded] = useState(false);
   const [shouldPlayOnLoad, setShouldPlayOnLoad] = useState(false);
 
   useEffect(() => {
-    if (!videoRef.current) return;
+    if (eagerLoad || !videoRef.current) return;
     let observer: IntersectionObserver | null = null;
     const fallbackTimer = setTimeout(() => {
       setShouldLoad(true);
@@ -303,7 +306,7 @@ function LazyVideo({
       clearTimeout(fallbackTimer);
       observer?.disconnect();
     };
-  }, []);
+  }, [eagerLoad]);
 
   const requestLoad = () => {
     if (!shouldLoad) setShouldLoad(true);
@@ -1050,6 +1053,7 @@ export default function Home() {
                       loop
                       muted
                       playsInline
+                      eagerLoad
                     />
                   )}
                 </div>
@@ -1098,6 +1102,7 @@ export default function Home() {
                     loop
                     muted
                     playsInline
+                    eagerLoad
                     onMouseEnter={handlePreviewPlay(card.key)}
                     onMouseLeave={handlePreviewPause}
                   />
@@ -1359,6 +1364,7 @@ export default function Home() {
                             loop
                             muted
                             playsInline
+                            eagerLoad
                             onMouseEnter={handlePreviewPlay(card.key)}
                             onMouseLeave={handlePreviewPause}
                             onFocus={handlePreviewPlay(card.key)}
