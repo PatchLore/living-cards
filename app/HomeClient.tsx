@@ -18,13 +18,13 @@ type CardItem = {
 };
 
 const CARDS: CardItem[] = [
-  // Valentine Cards — poster uses EXISTING files in public/cards/posters/ (rose, heart1, heart2) so images load; video src unchanged for click/hover playback
+  // Valentine Cards — new assets in public/cards/posters/ (valentine1–5.jpg and .mp4)
   {
     key: "valentine-rose",
     title: "Valentine Rose",
     desc: "A blooming rose for the one you love.",
-    src: "/cards/Valentine1.mp4",
-    poster: "/cards/posters/rose.jpg",
+    src: "/cards/posters/valentine1.mp4",
+    poster: "/cards/posters/valentine1.jpg",
     label: "Limited Time",
     available: 45,
     badges: ["Valentine"],
@@ -34,8 +34,8 @@ const CARDS: CardItem[] = [
     key: "valentine-heart-glow",
     title: "Valentine Heart Glow",
     desc: "A radiant heart that says I love you.",
-    src: "/cards/Valentine2.mp4",
-    poster: "/cards/posters/heart1.jpg",
+    src: "/cards/posters/valentine2.mp4",
+    poster: "/cards/posters/valentine2.jpg",
     label: "Limited Time",
     available: 42,
     badges: ["Valentine"],
@@ -45,8 +45,8 @@ const CARDS: CardItem[] = [
     key: "valentine-blossom",
     title: "Valentine Blossom",
     desc: "Soft blossoms for a sweet Valentine.",
-    src: "/cards/Valantine3.mp4",
-    poster: "/cards/posters/heart2.jpg",
+    src: "/cards/posters/valentine3.mp4",
+    poster: "/cards/posters/valentine3.jpg",
     label: "Limited Time",
     available: 40,
     badges: ["Valentine"],
@@ -56,8 +56,8 @@ const CARDS: CardItem[] = [
     key: "valentine-love-light",
     title: "Valentine Love Light",
     desc: "Warm light for your special someone.",
-    src: "/cards/Valantine4.mp4",
-    poster: "/cards/posters/heart1.jpg",
+    src: "/cards/posters/valentine4.mp4",
+    poster: "/cards/posters/valentine4.jpg",
     label: "Limited Time",
     available: 38,
     badges: ["Valentine"],
@@ -67,8 +67,8 @@ const CARDS: CardItem[] = [
     key: "valentine-forever",
     title: "Valentine Forever",
     desc: "A timeless Valentine message.",
-    src: "/cards/Valantine5.mp4",
-    poster: "/cards/posters/heart2.jpg",
+    src: "/cards/posters/valentine5.mp4",
+    poster: "/cards/posters/valentine5.jpg",
     label: "Limited Time",
     available: 36,
     badges: ["Valentine"],
@@ -135,17 +135,7 @@ const CARDS: CardItem[] = [
     available: 24,
     badges: ["Most Popular"],
   },
-  // Birthday Cards
-  {
-    key: "birthday-rose-bloom",
-    title: "Birthday Rose Bloom",
-    desc: "A blooming rose animation for elegant birthday wishes.",
-    src: "/cards/rose.mp4",
-    poster: "/cards/posters/rose.jpg",
-    label: "Limited Edition",
-    available: 35,
-    badges: ["Bestseller"],
-  },
+  // Birthday Cards (rose/heart posters removed — only Valentine uses valentine1-5)
   {
     key: "elegant-floral-birthday",
     title: "Elegant Floral Birthday",
@@ -165,27 +155,6 @@ const CARDS: CardItem[] = [
     poster: "/cards/posters/Thankyou2.jpg",
     label: "Limited Edition",
     available: 27,
-    badges: ["Bestseller"],
-  },
-  // Love / Heart Cards
-  {
-    key: "heart-of-light",
-    title: "Heart of Light",
-    desc: "A luminous heart animation for love and gratitude.",
-    src: "/cards/heart1.mp4",
-    poster: "/cards/posters/heart1.jpg",
-    label: "Limited Edition",
-    available: 22,
-    badges: ["Most Popular"],
-  },
-  {
-    key: "golden-heart-glow",
-    title: "Golden Heart Glow",
-    desc: "A radiant heart glow with romantic warmth.",
-    src: "/cards/heart2.mp4",
-    poster: "/cards/posters/heart2.jpg",
-    label: "Limited Edition",
-    available: 19,
     badges: ["Bestseller"],
   },
   // General Cards

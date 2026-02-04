@@ -4,13 +4,13 @@ import CardViewerClient from "./CardViewerClient";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
 const baseUrl = siteUrl.replace(/\/$/, "");
 
-// Map card keys → actual video filenames
+// Map card keys → path under /cards/ (Valentine videos in posters/)
 const CARD_VIDEO_MAP: Record<string, string> = {
-  "valentine-rose": "Valentine1.mp4",
-  "valentine-heart-glow": "Valentine2.mp4",
-  "valentine-blossom": "Valantine3.mp4",
-  "valentine-love-light": "Valantine4.mp4",
-  "valentine-forever": "Valantine5.mp4",
+  "valentine-rose": "posters/valentine1.mp4",
+  "valentine-heart-glow": "posters/valentine2.mp4",
+  "valentine-blossom": "posters/valentine3.mp4",
+  "valentine-love-light": "posters/valentine4.mp4",
+  "valentine-forever": "posters/valentine5.mp4",
   "starlit-christmas-tree": "christmas_tree.mp4",
   "christmas-night-moonlight": "moonlight.mp4",
   "snowy-cottage-evening": "Christmas2.mp4",
