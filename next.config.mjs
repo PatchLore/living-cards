@@ -3,8 +3,8 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: "/card/valentine-:path*",
-        destination: "/cards/valentines/valentine-:path*",
+        source: "/card/valentine-:slug",
+        destination: "/cards/valentines/valentine-:slug",
         permanent: true,
       },
     ];
