@@ -18,13 +18,13 @@ type CardItem = {
 };
 
 const CARDS: CardItem[] = [
-  // Valentine Cards (priority: sort first)
+  // Valentine Cards (priority: sort first) — poster matches video (Valentine1–Valantine5) so initial thumbnail is correct
   {
     key: "valentine-rose",
     title: "Valentine Rose",
     desc: "A blooming rose for the one you love.",
     src: "/cards/Valentine1.mp4",
-    poster: "/cards/posters/rose.jpg",
+    poster: "/cards/posters/Valentine1.jpg",
     label: "Limited Time",
     available: 45,
     badges: ["Valentine"],
@@ -35,7 +35,7 @@ const CARDS: CardItem[] = [
     title: "Valentine Heart Glow",
     desc: "A radiant heart that says I love you.",
     src: "/cards/Valentine2.mp4",
-    poster: "/cards/posters/heart1.jpg",
+    poster: "/cards/posters/Valentine2.jpg",
     label: "Limited Time",
     available: 42,
     badges: ["Valentine"],
@@ -46,7 +46,7 @@ const CARDS: CardItem[] = [
     title: "Valentine Blossom",
     desc: "Soft blossoms for a sweet Valentine.",
     src: "/cards/Valantine3.mp4",
-    poster: "/cards/posters/heart2.jpg",
+    poster: "/cards/posters/Valantine3.jpg",
     label: "Limited Time",
     available: 40,
     badges: ["Valentine"],
@@ -57,7 +57,7 @@ const CARDS: CardItem[] = [
     title: "Valentine Love Light",
     desc: "Warm light for your special someone.",
     src: "/cards/Valantine4.mp4",
-    poster: "/cards/posters/heart1.jpg",
+    poster: "/cards/posters/Valantine4.jpg",
     label: "Limited Time",
     available: 38,
     badges: ["Valentine"],
@@ -68,7 +68,7 @@ const CARDS: CardItem[] = [
     title: "Valentine Forever",
     desc: "A timeless Valentine message.",
     src: "/cards/Valantine5.mp4",
-    poster: "/cards/posters/heart2.jpg",
+    poster: "/cards/posters/Valantine5.jpg",
     label: "Limited Time",
     available: 36,
     badges: ["Valentine"],
