@@ -904,13 +904,81 @@ export default function Home() {
           name: "CardRoots",
         },
         category: "Digital Greeting Cards",
-        additionalProperty: {
-          "@type": "PropertyValue",
-          name: "Trees Planted",
-          value: "1",
-        },
+        additionalProperty: [
+          {
+            "@type": "PropertyValue",
+            name: "Trees Planted",
+            value: "1",
+          },
+          {
+            "@type": "PropertyValue",
+            name: "Delivery Time",
+            value: "Instant",
+          },
+          {
+            "@type": "PropertyValue",
+            name: "Sustainability Feature",
+            value: "Plants one verified tree per card",
+          },
+        ],
       },
     })),
+  };
+
+  // FAQ schema for AI discovery (homepage FAQPage JSON-LD)
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "How do digital Valentine cards work?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Choose from our collection of 10 animated Valentine cards, personalize your message, add recipient details, and we deliver it instantly via email. Every card plants one verified tree through our reforestation partners. The whole process takes less than 3 minutes.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Are the trees really planted? How can I verify?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, every card plants one real tree. We partner with verified reforestation organizations globally. After sending your card, you receive a digital tree certificate with GPS coordinates, planting date, and project details for full transparency.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can I send a Valentine card on Valentine's Day itself?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Absolutely! Our cards are delivered instantly via email, so you can send them right up until midnight on Valentine's Day. Perfect for last-minute gifts or when you're separated by distance.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What makes CardRoots cards better than traditional paper cards?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "CardRoots cards offer instant email delivery (no waiting 2-5 days), cost just £5 including tree planting (vs £3-8 plus postage), feature beautiful animations (vs static paper), create environmental benefit (vs landfill waste), and provide verified impact tracking (vs no accountability).",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "When will my card be delivered?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Instantly! Your personalized animated card is delivered via email within seconds of completing your order. You can schedule future delivery dates or send immediately.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Do you offer bulk or corporate orders?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes! We offer bulk discounts and a managed sending service for corporate Valentine campaigns. Email info@cardroots.com for custom quotes on orders of 100+ cards.",
+        },
+      },
+    ],
   };
 
   return (
@@ -919,6 +987,10 @@ export default function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productCollectionSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
       {/* Sticky Valentine urgency banner */}
@@ -1203,25 +1275,168 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why Digital Valentines? */}
-      <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="why-digital-valentines">
-        <h2 id="why-digital-valentines" className="sr-only">
-          Why Digital Valentines?
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Why Choose CardRoots? */}
+      <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="why-cardroots">
+        <div className="text-center mb-8">
+          <h2 id="why-cardroots" className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A] mb-3">
+            Why Choose CardRoots?
+          </h2>
+          <p className="text-[16px] md:text-[18px] text-[#1A1A1A]/70">
+            The eco-friendly alternative to traditional greeting cards
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {[
-            { label: "100% Verified Tree Planting" },
-            { label: "Instant Digital Delivery" },
-            { label: "Eco-Friendly Alternative" },
+            { label: "100% Verified Tree Planting", desc: "Not carbon offsets - real trees planted through verified partners" },
+            { label: "Instant Email Delivery", desc: "No shipping required - perfect for last-minute gifts" },
+            { label: "Beautiful Animated Cards", desc: "Not static images - engaging animations that bring your message to life" },
+            { label: "Track Your Impact", desc: "See where your tree is planted and measure your environmental contribution" },
+            { label: "Support Global Reforestation", desc: "Help restore forests and support sustainable projects worldwide" },
+            { label: "Perfect for Long-Distance", desc: "Send instantly to anyone, anywhere - no postal delays" },
           ].map((item) => (
             <div
               key={item.label}
-              className="flex items-center gap-3 bg-white border border-slate-200 rounded-2xl px-4 py-4 shadow-sm"
+              className="flex flex-col gap-2 bg-white border border-slate-200 rounded-2xl px-4 py-4 shadow-sm"
             >
-              <div className="w-10 h-10 rounded-full bg-[#E7F3EC] text-[#2D6A4F] flex items-center justify-center font-semibold">
-                ✓
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#E7F3EC] text-[#2D6A4F] flex items-center justify-center font-semibold flex-shrink-0">
+                  ✓
+                </div>
+                <p className="text-[16px] font-semibold text-[#1A1A1A]">{item.label}</p>
               </div>
-              <p className="text-[16px] font-medium text-[#1A1A1A]">{item.label}</p>
+              <p className="text-sm text-[#1A1A1A]/70 ml-[52px]">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Natural Language Q&A Section for AI Discovery */}
+      <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="faq-heading">
+        <div className="text-center mb-8">
+          <h2 id="faq-heading" className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A] mb-3">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-[16px] md:text-[18px] text-[#1A1A1A]/70">
+            Everything you need to know about digital Valentine cards
+          </p>
+        </div>
+        <div className="space-y-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">What are digital Valentine cards?</h3>
+            <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
+              Digital Valentine cards are animated greeting cards delivered instantly via email. Unlike traditional paper cards, they're eco-friendly and plant real trees. CardRoots digital cards feature beautiful animations, personalized messages, and verified tree planting through our reforestation partners.
+            </p>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">How quickly are digital Valentine cards delivered?</h3>
+            <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
+              CardRoots digital Valentine cards are delivered instantly via email - perfect for last-minute gifts or when you're separated by distance. You can send cards right up until midnight on Valentine's Day with no shipping delays or cutoff dates.
+            </p>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">What makes CardRoots cards eco-friendly?</h3>
+            <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
+              Every CardRoots card plants one verified tree through our reforestation partners. You can track your tree's planting location and environmental impact. Unlike paper cards that end up in landfill, our digital cards create zero waste while actively restoring forests worldwide.
+            </p>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">Can I send a Valentine card on Valentine's Day itself?</h3>
+            <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
+              Yes! Our instant email delivery means you can send cards right up until midnight on Valentine's Day. No shipping delays or cutoff dates. Perfect for last-minute Valentine shoppers or when you realize you forgot to send a card.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison: Digital vs Traditional Cards */}
+      <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="comparison-heading">
+        <div className="text-center mb-8">
+          <h2 id="comparison-heading" className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A] mb-3">
+            Digital Valentine Cards vs Traditional Cards
+          </h2>
+          <p className="text-[16px] md:text-[18px] text-[#1A1A1A]/70">
+            See why digital cards are better for you and the planet
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-4">Traditional Paper Cards</h3>
+            <ul className="space-y-2 text-[16px] text-[#1A1A1A]/70">
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 mt-1">✗</span>
+                <span>Require 2-5 days shipping</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 mt-1">✗</span>
+                <span>Cost £3-8 + £1.50 postage</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 mt-1">✗</span>
+                <span>End up in landfill</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 mt-1">✗</span>
+                <span>Limited personalization</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 mt-1">✗</span>
+                <span>No environmental benefit</span>
+              </li>
+            </ul>
+          </div>
+          <div className="bg-white border-2 border-[#2D6A4F] rounded-2xl p-6 shadow-sm">
+            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-4">CardRoots Digital Cards</h3>
+            <ul className="space-y-2 text-[16px] text-[#1A1A1A]/70">
+              <li className="flex items-start gap-2">
+                <span className="text-[#2D6A4F] mt-1">✓</span>
+                <span>Instant email delivery</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#2D6A4F] mt-1">✓</span>
+                <span>£5 including tree planting</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#2D6A4F] mt-1">✓</span>
+                <span>Zero waste, plants a tree</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#2D6A4F] mt-1">✓</span>
+                <span>Fully customizable messages</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-[#2D6A4F] mt-1">✓</span>
+                <span>Animated and interactive</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Use Cases Section */}
+      <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="use-cases-heading">
+        <div className="text-center mb-8">
+          <h2 id="use-cases-heading" className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A] mb-3">
+            Perfect For
+          </h2>
+          <p className="text-[16px] md:text-[18px] text-[#1A1A1A]/70">
+            Who benefits most from digital Valentine cards?
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[
+            { title: "Long-Distance Couples", desc: "Send instantly to anyone, anywhere - no postal delays" },
+            { title: "Last-Minute Shoppers", desc: "Perfect when you realize Valentine's Day is tomorrow" },
+            { title: "Eco-Conscious Gift Givers", desc: "Show you care about the environment with every card" },
+            { title: "Zero-Waste Advocates", desc: "No paper waste - just beautiful digital cards and real trees" },
+            { title: "Corporate Campaigns", desc: "Send multiple cards efficiently while supporting reforestation" },
+            { title: "Multiple Recipients", desc: "Send to parents, friends, colleagues - all instantly" },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
+            >
+              <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">{item.title}</h3>
+              <p className="text-sm text-[#1A1A1A]/70">{item.desc}</p>
             </div>
           ))}
         </div>

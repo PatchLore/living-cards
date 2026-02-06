@@ -164,11 +164,40 @@ export default async function ValentineCardPage({
     },
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: cleanBase,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Valentine Cards",
+        item: `${cleanBase}/cards/valentines`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: cardMeta.title,
+        item: canonicalUrl,
+      },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <CardViewerClient cardKey={cardName} backToHash="valentine-collection" />
     </>
