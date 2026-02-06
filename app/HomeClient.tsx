@@ -925,7 +925,7 @@ export default function Home() {
       {showSeasonalBanner && (
         <div className="sticky top-0 z-50 w-full bg-red-600 text-white text-sm px-4 py-2.5 flex items-center justify-center gap-3 shadow-md">
           <span>
-            ⏰ Valentine&apos;s Day is February 14 — Order by Feb 12 for guaranteed delivery
+            ⏰ Valentine&apos;s Day is February 14 — Instant email delivery, send anytime before midnight!
           </span>
           <button
             aria-label="Dismiss banner"
@@ -1141,7 +1141,22 @@ export default function Home() {
                   Limited Time
                 </span>
               </div>
-              <div className="rounded-2xl overflow-hidden mb-3 bg-slate-100">
+              <div className="relative rounded-2xl overflow-hidden mb-3 bg-slate-100">
+                {card.key === "valentine-heart-glow" && (
+                  <span className="absolute top-2 right-2 z-10 text-[11px] font-semibold px-2 py-1 rounded-md text-white shadow-sm bg-gradient-to-br from-red-500 to-red-600">
+                    🔥 Most Popular
+                  </span>
+                )}
+                {card.key === "valentine-dream" && (
+                  <span className="absolute top-2 right-2 z-10 text-[11px] font-semibold px-2 py-1 rounded-md text-[#333] shadow-sm bg-gradient-to-br from-amber-300 to-amber-500">
+                    ⭐ Staff Pick
+                  </span>
+                )}
+                {card.key === "valentine-treasure" && (
+                  <span className="absolute top-2 right-2 z-10 text-[11px] font-semibold px-2 py-1 rounded-md text-white shadow-sm bg-gradient-to-br from-violet-500 to-violet-700">
+                    🆕 New This Year
+                  </span>
+                )}
                 {isMobileDevice ? (
                   <img
                     src={posterUrl(card.poster, card.priority)}
