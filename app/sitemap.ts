@@ -6,6 +6,11 @@ const VALENTINE_CARD_KEYS = [
   "valentine-blossom",
   "valentine-love-light",
   "valentine-forever",
+  "valentine-sweetheart",
+  "valentine-together",
+  "valentine-spark",
+  "valentine-dream",
+  "valentine-treasure",
 ];
 
 const OTHER_CARD_KEYS = [

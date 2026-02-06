@@ -11,6 +11,11 @@ const CARD_VIDEO_MAP: Record<string, string> = {
   "valentine-blossom": "posters/valentine3.mp4",
   "valentine-love-light": "posters/valentine4.mp4",
   "valentine-forever": "posters/valentine5.mp4",
+  "valentine-sweetheart": "posters/Valentine6.mp4",
+  "valentine-together": "posters/Valentine7.mp4",
+  "valentine-spark": "posters/Valentine8.mp4",
+  "valentine-dream": "posters/Valentine9.mp4",
+  "valentine-treasure": "posters/Valentine10.mp4",
   "starlit-christmas-tree": "christmas_tree.mp4",
   "christmas-night-moonlight": "moonlight.mp4",
   "snowy-cottage-evening": "Christmas2.mp4",
@@ -51,6 +56,31 @@ const CARD_METADATA: Record<string, { title: string; occasion: string; descripti
     title: "Valentine Forever",
     occasion: "Valentine's Day",
     description: "A timeless Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "valentine-sweetheart": {
+    title: "Valentine Sweetheart",
+    occasion: "Valentine's Day",
+    description: "A sweet Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "valentine-together": {
+    title: "Valentine Together",
+    occasion: "Valentine's Day",
+    description: "Celebrate being together — a Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "valentine-spark": {
+    title: "Valentine Spark",
+    occasion: "Valentine's Day",
+    description: "A little spark of love — Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "valentine-dream": {
+    title: "Valentine Dream",
+    occasion: "Valentine's Day",
+    description: "A dreamy Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  },
+  "valentine-treasure": {
+    title: "Valentine Treasure",
+    occasion: "Valentine's Day",
+    description: "You're a treasure — send a Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
   },
   "starlit-christmas-tree": {
     title: "Starlit Christmas Tree",

@@ -18,7 +18,7 @@ type CardItem = {
 };
 
 const CARDS: CardItem[] = [
-  // Valentine Cards — new assets in public/cards/posters/ (valentine1–5.jpg and .mp4)
+  // Valentine Cards — posters valentine1.jpg–valentine10.jpg + matching MP4s in public/cards/posters/
   {
     key: "valentine-rose",
     title: "Valentine Rose",
@@ -71,6 +71,61 @@ const CARDS: CardItem[] = [
     poster: "/cards/posters/valentine5.jpg",
     label: "Limited Time",
     available: 36,
+    badges: ["Valentine"],
+    priority: true,
+  },
+  {
+    key: "valentine-sweetheart",
+    title: "Valentine Sweetheart",
+    desc: "A sweet animation for your special someone.",
+    src: "/cards/posters/Valentine6.mp4",
+    poster: "/cards/posters/valentine6.jpg",
+    label: "Limited Time",
+    available: 34,
+    badges: ["Valentine"],
+    priority: true,
+  },
+  {
+    key: "valentine-together",
+    title: "Valentine Together",
+    desc: "Celebrate being together with a thoughtful gesture.",
+    src: "/cards/posters/Valentine7.mp4",
+    poster: "/cards/posters/valentine7.jpg",
+    label: "Limited Time",
+    available: 32,
+    badges: ["Valentine"],
+    priority: true,
+  },
+  {
+    key: "valentine-spark",
+    title: "Valentine Spark",
+    desc: "A little spark of love for Valentine's Day.",
+    src: "/cards/posters/Valentine8.mp4",
+    poster: "/cards/posters/valentine8.jpg",
+    label: "Limited Time",
+    available: 30,
+    badges: ["Valentine"],
+    priority: true,
+  },
+  {
+    key: "valentine-dream",
+    title: "Valentine Dream",
+    desc: "A dreamy animation to say I love you.",
+    src: "/cards/posters/Valentine9.mp4",
+    poster: "/cards/posters/valentine9.jpg",
+    label: "Limited Time",
+    available: 28,
+    badges: ["Valentine"],
+    priority: true,
+  },
+  {
+    key: "valentine-treasure",
+    title: "Valentine Treasure",
+    desc: "You're a treasure — send a card that plants a tree.",
+    src: "/cards/posters/Valentine10.mp4",
+    poster: "/cards/posters/valentine10.jpg",
+    label: "Limited Time",
+    available: 26,
     badges: ["Valentine"],
     priority: true,
   },
@@ -179,6 +234,11 @@ const VALENTINE_CARD_ALTS: Record<string, string> = {
   "valentine-blossom": "Blossom digital Valentine card animation that plants a tree",
   "valentine-love-light": "Love light digital Valentine card animation that plants a tree",
   "valentine-forever": "Timeless Valentine digital card animation that plants a tree",
+  "valentine-sweetheart": "Sweetheart digital Valentine card animation that plants a tree",
+  "valentine-together": "Together digital Valentine card animation that plants a tree",
+  "valentine-spark": "Spark digital Valentine card animation that plants a tree",
+  "valentine-dream": "Dreamy digital Valentine card animation that plants a tree",
+  "valentine-treasure": "Treasure digital Valentine card animation that plants a tree",
 };
 
 function getValentineCardAlt(card: CardItem): string {
@@ -1071,24 +1131,24 @@ export default function Home() {
           </span>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-          {valentineCards.map((card) => (
+          {valentineCards.map((card, index) => (
             <article
               key={card.key}
-              className="group relative w-full min-h-[380px] rounded-3xl bg-white border border-slate-200 p-4 shadow-sm transition transform hover:scale-[1.02] hover:shadow-lg"
+              className="group relative w-full min-h-[380px] rounded-3xl bg-white border border-slate-200 p-4 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(244,63,94,0.12)] focus-within:ring-2 focus-within:ring-pink-300 focus-within:ring-offset-2 focus-within:outline-none"
             >
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-[11px] uppercase tracking-wide font-semibold bg-pink-100 text-pink-800 px-2 py-1 rounded-full">
                   Limited Time
                 </span>
               </div>
-              <div className="rounded-2xl overflow-hidden mb-3">
+              <div className="rounded-2xl overflow-hidden mb-3 bg-slate-100">
                 {isMobileDevice ? (
                   <img
                     src={posterUrl(card.poster, card.priority)}
                     alt={getValentineCardAlt(card)}
                     className="w-full h-44 object-cover"
-                    loading="eager"
-                    fetchPriority="high"
+                    loading={index < 5 ? "eager" : "lazy"}
+                    fetchPriority={index < 5 ? "high" : undefined}
                   />
                 ) : (
                   <LazyVideo
@@ -1099,7 +1159,7 @@ export default function Home() {
                     loop
                     muted
                     playsInline
-                    eagerLoad
+                    eagerLoad={index < 5}
                     onMouseEnter={handlePreviewPlay(card.key)}
                     onMouseLeave={handlePreviewPause}
                   />
@@ -1119,7 +1179,7 @@ export default function Home() {
                   formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                   trackEvent("valentine_send_this_card", { cardKey: card.key });
                 }}
-                className="block w-full h-11 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-center leading-[2.75rem] transition"
+                className="block w-full min-h-[44px] h-11 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-center leading-[2.75rem] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
               >
                 Send This Card
               </a>
@@ -1301,7 +1361,7 @@ export default function Home() {
                   {section.cards.map((card, index) => (
                     <article
                       key={card.key}
-                      className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
+                      className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] focus-within:ring-2 focus-within:ring-slate-300 focus-within:ring-offset-2 focus-within:outline-none animate-fade-in"
                       style={{ animationDelay: `${(sectionIndex * 6 + index) * 50}ms` }}
                       onClick={(event) => {
                         if (!isMobileDevice) return;
@@ -1319,7 +1379,7 @@ export default function Home() {
                             setShowFullPreview(false);
                             trackEvent("quick_view_open", { cardKey: card.key });
                           }}
-                          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-[#2D6A4F] hover:bg-[#E7F3EC] transition"
+                          className="absolute top-4 right-4 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-[#2D6A4F] hover:bg-[#E7F3EC] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
                           aria-label="Quick view"
                         >
                           👁
@@ -1343,7 +1403,7 @@ export default function Home() {
                       <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
                         Limited Edition - Only {card.available} cards available
                       </div>
-                      <div className="rounded-2xl overflow-hidden mb-4">
+                      <div className="rounded-2xl overflow-hidden mb-4 bg-slate-100">
                         {isMobileDevice ? (
                           <img
                             src={posterUrl(card.poster, card.priority)}
@@ -1361,7 +1421,7 @@ export default function Home() {
                             loop
                             muted
                             playsInline
-                            eagerLoad
+                            eagerLoad={section.title === "Valentine Cards" ? index < 5 : false}
                             onMouseEnter={handlePreviewPlay(card.key)}
                             onMouseLeave={handlePreviewPause}
                             onFocus={handlePreviewPlay(card.key)}
@@ -1388,7 +1448,7 @@ export default function Home() {
                           formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                           trackEvent("personalize_start", { cardKey: card.key });
                         }}
-                        className="w-full h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition"
+                        className="w-full min-h-[44px] h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
                       >
                         Select This Card
                       </button>
@@ -1403,7 +1463,7 @@ export default function Home() {
             {filteredCards.map((card, index) => (
               <article
                 key={card.key}
-                className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] animate-fade-in"
+                className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] focus-within:ring-2 focus-within:ring-slate-300 focus-within:ring-offset-2 focus-within:outline-none animate-fade-in"
                 style={{ animationDelay: `${index * 50}ms` }}
                 onClick={(event) => {
                   if (!isMobileDevice) return;
@@ -1421,7 +1481,7 @@ export default function Home() {
                       setShowFullPreview(false);
                       trackEvent("quick_view_open", { cardKey: card.key });
                     }}
-                    className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-[#2D6A4F] hover:bg-[#E7F3EC] transition"
+                    className="absolute top-4 right-4 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-[#2D6A4F] hover:bg-[#E7F3EC] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
                     aria-label="Quick view"
                   >
                     👁
@@ -1445,7 +1505,7 @@ export default function Home() {
                 <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
                   Limited Edition - Only {card.available} cards available
                 </div>
-                <div className="rounded-2xl overflow-hidden mb-4">
+                <div className="rounded-2xl overflow-hidden mb-4 bg-slate-100">
                   {isMobileDevice ? (
                     <img
                       src={posterUrl(card.poster, card.priority)}
@@ -1463,6 +1523,7 @@ export default function Home() {
                       loop
                       muted
                       playsInline
+                      eagerLoad={activeFilter === "Valentine's" ? index < 5 : false}
                       onMouseEnter={handlePreviewPlay(card.key)}
                       onMouseLeave={handlePreviewPause}
                       onFocus={handlePreviewPlay(card.key)}
@@ -1489,7 +1550,7 @@ export default function Home() {
                     formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                     trackEvent("personalize_start", { cardKey: card.key });
                   }}
-                  className="w-full h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition"
+                  className="w-full min-h-[44px] h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
                 >
                   Select This Card
                 </button>

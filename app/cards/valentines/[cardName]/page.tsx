@@ -8,6 +8,11 @@ const VALENTINE_CARD_KEYS = [
   "valentine-blossom",
   "valentine-love-light",
   "valentine-forever",
+  "valentine-sweetheart",
+  "valentine-together",
+  "valentine-spark",
+  "valentine-dream",
+  "valentine-treasure",
 ] as const;
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
@@ -19,6 +24,11 @@ const CARD_VIDEO_MAP: Record<string, string> = {
   "valentine-blossom": "posters/valentine3.mp4",
   "valentine-love-light": "posters/valentine4.mp4",
   "valentine-forever": "posters/valentine5.mp4",
+  "valentine-sweetheart": "posters/Valentine6.mp4",
+  "valentine-together": "posters/Valentine7.mp4",
+  "valentine-spark": "posters/Valentine8.mp4",
+  "valentine-dream": "posters/Valentine9.mp4",
+  "valentine-treasure": "posters/Valentine10.mp4",
 };
 
 const CARD_METADATA: Record<string, { title: string; description: string }> = {
@@ -41,6 +51,26 @@ const CARD_METADATA: Record<string, { title: string; description: string }> = {
   "valentine-forever": {
     title: "Valentine Forever",
     description: "Animated digital Valentine card that plants a real tree. A timeless Valentine message.",
+  },
+  "valentine-sweetheart": {
+    title: "Valentine Sweetheart",
+    description: "Animated digital Valentine card that plants a real tree. A sweet animation for your special someone.",
+  },
+  "valentine-together": {
+    title: "Valentine Together",
+    description: "Animated digital Valentine card that plants a real tree. Celebrate being together with a thoughtful gesture.",
+  },
+  "valentine-spark": {
+    title: "Valentine Spark",
+    description: "Animated digital Valentine card that plants a real tree. A little spark of love for Valentine's Day.",
+  },
+  "valentine-dream": {
+    title: "Valentine Dream",
+    description: "Animated digital Valentine card that plants a real tree. A dreamy animation to say I love you.",
+  },
+  "valentine-treasure": {
+    title: "Valentine Treasure",
+    description: "Animated digital Valentine card that plants a real tree. You're a treasure — send a card that plants a tree.",
   },
 };
 
