@@ -198,8 +198,6 @@ const CARDS: CardItem[] = [
   },
 ];
 
-const heroPreviewCards: CardItem[] = CARDS.filter((c) => c.priority).slice(0, 3);
-
 // Descriptive alt text for Easter cards (SEO + accessibility)
 const EASTER_CARD_ALTS: Record<string, string> = {
   "easter-morning": "Easter morning digital card animation that plants a tree",
@@ -407,6 +405,70 @@ function LazyVideo({
   );
 }
 
+type LazyVideoCardProps = {
+  card: CardItem;
+  isMobileDevice: boolean;
+  onSelect: () => void;
+  onPreviewPlay: () => void;
+  onPreviewPause: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
+  onSendThisCard: () => void;
+};
+
+function LazyVideoCard({ card, isMobileDevice, onSelect, onPreviewPlay, onPreviewPause, onSendThisCard }: LazyVideoCardProps) {
+  return (
+    <article
+      className="flex-shrink-0 snap-start w-[min(85vw,320px)] sm:w-full group relative min-h-[380px] rounded-3xl bg-white border border-slate-200 p-4 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(123,198,126,0.2)] focus-within:ring-2 focus-within:ring-easter-primary focus-within:ring-offset-2 focus-within:outline-none"
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-[11px] uppercase tracking-wide font-semibold bg-easter-primary/20 text-easter-primary px-2 py-1 rounded-full">
+          {card.label}
+        </span>
+      </div>
+      <div className="relative rounded-2xl overflow-hidden mb-3 bg-slate-100">
+        {isMobileDevice ? (
+          <img
+            src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
+            alt={card.key.startsWith("easter") ? getEasterCardAlt(card) : card.title}
+            className="w-full h-44 object-cover cursor-pointer"
+            loading="lazy"
+            onClick={onSelect}
+          />
+        ) : (
+          <LazyVideo
+            className="w-full h-44 object-cover"
+            src={card.src}
+            poster={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
+            tapToPlay={false}
+            loop
+            muted
+            playsInline
+            eagerLoad={false}
+            onMouseEnter={onPreviewPlay}
+            onMouseLeave={onPreviewPause}
+          />
+        )}
+      </div>
+      <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">{card.title}</h3>
+      <p className="text-sm text-[#1A1A1A]/70 mb-3 line-clamp-2">{card.desc}</p>
+      <div className="mb-3">
+        <span className="text-xl font-semibold text-[#2D6A4F]">£5</span>
+        <span className="text-xs text-[#1A1A1A]/60 ml-1">per card</span>
+      </div>
+      <a
+        href={`/cards/easter/${card.key}`}
+        onClick={(e) => {
+          e.preventDefault();
+          if (isMobileDevice) onSelect();
+          else onSendThisCard();
+        }}
+        className="block w-full min-h-[44px] h-11 rounded-full bg-easter-primary hover:bg-easter-primary-hover text-white font-semibold text-center leading-[2.75rem] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-easter-primary focus:ring-offset-2"
+      >
+        Send This Card
+      </a>
+    </article>
+  );
+}
+
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean }
@@ -573,7 +635,6 @@ export default function Home() {
   const [faqQuery, setFaqQuery] = useState("");
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [cardsReady, setCardsReady] = useState(false);
-  const [heroStartIndex, setHeroStartIndex] = useState(0);
   const [mobilePreviewCard, setMobilePreviewCard] = useState<CardItem | null>(null);
   const isMobileDevice = useIsMobile();
 
@@ -674,13 +735,6 @@ export default function Home() {
   useEffect(() => {
     const timer = setTimeout(() => setCardsReady(true), 300);
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHeroStartIndex((prev) => (prev + 1) % heroPreviewCards.length);
-    }, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -827,10 +881,6 @@ export default function Home() {
     if (activeFilter === "All") return sortedCards;
     return sortedCards.filter((card) => getCategory(card.key) === activeFilter);
   }, [activeFilter, sortedCards]);
-
-  const heroCards = heroPreviewCards.map((_, index) => {
-    return heroPreviewCards[(heroStartIndex + index) % heroPreviewCards.length];
-  });
 
   const easterCards = sortedCards.filter((card) => getCategory(card.key) === "Easter");
   const christmasCards = sortedCards.filter((card) => getCategory(card.key) === "Christmas");
@@ -1128,47 +1178,11 @@ export default function Home() {
               Join thousands planting trees, one card at a time 🌱
             </p>
           </div>
-
-          <div className="mt-10">
-            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 scroll-touch md:grid md:grid-cols-3 md:overflow-visible md:max-w-3xl">
-              {heroCards.map((card, index) => {
-                const heroPoster = `/cards/posters/easter${index + 1}.jpg`;
-                const heroSrc = `/cards/posters/easter${index + 1}.mp4`;
-                return (
-                  <div
-                    key={`easter-hero-${index}-${heroStartIndex}`}
-                    className="flex-shrink-0 snap-start w-[min(85vw,280px)] md:w-full rounded-2xl overflow-hidden border border-easter-primary/40 bg-white shadow-md animate-fade-in"
-                  >
-                    {isMobileDevice ? (
-                      <img
-                        src={posterUrl(heroPoster, true)}
-                        alt={`Easter digital card ${index + 1} that plants a tree`}
-                        className="w-full h-32 md:h-40 object-cover"
-                        loading="eager"
-                        fetchPriority="high"
-                      />
-                    ) : (
-                      <LazyVideo
-                        className="w-full h-32 md:h-40 object-cover"
-                        src={heroSrc}
-                        poster={posterUrl(heroPoster, true)}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        eagerLoad
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* New Easter Collection - above fold */}
-      <section id="easter-collection" className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="new-easter-collection-heading">
+      {/* New Easter Collection — single grid, only LazyVideoCard renders Easter cards */}
+      <section id="easter-collection" className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="new-easter-collection-heading" ref={collectionRef}>
         <div className="flex items-center gap-3 mb-6">
           <h2 id="new-easter-collection-heading" className="text-[28px] md:text-[36px] font-semibold text-[#1A1A1A]">
             🐣 New Easter Collection
@@ -1177,65 +1191,21 @@ export default function Home() {
             Limited Time
           </span>
         </div>
-        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 scroll-touch sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible">
-          {easterCards.map((card, index) => (
-            <article
+        <div className="cards-grid flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 scroll-touch sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible">
+          {easterCards.map((card) => (
+            <LazyVideoCard
               key={card.key}
-              className="flex-shrink-0 snap-start w-[min(85vw,320px)] sm:w-full group relative min-h-[380px] rounded-3xl bg-white border border-slate-200 p-4 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(123,198,126,0.2)] focus-within:ring-2 focus-within:ring-easter-primary focus-within:ring-offset-2 focus-within:outline-none"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-[11px] uppercase tracking-wide font-semibold bg-easter-primary/20 text-easter-primary px-2 py-1 rounded-full">
-                  {card.label}
-                </span>
-              </div>
-              <div className="relative rounded-2xl overflow-hidden mb-3 bg-slate-100">
-                {isMobileDevice ? (
-                  <img
-                    src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
-                    alt={getEasterCardAlt(card)}
-                    className="w-full h-44 object-cover cursor-pointer"
-                    loading={index < 5 ? "eager" : "lazy"}
-                    fetchPriority={index < 5 ? "high" : undefined}
-                    onClick={() => setMobilePreviewCard(card)}
-                  />
-                ) : (
-                  <LazyVideo
-                    className="w-full h-44 object-cover"
-                    src={card.src}
-                    poster={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
-                    tapToPlay={false}
-                    loop
-                    muted
-                    playsInline
-                    eagerLoad={index < 5}
-                    onMouseEnter={handlePreviewPlay(card.key)}
-                    onMouseLeave={handlePreviewPause}
-                  />
-                )}
-              </div>
-              <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">{card.title}</h3>
-              <p className="text-sm text-[#1A1A1A]/70 mb-3 line-clamp-2">{card.desc}</p>
-              <div className="mb-3">
-                <span className="text-xl font-semibold text-[#2D6A4F]">£5</span>
-                <span className="text-xs text-[#1A1A1A]/60 ml-1">per card</span>
-              </div>
-              <a
-                href={`/cards/easter/${card.key}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (isMobileDevice) {
-                    setMobilePreviewCard(card);
-                  } else {
-                    setSelectedCard(card.key);
-                    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }
-                  trackEvent("easter_send_this_card", { cardKey: card.key });
-                }}
-                className="block w-full min-h-[44px] h-11 rounded-full bg-easter-primary hover:bg-easter-primary-hover text-white font-semibold text-center leading-[2.75rem] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-easter-primary focus:ring-offset-2"
-              >
-                Send This Card
-              </a>
-            </article>
+              card={card}
+              isMobileDevice={isMobileDevice}
+              onSelect={() => setMobilePreviewCard(card)}
+              onPreviewPlay={handlePreviewPlay(card.key)}
+              onPreviewPause={handlePreviewPause}
+              onSendThisCard={() => {
+                setSelectedCard(card.key);
+                formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                trackEvent("easter_send_this_card", { cardKey: card.key });
+              }}
+            />
           ))}
         </div>
       </section>
@@ -1489,8 +1459,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Collection */}
-      <section id="collection" ref={collectionRef} className="max-w-7xl mx-auto mb-12 md:mb-20">
+      {/* Collection (Easter cards live in #easter-collection above; no duplicate grid) */}
+      <section id="collection" className="max-w-7xl mx-auto mb-12 md:mb-20">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-8">
           <div>
             <h2 className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A]">
@@ -1540,10 +1510,10 @@ export default function Home() {
         ) : activeFilter === "All" ? (
           <div className="space-y-12">
             {[
-              { title: "Easter Cards", cards: easterCards },
-              { title: "Christmas Cards", cards: christmasCards },
-              { title: "Birthday & Celebration Cards", cards: birthdayCards },
-              { title: "Thank You & Love Cards", cards: thankYouLoveCards },
+              { title: "Easter Cards", cards: easterCards, isEaster: true },
+              { title: "Christmas Cards", cards: christmasCards, isEaster: false },
+              { title: "Birthday & Celebration Cards", cards: birthdayCards, isEaster: false },
+              { title: "Thank You & Love Cards", cards: thankYouLoveCards, isEaster: false },
             ].map((section, sectionIndex) => (
               <div key={section.title}>
                 <div className="flex items-center gap-4 mb-6">
@@ -1552,6 +1522,11 @@ export default function Home() {
                   </h3>
                   <div className="flex-1 h-px bg-slate-200" />
                 </div>
+                {section.isEaster ? (
+                  <p className="text-[#1A1A1A]/70 mb-4">
+                    Easter cards are in the <a href="#easter-collection" className="text-[#2D6A4F] font-semibold underline hover:no-underline" onClick={(e) => { e.preventDefault(); document.getElementById("easter-collection")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>New Easter Collection</a> above. No duplicate grid.
+                  </p>
+                ) : (
                 <div className="relative z-10 flex overflow-x-auto snap-x snap-mandatory gap-x-6 gap-y-10 pb-4 scroll-touch md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible">
                   {section.cards.map((card, index) => (
                     <article
@@ -1645,14 +1620,19 @@ export default function Home() {
                         }}
                         className="w-full min-h-[44px] h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
                       >
-                        Select This Card
-                      </button>
-                    </article>
-                  ))}
+                  Select This Card
+                </button>
+              </article>
+            ))}
                 </div>
+                )}
               </div>
             ))}
           </div>
+        ) : activeFilter === "Easter" ? (
+          <p className="text-[#1A1A1A]/70">
+            View the 8 Easter cards in the <a href="#easter-collection" className="text-[#2D6A4F] font-semibold underline hover:no-underline" onClick={(e) => { e.preventDefault(); document.getElementById("easter-collection")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>New Easter Collection</a> above.
+          </p>
         ) : (
           <div className="relative z-10 flex overflow-x-auto snap-x snap-mandatory gap-x-6 gap-y-10 pb-4 scroll-touch md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible">
             {filteredCards.map((card, index) => (
@@ -1752,7 +1732,7 @@ export default function Home() {
               </article>
             ))}
           </div>
-        )}
+        ) )}
       </section>
 
       {/* Personalization Form (hidden until a card is selected) */}
