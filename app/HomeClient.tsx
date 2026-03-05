@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { track } from "@vercel/analytics";
 import dynamic from "next/dynamic";
 
@@ -1134,31 +1135,23 @@ export default function Home() {
                 const heroPoster = `/cards/posters/easter${index + 1}.jpg`;
                 const heroSrc = `/cards/posters/easter${index + 1}.mp4`;
                 return (
-                  <div
+                  <Link
                     key={`easter-hero-${index}-${heroStartIndex}`}
-                    className="flex-shrink-0 snap-start w-[min(85vw,280px)] md:w-full rounded-2xl overflow-hidden border border-easter-primary/40 bg-white shadow-md animate-fade-in"
+                    href={`/cards/easter/${card.key}`}
+                    className="flex-shrink-0 snap-start w-[min(85vw,280px)] md:w-full rounded-2xl overflow-hidden border border-easter-primary/40 bg-white shadow-md animate-fade-in block"
                   >
-                    {isMobileDevice ? (
-                      <img
-                        src={posterUrl(heroPoster, true)}
-                        alt={`Easter digital card ${index + 1} that plants a tree`}
-                        className="w-full h-32 md:h-40 object-cover"
-                        loading="eager"
-                        fetchPriority="high"
-                      />
-                    ) : (
-                      <LazyVideo
-                        className="w-full h-32 md:h-40 object-cover"
-                        src={heroSrc}
-                        poster={posterUrl(heroPoster, true)}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        eagerLoad
-                      />
-                    )}
-                  </div>
+                    <video
+                      src={heroSrc}
+                      poster={posterUrl(heroPoster, true)}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                      className="w-full h-32 md:h-40 object-cover rounded-lg cursor-pointer"
+                      aria-label={`Easter digital card ${index + 1} that plants a tree`}
+                    />
+                  </Link>
                 );
               })}
             </div>
@@ -1188,28 +1181,19 @@ export default function Home() {
                 </span>
               </div>
               <div className="relative rounded-2xl overflow-hidden mb-3 bg-slate-100">
-                {isMobileDevice ? (
-                  <img
-                    src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
-                    alt={getEasterCardAlt(card)}
-                    className="w-full h-44 object-cover"
-                    loading={index < 5 ? "eager" : "lazy"}
-                    fetchPriority={index < 5 ? "high" : undefined}
-                  />
-                ) : (
-                  <LazyVideo
-                    className="w-full h-44 object-cover"
+                <Link href={`/cards/easter/${card.key}`} className="block">
+                  <video
                     src={card.src}
                     poster={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
-                    tapToPlay={false}
-                    loop
+                    autoPlay
                     muted
+                    loop
                     playsInline
-                    eagerLoad={index < 5}
-                    onMouseEnter={handlePreviewPlay(card.key)}
-                    onMouseLeave={handlePreviewPause}
+                    preload="auto"
+                    className="w-full h-44 object-cover rounded-lg cursor-pointer"
+                    aria-label={getEasterCardAlt(card)}
                   />
-                )}
+                </Link>
               </div>
               <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">{card.title}</h3>
               <p className="text-sm text-[#1A1A1A]/70 mb-3 line-clamp-2">{card.desc}</p>
@@ -1217,18 +1201,12 @@ export default function Home() {
                 <span className="text-xl font-semibold text-[#2D6A4F]">£5</span>
                 <span className="text-xs text-[#1A1A1A]/60 ml-1">per card</span>
               </div>
-              <a
+              <Link
                 href={`/cards/easter/${card.key}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setSelectedCard(card.key);
-                  formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  trackEvent("easter_send_this_card", { cardKey: card.key });
-                }}
                 className="block w-full min-h-[44px] h-11 rounded-full bg-easter-primary hover:bg-easter-primary-hover text-white font-semibold text-center leading-[2.75rem] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-easter-primary focus:ring-offset-2"
               >
                 Send This Card
-              </a>
+              </Link>
             </article>
           ))}
         </div>
@@ -1593,7 +1571,21 @@ export default function Home() {
                         Limited Edition - Only {card.available} cards available
                       </div>
                       <div className="rounded-2xl overflow-hidden mb-4 bg-slate-100">
-                        {isMobileDevice ? (
+                        {card.key.startsWith("easter") ? (
+                          <Link href={`/cards/easter/${card.key}`} className="block">
+                            <video
+                              src={card.src}
+                              poster={posterUrl(card.poster, true)}
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                              preload="auto"
+                              className="w-full h-60 md:h-64 object-cover rounded-lg cursor-pointer"
+                              aria-label={getEasterCardAlt(card)}
+                            />
+                          </Link>
+                        ) : isMobileDevice ? (
                           <img
                             src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
                             alt={getCategory(card.key) === "Easter" ? getEasterCardAlt(card) : card.title}
@@ -1630,17 +1622,26 @@ export default function Home() {
                           Includes 1 tree planted 🌱
                         </div>
                       </div>
-                      <button
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setSelectedCard(card.key);
-                          formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                          trackEvent("personalize_start", { cardKey: card.key });
-                        }}
-                        className="w-full min-h-[44px] h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
-                      >
-                        Select This Card
-                      </button>
+                      {card.key.startsWith("easter") ? (
+                        <Link
+                          href={`/cards/easter/${card.key}`}
+                          className="block w-full min-h-[44px] h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2 text-center leading-[3rem]"
+                        >
+                          View &amp; Send This Card
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setSelectedCard(card.key);
+                            formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                            trackEvent("personalize_start", { cardKey: card.key });
+                          }}
+                          className="w-full min-h-[44px] h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
+                        >
+                          Select This Card
+                        </button>
+                      )}
                     </article>
                   ))}
                 </div>
@@ -1695,7 +1696,21 @@ export default function Home() {
                   Limited Edition - Only {card.available} cards available
                 </div>
                 <div className="rounded-2xl overflow-hidden mb-4 bg-slate-100">
-                  {isMobileDevice ? (
+                  {card.key.startsWith("easter") ? (
+                    <Link href={`/cards/easter/${card.key}`} className="block">
+                      <video
+                        src={card.src}
+                        poster={posterUrl(card.poster, true)}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="auto"
+                        className="w-full h-60 md:h-64 object-cover rounded-lg cursor-pointer"
+                        aria-label={getEasterCardAlt(card)}
+                      />
+                    </Link>
+                  ) : isMobileDevice ? (
                     <img
                       src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
                       alt={getCategory(card.key) === "Easter" ? getEasterCardAlt(card) : card.title}
@@ -1732,17 +1747,26 @@ export default function Home() {
                     Includes 1 tree planted 🌱
                   </div>
                 </div>
-                <button
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setSelectedCard(card.key);
-                    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    trackEvent("personalize_start", { cardKey: card.key });
-                  }}
-                  className="w-full min-h-[44px] h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
-                >
-                  Select This Card
-                </button>
+                {card.key.startsWith("easter") ? (
+                  <Link
+                    href={`/cards/easter/${card.key}`}
+                    className="block w-full min-h-[44px] h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2 text-center leading-[3rem]"
+                  >
+                    View &amp; Send This Card
+                  </Link>
+                ) : (
+                  <button
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setSelectedCard(card.key);
+                      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      trackEvent("personalize_start", { cardKey: card.key });
+                    }}
+                    className="w-full min-h-[44px] h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
+                  >
+                    Select This Card
+                  </button>
+                )}
               </article>
             ))}
           </div>
