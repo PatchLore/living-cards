@@ -1,16 +1,14 @@
 import type { MetadataRoute } from "next";
 
-const VALENTINE_CARD_KEYS = [
-  "valentine-rose",
-  "valentine-heart-glow",
-  "valentine-blossom",
-  "valentine-love-light",
-  "valentine-forever",
-  "valentine-sweetheart",
-  "valentine-together",
-  "valentine-spark",
-  "valentine-dream",
-  "valentine-treasure",
+const EASTER_CARD_KEYS = [
+  "easter-morning",
+  "easter-bloom",
+  "easter-bunny",
+  "easter-eggs",
+  "easter-garden",
+  "easter-joy",
+  "easter-sunrise",
+  "easter-wishes",
 ];
 
 const OTHER_CARD_KEYS = [
@@ -39,8 +37,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${cleanBaseUrl}/privacy`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.2 },
   ];
 
-  const valentineCardPages = VALENTINE_CARD_KEYS.map((cardKey) => ({
-    url: `${cleanBaseUrl}/cards/valentines/${cardKey}`,
+  const easterCardPages = EASTER_CARD_KEYS.map((cardKey) => ({
+    url: `${cleanBaseUrl}/cards/easter/${cardKey}`,
     lastModified: new Date(),
     changeFrequency: "monthly" as const,
     priority: 0.95,
@@ -53,6 +51,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  return [...staticPages, ...valentineCardPages, ...otherCardPages];
+  return [...staticPages, ...easterCardPages, ...otherCardPages];
 }
 

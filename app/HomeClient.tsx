@@ -18,116 +18,89 @@ type CardItem = {
 };
 
 const CARDS: CardItem[] = [
-  // Valentine Cards — posters valentine1.jpg–valentine10.jpg + matching MP4s in public/cards/posters/
+  // Easter Cards — posters easter1.jpg–easter8.jpg + matching MP4s in public/cards/posters/
   {
-    key: "valentine-rose",
-    title: "Valentine Rose",
-    desc: "A blooming rose for the one you love.",
-    src: "/cards/posters/valentine1.mp4",
-    poster: "/cards/posters/valentine1.jpg",
-    label: "Limited Time",
+    key: "easter-morning",
+    title: "Easter Morning",
+    desc: "A beautiful Easter morning animation.",
+    src: "/cards/posters/easter1.mp4",
+    poster: "/cards/posters/easter1.jpg",
+    label: "New Easter Collection",
     available: 45,
-    badges: ["Valentine"],
+    badges: ["Easter"],
     priority: true,
   },
   {
-    key: "valentine-heart-glow",
-    title: "Valentine Heart Glow",
-    desc: "A radiant heart that says I love you.",
-    src: "/cards/posters/valentine2.mp4",
-    poster: "/cards/posters/valentine2.jpg",
-    label: "Limited Time",
+    key: "easter-bloom",
+    title: "Easter Bloom",
+    desc: "Spring flowers blooming for Easter.",
+    src: "/cards/posters/easter2.mp4",
+    poster: "/cards/posters/easter2.jpg",
+    label: "⭐ Staff Pick",
     available: 42,
-    badges: ["Valentine"],
+    badges: ["Easter"],
     priority: true,
   },
   {
-    key: "valentine-blossom",
-    title: "Valentine Blossom",
-    desc: "Soft blossoms for a sweet Valentine.",
-    src: "/cards/posters/valentine3.mp4",
-    poster: "/cards/posters/valentine3.jpg",
-    label: "Limited Time",
+    key: "easter-bunny",
+    title: "Easter Bunny",
+    desc: "A cheerful Easter bunny to brighten their day.",
+    src: "/cards/posters/easter3.mp4",
+    poster: "/cards/posters/easter3.jpg",
+    label: "🔥 Most Popular",
     available: 40,
-    badges: ["Valentine"],
+    badges: ["Easter"],
     priority: true,
   },
   {
-    key: "valentine-love-light",
-    title: "Valentine Love Light",
-    desc: "Warm light for your special someone.",
-    src: "/cards/posters/valentine4.mp4",
-    poster: "/cards/posters/valentine4.jpg",
+    key: "easter-eggs",
+    title: "Easter Eggs",
+    desc: "Colourful Easter eggs for a joyful celebration.",
+    src: "/cards/posters/easter4.mp4",
+    poster: "/cards/posters/easter4.jpg",
     label: "Limited Time",
     available: 38,
-    badges: ["Valentine"],
-    priority: true,
+    badges: ["Easter"],
   },
   {
-    key: "valentine-forever",
-    title: "Valentine Forever",
-    desc: "A timeless Valentine message.",
-    src: "/cards/posters/valentine5.mp4",
-    poster: "/cards/posters/valentine5.jpg",
+    key: "easter-garden",
+    title: "Easter Garden",
+    desc: "A garden in full spring bloom for Easter.",
+    src: "/cards/posters/easter5.mp4",
+    poster: "/cards/posters/easter5.jpg",
     label: "Limited Time",
     available: 36,
-    badges: ["Valentine"],
-    priority: true,
+    badges: ["Easter"],
   },
   {
-    key: "valentine-sweetheart",
-    title: "Valentine Sweetheart",
-    desc: "A sweet animation for your special someone.",
-    src: "/cards/posters/Valentine6.mp4",
-    poster: "/cards/posters/valentine6.jpg",
+    key: "easter-joy",
+    title: "Easter Joy",
+    desc: "Spreading joy this Easter season.",
+    src: "/cards/posters/easter6.mp4",
+    poster: "/cards/posters/easter6.jpg",
     label: "Limited Time",
     available: 34,
-    badges: ["Valentine"],
-    priority: true,
+    badges: ["Easter"],
   },
   {
-    key: "valentine-together",
-    title: "Valentine Together",
-    desc: "Celebrate being together with a thoughtful gesture.",
-    src: "/cards/posters/Valentine7.mp4",
-    poster: "/cards/posters/valentine7.jpg",
+    key: "easter-sunrise",
+    title: "Easter Sunrise",
+    desc: "A warm Easter sunrise to share with loved ones.",
+    src: "/cards/posters/easter7.mp4",
+    poster: "/cards/posters/easter7.jpg",
     label: "Limited Time",
     available: 32,
-    badges: ["Valentine"],
-    priority: true,
+    badges: ["Easter"],
   },
   {
-    key: "valentine-spark",
-    title: "Valentine Spark",
-    desc: "A little spark of love for Valentine's Day.",
-    src: "/cards/posters/Valentine8.mp4",
-    poster: "/cards/posters/valentine8.jpg",
-    label: "Limited Time",
+    key: "easter-wishes",
+    title: "Easter Wishes",
+    desc: "Warm Easter wishes for everyone you love.",
+    src: "/cards/posters/easter8.mp4",
+    poster: "/cards/posters/easter8.jpg",
+    label: "🆕 New This Year",
     available: 30,
-    badges: ["Valentine"],
-    priority: true,
-  },
-  {
-    key: "valentine-dream",
-    title: "Valentine Dream",
-    desc: "A dreamy animation to say I love you.",
-    src: "/cards/posters/Valentine9.mp4",
-    poster: "/cards/posters/valentine9.jpg",
-    label: "Limited Time",
-    available: 28,
-    badges: ["Valentine"],
-    priority: true,
-  },
-  {
-    key: "valentine-treasure",
-    title: "Valentine Treasure",
-    desc: "You're a treasure — send a card that plants a tree.",
-    src: "/cards/posters/Valentine10.mp4",
-    poster: "/cards/posters/valentine10.jpg",
-    label: "Limited Time",
-    available: 26,
-    badges: ["Valentine"],
-    priority: true,
+    badges: ["Easter"],
   },
   // Christmas Cards
   {
@@ -227,26 +200,24 @@ const CARDS: CardItem[] = [
 
 const heroPreviewCards: CardItem[] = CARDS.filter((c) => c.priority).slice(0, 3);
 
-// Descriptive alt text for Valentine cards (SEO + accessibility)
-const VALENTINE_CARD_ALTS: Record<string, string> = {
-  "valentine-rose": "Red rose digital Valentine card animation that plants a tree",
-  "valentine-heart-glow": "Glowing heart digital Valentine card animation that plants a tree",
-  "valentine-blossom": "Blossom digital Valentine card animation that plants a tree",
-  "valentine-love-light": "Love light digital Valentine card animation that plants a tree",
-  "valentine-forever": "Timeless Valentine digital card animation that plants a tree",
-  "valentine-sweetheart": "Sweetheart digital Valentine card animation that plants a tree",
-  "valentine-together": "Together digital Valentine card animation that plants a tree",
-  "valentine-spark": "Spark digital Valentine card animation that plants a tree",
-  "valentine-dream": "Dreamy digital Valentine card animation that plants a tree",
-  "valentine-treasure": "Treasure digital Valentine card animation that plants a tree",
+// Descriptive alt text for Easter cards (SEO + accessibility)
+const EASTER_CARD_ALTS: Record<string, string> = {
+  "easter-morning": "Easter morning digital card animation that plants a tree",
+  "easter-bloom": "Easter bloom spring flowers digital card animation that plants a tree",
+  "easter-bunny": "Easter bunny digital card animation that plants a tree",
+  "easter-eggs": "Easter eggs colourful digital card animation that plants a tree",
+  "easter-garden": "Easter garden spring bloom digital card animation that plants a tree",
+  "easter-joy": "Easter joy digital card animation that plants a tree",
+  "easter-sunrise": "Easter sunrise digital card animation that plants a tree",
+  "easter-wishes": "Easter wishes digital card animation that plants a tree",
 };
 
-function getValentineCardAlt(card: CardItem): string {
-  return VALENTINE_CARD_ALTS[card.key] ?? `${card.title} digital Valentine card animation that plants a tree`;
+function getEasterCardAlt(card: CardItem): string {
+  return EASTER_CARD_ALTS[card.key] ?? `${card.title} digital Easter card animation that plants a tree`;
 }
 
-// Cache-bust poster URLs for Valentine cards so edge/browser don't serve stale cached images from old layout
-const POSTER_CACHE_VERSION = "valentine";
+// Cache-bust poster URLs for seasonal cards so edge/browser don't serve stale cached images
+const POSTER_CACHE_VERSION = "easter";
 function posterUrl(poster: string | undefined, bustCache = false): string {
   if (!poster) return "";
   return bustCache ? `${poster}?v=${POSTER_CACHE_VERSION}` : poster;
@@ -467,8 +438,8 @@ class ErrorBoundary extends React.Component<
               >
                 {card.poster && (
                   <img
-                    src={posterUrl(card.poster, card.priority)}
-                    alt={card.title}
+                    src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
+                    alt={card.key.startsWith("easter") ? getEasterCardAlt(card) : card.title}
                     className="w-full h-40 object-cover"
                     loading="lazy"
                   />
@@ -550,8 +521,8 @@ function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalPro
         <div className="relative rounded-2xl overflow-hidden bg-black/30">
           {videoFailed ? (
             <img
-              src={posterUrl(card.poster, card.priority)}
-              alt={card.title}
+              src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
+              alt={card.key.startsWith("easter") ? getEasterCardAlt(card) : card.title}
               className="w-full h-[60vh] object-cover"
               loading="lazy"
             />
@@ -560,7 +531,7 @@ function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalPro
               ref={videoRef}
               className="w-full h-[60vh] object-cover"
               src={card.src}
-              poster={posterUrl(card.poster, card.priority)}
+              poster={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
               playsInline
               muted
               controls
@@ -592,7 +563,7 @@ export default function Home() {
   const [recipient, setRecipient] = useState("");
   const [message, setMessage] = useState("");
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<string>("Valentine's");
+  const [activeFilter, setActiveFilter] = useState<string>("Easter");
   const [quickViewCard, setQuickViewCard] = useState<CardItem | null>(null);
   const [showFullPreview, setShowFullPreview] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -817,17 +788,17 @@ export default function Home() {
   };
 
   const CATEGORY_ORDER: Record<string, number> = {
-    "Valentine's": 0,
-    "Christmas": 1,
-    "Birthday": 2,
+    Easter: 0,
+    Christmas: 1,
+    Birthday: 2,
     "Thank You": 3,
-    "Love": 4,
-    "General": 5,
+    Love: 4,
+    General: 5,
   };
 
   function getCategory(cardKey: string): string {
     const k = cardKey.toLowerCase();
-    if (k.includes("valentine")) return "Valentine's";
+    if (k.includes("easter")) return "Easter";
     if (k.includes("christmas") || k.includes("xmas") || k.includes("santa")) return "Christmas";
     if (k.includes("birthday")) return "Birthday";
     if (k.includes("thank")) return "Thank You";
@@ -849,7 +820,7 @@ export default function Home() {
     });
   }, []);
 
-  const filters = ["Valentine's", "Christmas", "Birthday", "Thank You", "All"];
+  const filters = ["Easter", "Christmas", "Birthday", "Thank You", "All"];
 
   const filteredCards = React.useMemo(() => {
     if (activeFilter === "All") return sortedCards;
@@ -860,7 +831,7 @@ export default function Home() {
     return heroPreviewCards[(heroStartIndex + index) % heroPreviewCards.length];
   });
 
-  const valentineCards = sortedCards.filter((card) => getCategory(card.key) === "Valentine's");
+  const easterCards = sortedCards.filter((card) => getCategory(card.key) === "Easter");
   const christmasCards = sortedCards.filter((card) => getCategory(card.key) === "Christmas");
   const birthdayCards = sortedCards.filter((card) => getCategory(card.key) === "Birthday");
   const thankYouLoveCards = sortedCards.filter((card) => {
@@ -871,19 +842,19 @@ export default function Home() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
   const baseUrl = siteUrl.replace(/\/$/, "");
   
-  // Days until Valentine's Day (Feb 14)
-  const valentinesDate = new Date(new Date().getFullYear(), 1, 14);
+  // Days until Easter (April 20)
+  const easterDate = new Date(new Date().getFullYear(), 3, 20);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  valentinesDate.setHours(0, 0, 0, 0);
-  const daysUntilValentines = Math.max(0, Math.ceil((valentinesDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
+  easterDate.setHours(0, 0, 0, 0);
+  const daysUntilEaster = Math.max(0, Math.ceil((easterDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
 
   // Structured data for Product collection
   const productCollectionSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Digital Valentine Cards That Plant Trees",
-    description: "Collection of animated digital greeting cards that plant real trees. Eco-friendly Valentine's, Christmas, birthday, and thank you cards.",
+    name: "Digital Easter Cards That Plant Trees",
+    description: "Collection of animated digital greeting cards that plant real trees. Eco-friendly Easter, Christmas, birthday, and thank you cards.",
     itemListElement: CARDS.map((card, index) => ({
       "@type": "ListItem",
       position: index + 1,
@@ -897,7 +868,7 @@ export default function Home() {
           price: "5.00",
           priceCurrency: "GBP",
           availability: "https://schema.org/InStock",
-          url: card.priority ? `${baseUrl}/cards/valentines/${card.key}` : `${baseUrl}/card/${card.key}`,
+          url: card.priority ? `${baseUrl}/cards/easter/${card.key}` : `${baseUrl}/card/${card.key}`,
         },
         brand: {
           "@type": "Brand",
@@ -932,10 +903,10 @@ export default function Home() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "How do digital Valentine cards work?",
+        name: "How do digital Easter cards work?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Choose from our collection of 10 animated Valentine cards, personalize your message, add recipient details, and we deliver it instantly via email. Every card plants one verified tree through our reforestation partners. The whole process takes less than 3 minutes.",
+          text: "Choose from our collection of 8 animated Easter cards, personalize your message, add recipient details, and we deliver it instantly via email. Every card plants one verified tree through our reforestation partners. The whole process takes less than 3 minutes.",
         },
       },
       {
@@ -948,10 +919,10 @@ export default function Home() {
       },
       {
         "@type": "Question",
-        name: "Can I send a Valentine card on Valentine's Day itself?",
+        name: "Can I send an Easter card on Easter itself?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Absolutely! Our cards are delivered instantly via email, so you can send them right up until midnight on Valentine's Day. Perfect for last-minute gifts or when you're separated by distance.",
+          text: "Absolutely! Our cards are delivered instantly via email, so you can send them right up until midnight on Easter. Perfect for last-minute gifts or when you're separated by distance.",
         },
       },
       {
@@ -975,7 +946,7 @@ export default function Home() {
         name: "Do you offer bulk or corporate orders?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes! We offer bulk discounts and a managed sending service for corporate Valentine campaigns. Email info@cardroots.com for custom quotes on orders of 100+ cards.",
+          text: "Yes! We offer bulk discounts and a managed sending service for corporate Easter campaigns. Email info@cardroots.com for custom quotes on orders of 100+ cards.",
         },
       },
     ],
@@ -993,11 +964,11 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
-      {/* Sticky Valentine urgency banner */}
+      {/* Sticky Easter urgency banner */}
       {showSeasonalBanner && (
-        <div className="sticky top-0 z-50 w-full bg-red-600 text-white text-sm px-4 py-2.5 flex items-center justify-center gap-3 shadow-md">
+        <div className="sticky top-0 z-50 w-full bg-easter-primary text-white text-sm px-4 py-2.5 flex items-center justify-center gap-3 shadow-md">
           <span>
-            ⏰ Valentine&apos;s Day is February 14 — Instant email delivery, send anytime before midnight!
+            🐣 Easter is April 20 — Instant email delivery, send anytime before midnight!
           </span>
           <button
             aria-label="Dismiss banner"
@@ -1098,51 +1069,51 @@ export default function Home() {
         )}
       </header>
 
-      {/* Hero - Valentine first */}
+      {/* Hero - Easter first */}
       <section
-        className="relative -mx-4 sm:-mx-6 mb-12 md:mb-20 bg-gradient-to-br from-pink-100 via-rose-50 to-[#FAFAF9] overflow-hidden"
+        className="relative -mx-4 sm:-mx-6 mb-12 md:mb-20 bg-gradient-to-br from-green-100 via-easter-yellow/30 to-[#FAFAF9] overflow-hidden"
         itemScope
         itemType="https://schema.org/SoftwareApplication"
       >
         {/* Soft heart animation overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-30" aria-hidden>
-          <div className="absolute top-20 left-[10%] w-16 h-16 rounded-full bg-pink-300/50 blur-2xl animate-pulse" />
-          <div className="absolute top-40 right-[15%] w-20 h-20 rounded-full bg-rose-300/40 blur-2xl animate-pulse" style={{ animationDelay: "1s" }} />
-          <div className="absolute bottom-32 left-[20%] w-14 h-14 rounded-full bg-pink-200/50 blur-2xl animate-pulse" style={{ animationDelay: "0.5s" }} />
+          <div className="absolute top-20 left-[10%] w-16 h-16 rounded-full bg-easter-primary/40 blur-2xl animate-pulse" />
+          <div className="absolute top-40 right-[15%] w-20 h-20 rounded-full bg-easter-lavender/40 blur-2xl animate-pulse" style={{ animationDelay: "1s" }} />
+          <div className="absolute bottom-32 left-[20%] w-14 h-14 rounded-full bg-easter-yellow/50 blur-2xl animate-pulse" style={{ animationDelay: "0.5s" }} />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-20 min-h-[60vh] md:min-h-[70vh] lg:min-h-[80vh] flex flex-col justify-center">
           <div className="max-w-3xl space-y-5">
-            <p className="text-sm font-semibold tracking-wide text-rose-600 uppercase">
+            <p className="text-sm font-semibold tracking-wide text-easter-primary uppercase">
               Eco-friendly digital greetings
             </p>
             <h1
               className="text-[36px] md:text-[48px] lg:text-[56px] font-bold text-[#1A1A1A]"
               itemProp="name"
             >
-              Send Digital Valentine Cards That Plant Trees
+              Send Digital Easter Cards That Plant Trees
             </h1>
             <p
               className="text-[16px] md:text-[18px] leading-[1.6] text-[#1A1A1A]/80"
               itemProp="description"
             >
-              Valentine&apos;s Day is {daysUntilValentines} days away — Send a living card that grows instead of dies
+              Easter is {daysUntilEaster} days away — Send a living card that grows instead of dies
             </p>
             <div className="sr-only">
               <p>
-                CardRoots sends digital Valentine cards that plant real trees. Eco-friendly digital
-                greeting cards for Valentine&apos;s Day, Christmas, birthdays, and special occasions.
+                CardRoots sends digital Easter cards that plant real trees. Eco-friendly digital
+                greeting cards for Easter, Christmas, birthdays, and special occasions.
                 Instant delivery with real environmental impact.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-4">
               <button
                 onClick={() => {
-                  document.getElementById("valentine-collection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  document.getElementById("easter-collection")?.scrollIntoView({ behavior: "smooth", block: "start" });
                   trackEvent("cta_browse_hero");
                 }}
-                className="h-[60px] px-10 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold shadow-lg transition"
+                className="h-[60px] px-10 rounded-full bg-easter-primary hover:bg-easter-primary-hover text-white font-semibold shadow-lg transition"
               >
-                Browse Valentine Cards →
+                Browse Easter Cards →
               </button>
               <a
                 href="/corporate"
@@ -1152,87 +1123,75 @@ export default function Home() {
                 For Business
               </a>
             </div>
-            <p className="text-sm text-rose-700 font-medium">
+            <p className="text-sm text-easter-primary font-medium">
               Join thousands planting trees, one card at a time 🌱
             </p>
           </div>
 
           <div className="mt-10">
-            <div className="grid grid-cols-3 gap-4 max-w-3xl">
-              {heroCards.map((card) => (
-                <div
-                  key={`${card.key}-${heroStartIndex}`}
-                  className="rounded-2xl overflow-hidden border border-pink-200/60 bg-white shadow-md animate-fade-in"
-                >
-                  {isMobileDevice ? (
-                    <img
-                      src={posterUrl(card.poster, card.priority)}
-                      alt={card.priority ? getValentineCardAlt(card) : card.title}
-                      className="w-full h-32 md:h-40 object-cover"
-                      loading="eager"
-                      fetchPriority="high"
-                    />
-                  ) : (
-                    <LazyVideo
-                      className="w-full h-32 md:h-40 object-cover"
-                      src={card.src}
-                      webmSrc={card.webmSrc}
-                      poster={posterUrl(card.poster, card.priority)}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      eagerLoad
-                    />
-                  )}
-                </div>
-              ))}
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 scroll-touch md:grid md:grid-cols-3 md:overflow-visible md:max-w-3xl">
+              {heroCards.map((card, index) => {
+                const heroPoster = `/cards/posters/easter${index + 1}.jpg`;
+                const heroSrc = `/cards/posters/easter${index + 1}.mp4`;
+                return (
+                  <div
+                    key={`easter-hero-${index}-${heroStartIndex}`}
+                    className="flex-shrink-0 snap-start w-[min(85vw,280px)] md:w-full rounded-2xl overflow-hidden border border-easter-primary/40 bg-white shadow-md animate-fade-in"
+                  >
+                    {isMobileDevice ? (
+                      <img
+                        src={posterUrl(heroPoster, true)}
+                        alt={`Easter digital card ${index + 1} that plants a tree`}
+                        className="w-full h-32 md:h-40 object-cover"
+                        loading="eager"
+                        fetchPriority="high"
+                      />
+                    ) : (
+                      <LazyVideo
+                        className="w-full h-32 md:h-40 object-cover"
+                        src={heroSrc}
+                        poster={posterUrl(heroPoster, true)}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        eagerLoad
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
-      {/* New Valentine Collection - above fold */}
-      <section id="valentine-collection" className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="new-valentine-collection-heading">
+      {/* New Easter Collection - above fold */}
+      <section id="easter-collection" className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="new-easter-collection-heading">
         <div className="flex items-center gap-3 mb-6">
-          <h2 id="new-valentine-collection-heading" className="text-[28px] md:text-[36px] font-semibold text-[#1A1A1A]">
-            🌹 New Valentine Collection
+          <h2 id="new-easter-collection-heading" className="text-[28px] md:text-[36px] font-semibold text-[#1A1A1A]">
+            🐣 New Easter Collection
           </h2>
           <span className="text-xs uppercase tracking-wide font-semibold bg-amber-200/80 text-amber-900 px-3 py-1.5 rounded-full">
             Limited Time
           </span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-          {valentineCards.map((card, index) => (
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 scroll-touch sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible">
+          {easterCards.map((card, index) => (
             <article
               key={card.key}
-              className="group relative w-full min-h-[380px] rounded-3xl bg-white border border-slate-200 p-4 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(244,63,94,0.12)] focus-within:ring-2 focus-within:ring-pink-300 focus-within:ring-offset-2 focus-within:outline-none"
+              className="flex-shrink-0 snap-start w-[min(85vw,320px)] sm:w-full group relative min-h-[380px] rounded-3xl bg-white border border-slate-200 p-4 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(123,198,126,0.2)] focus-within:ring-2 focus-within:ring-easter-primary focus-within:ring-offset-2 focus-within:outline-none"
             >
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-[11px] uppercase tracking-wide font-semibold bg-pink-100 text-pink-800 px-2 py-1 rounded-full">
-                  Limited Time
+                <span className="text-[11px] uppercase tracking-wide font-semibold bg-easter-primary/20 text-easter-primary px-2 py-1 rounded-full">
+                  {card.label}
                 </span>
               </div>
               <div className="relative rounded-2xl overflow-hidden mb-3 bg-slate-100">
-                {card.key === "valentine-heart-glow" && (
-                  <span className="absolute top-2 right-2 z-10 text-[11px] font-semibold px-2 py-1 rounded-md text-white shadow-sm bg-gradient-to-br from-red-500 to-red-600">
-                    🔥 Most Popular
-                  </span>
-                )}
-                {card.key === "valentine-dream" && (
-                  <span className="absolute top-2 right-2 z-10 text-[11px] font-semibold px-2 py-1 rounded-md text-[#333] shadow-sm bg-gradient-to-br from-amber-300 to-amber-500">
-                    ⭐ Staff Pick
-                  </span>
-                )}
-                {card.key === "valentine-treasure" && (
-                  <span className="absolute top-2 right-2 z-10 text-[11px] font-semibold px-2 py-1 rounded-md text-white shadow-sm bg-gradient-to-br from-violet-500 to-violet-700">
-                    🆕 New This Year
-                  </span>
-                )}
                 {isMobileDevice ? (
                   <img
-                    src={posterUrl(card.poster, card.priority)}
-                    alt={getValentineCardAlt(card)}
+                    src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
+                    alt={getEasterCardAlt(card)}
                     className="w-full h-44 object-cover"
                     loading={index < 5 ? "eager" : "lazy"}
                     fetchPriority={index < 5 ? "high" : undefined}
@@ -1241,7 +1200,7 @@ export default function Home() {
                   <LazyVideo
                     className="w-full h-44 object-cover"
                     src={card.src}
-                    poster={posterUrl(card.poster, card.priority)}
+                    poster={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
                     tapToPlay={false}
                     loop
                     muted
@@ -1259,14 +1218,14 @@ export default function Home() {
                 <span className="text-xs text-[#1A1A1A]/60 ml-1">per card</span>
               </div>
               <a
-                href={`/cards/valentines/${card.key}`}
+                href={`/cards/easter/${card.key}`}
                 onClick={(e) => {
                   e.preventDefault();
                   setSelectedCard(card.key);
                   formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  trackEvent("valentine_send_this_card", { cardKey: card.key });
+                  trackEvent("easter_send_this_card", { cardKey: card.key });
                 }}
-                className="block w-full min-h-[44px] h-11 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-center leading-[2.75rem] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                className="block w-full min-h-[44px] h-11 rounded-full bg-easter-primary hover:bg-easter-primary-hover text-white font-semibold text-center leading-[2.75rem] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-easter-primary focus:ring-offset-2"
               >
                 Send This Card
               </a>
@@ -1317,20 +1276,20 @@ export default function Home() {
             Frequently Asked Questions
           </h2>
           <p className="text-[16px] md:text-[18px] text-[#1A1A1A]/70">
-            Everything you need to know about digital Valentine cards
+            Everything you need to know about digital Easter cards
           </p>
         </div>
         <div className="space-y-6">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">What are digital Valentine cards?</h3>
+            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">What are digital Easter cards?</h3>
             <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
-              Digital Valentine cards are animated greeting cards delivered instantly via email. Unlike traditional paper cards, they're eco-friendly and plant real trees. CardRoots digital cards feature beautiful animations, personalized messages, and verified tree planting through our reforestation partners.
+              Digital Easter cards are animated greeting cards delivered instantly via email. Unlike traditional paper cards, they're eco-friendly and plant real trees. CardRoots digital cards feature beautiful animations, personalized messages, and verified tree planting through our reforestation partners.
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">How quickly are digital Valentine cards delivered?</h3>
+            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">How quickly are digital Easter cards delivered?</h3>
             <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
-              CardRoots digital Valentine cards are delivered instantly via email - perfect for last-minute gifts or when you're separated by distance. You can send cards right up until midnight on Valentine's Day with no shipping delays or cutoff dates.
+              CardRoots digital Easter cards are delivered instantly via email - perfect for last-minute gifts or when you're separated by distance. You can send cards right up until midnight on Easter with no shipping delays or cutoff dates.
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
@@ -1340,9 +1299,9 @@ export default function Home() {
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">Can I send a Valentine card on Valentine's Day itself?</h3>
+            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">Can I send an Easter card on Easter itself?</h3>
             <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
-              Yes! Our instant email delivery means you can send cards right up until midnight on Valentine's Day. No shipping delays or cutoff dates. Perfect for last-minute Valentine shoppers or when you realize you forgot to send a card.
+              Yes! Our instant email delivery means you can send cards right up until midnight on Easter. No shipping delays or cutoff dates. Perfect for last-minute Easter shoppers or when you realize you forgot to send a card.
             </p>
           </div>
         </div>
@@ -1352,7 +1311,7 @@ export default function Home() {
       <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="comparison-heading">
         <div className="text-center mb-8">
           <h2 id="comparison-heading" className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A] mb-3">
-            Digital Valentine Cards vs Traditional Cards
+            Digital Easter Cards vs Traditional Cards
           </h2>
           <p className="text-[16px] md:text-[18px] text-[#1A1A1A]/70">
             See why digital cards are better for you and the planet
@@ -1419,13 +1378,13 @@ export default function Home() {
             Perfect For
           </h2>
           <p className="text-[16px] md:text-[18px] text-[#1A1A1A]/70">
-            Who benefits most from digital Valentine cards?
+            Who benefits most from digital Easter cards?
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
             { title: "Long-Distance Couples", desc: "Send instantly to anyone, anywhere - no postal delays" },
-            { title: "Last-Minute Shoppers", desc: "Perfect when you realize Valentine's Day is tomorrow" },
+            { title: "Last-Minute Shoppers", desc: "Perfect when you realize Easter is tomorrow" },
             { title: "Eco-Conscious Gift Givers", desc: "Show you care about the environment with every card" },
             { title: "Zero-Waste Advocates", desc: "No paper waste - just beautiful digital cards and real trees" },
             { title: "Corporate Campaigns", desc: "Send multiple cards efficiently while supporting reforestation" },
@@ -1575,7 +1534,7 @@ export default function Home() {
         ) : activeFilter === "All" ? (
           <div className="space-y-12">
             {[
-              { title: "Valentine Cards", cards: valentineCards },
+              { title: "Easter Cards", cards: easterCards },
               { title: "Christmas Cards", cards: christmasCards },
               { title: "Birthday & Celebration Cards", cards: birthdayCards },
               { title: "Thank You & Love Cards", cards: thankYouLoveCards },
@@ -1587,11 +1546,11 @@ export default function Home() {
                   </h3>
                   <div className="flex-1 h-px bg-slate-200" />
                 </div>
-                <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+                <div className="relative z-10 flex overflow-x-auto snap-x snap-mandatory gap-x-6 gap-y-10 pb-4 scroll-touch md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible">
                   {section.cards.map((card, index) => (
                     <article
                       key={card.key}
-                      className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] focus-within:ring-2 focus-within:ring-slate-300 focus-within:ring-offset-2 focus-within:outline-none animate-fade-in"
+                      className="flex-shrink-0 snap-start w-[min(85vw,340px)] md:w-full group relative min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] focus-within:ring-2 focus-within:ring-slate-300 focus-within:ring-offset-2 focus-within:outline-none animate-fade-in"
                       style={{ animationDelay: `${(sectionIndex * 6 + index) * 50}ms` }}
                       onClick={(event) => {
                         if (!isMobileDevice) return;
@@ -1636,8 +1595,8 @@ export default function Home() {
                       <div className="rounded-2xl overflow-hidden mb-4 bg-slate-100">
                         {isMobileDevice ? (
                           <img
-                            src={posterUrl(card.poster, card.priority)}
-                            alt={card.title}
+                            src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
+                            alt={getCategory(card.key) === "Easter" ? getEasterCardAlt(card) : card.title}
                             className="w-full h-60 md:h-64 object-cover"
                             loading="lazy"
                           />
@@ -1646,12 +1605,12 @@ export default function Home() {
                             className="w-full h-60 md:h-64 object-cover"
                             src={card.src}
                             webmSrc={card.webmSrc}
-                            poster={posterUrl(card.poster, card.priority)}
+                            poster={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
                             tapToPlay={false}
                             loop
                             muted
                             playsInline
-                            eagerLoad={section.title === "Valentine Cards" ? index < 5 : false}
+                            eagerLoad={section.title === "Easter Cards" ? index < 5 : false}
                             onMouseEnter={handlePreviewPlay(card.key)}
                             onMouseLeave={handlePreviewPause}
                             onFocus={handlePreviewPlay(card.key)}
@@ -1689,11 +1648,11 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+          <div className="relative z-10 flex overflow-x-auto snap-x snap-mandatory gap-x-6 gap-y-10 pb-4 scroll-touch md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible">
             {filteredCards.map((card, index) => (
               <article
                 key={card.key}
-                className="group relative w-full min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] focus-within:ring-2 focus-within:ring-slate-300 focus-within:ring-offset-2 focus-within:outline-none animate-fade-in"
+                className="flex-shrink-0 snap-start w-[min(85vw,340px)] md:w-full group relative min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] focus-within:ring-2 focus-within:ring-slate-300 focus-within:ring-offset-2 focus-within:outline-none animate-fade-in"
                 style={{ animationDelay: `${index * 50}ms` }}
                 onClick={(event) => {
                   if (!isMobileDevice) return;
@@ -1738,8 +1697,8 @@ export default function Home() {
                 <div className="rounded-2xl overflow-hidden mb-4 bg-slate-100">
                   {isMobileDevice ? (
                     <img
-                      src={posterUrl(card.poster, card.priority)}
-                      alt={card.title}
+                      src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
+                      alt={getCategory(card.key) === "Easter" ? getEasterCardAlt(card) : card.title}
                       className="w-full h-60 md:h-64 object-cover"
                       loading="lazy"
                     />
@@ -1748,12 +1707,12 @@ export default function Home() {
                       className="w-full h-60 md:h-64 object-cover"
                       src={card.src}
                       webmSrc={card.webmSrc}
-                      poster={posterUrl(card.poster, card.priority)}
+                      poster={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
                       tapToPlay={false}
                       loop
                       muted
                       playsInline
-                      eagerLoad={activeFilter === "Valentine's" ? index < 5 : false}
+                      eagerLoad={activeFilter === "Easter" ? index < 5 : false}
                       onMouseEnter={handlePreviewPlay(card.key)}
                       onMouseLeave={handlePreviewPause}
                       onFocus={handlePreviewPlay(card.key)}
@@ -1864,12 +1823,12 @@ export default function Home() {
           <p className="text-[16px] text-[#1A1A1A]/70 mt-2">
             Every card includes one tree planted and instant delivery.
           </p>
-          <div className="mt-4 p-4 rounded-2xl bg-pink-50 border border-pink-200/60">
-            <p className="text-[16px] font-semibold text-pink-900">
-              Valentine&apos;s Special: Buy 3 cards, get 1 free
+          <div className="mt-4 p-4 rounded-2xl bg-easter-yellow/30 border border-easter-primary/40">
+            <p className="text-[16px] font-semibold text-[#2D5A2F]">
+              Easter Special: Buy 3 cards, get 1 free
             </p>
-            <p className="text-sm text-pink-800 mt-1">
-              Use code <code className="bg-pink-200/80 px-2 py-0.5 rounded font-mono font-semibold">LOVE2025</code> at checkout
+            <p className="text-sm text-[#2D5A2F]/90 mt-1">
+              Use code <code className="bg-easter-primary/30 px-2 py-0.5 rounded font-mono font-semibold">EASTER2025</code> at checkout
             </p>
           </div>
         </div>
@@ -1924,9 +1883,9 @@ export default function Home() {
               collectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
               trackEvent("mobile_cta_view_all");
             }}
-            className="w-full bg-red-600 text-white py-3 rounded-2xl shadow-lg"
+            className="w-full bg-easter-primary text-white py-3 rounded-2xl shadow-lg"
           >
-            Browse Valentine Cards | £5 each 🌱
+            Browse Easter Cards | £5 each 🌱
           </button>
         </div>
       )}
@@ -1972,8 +1931,8 @@ export default function Home() {
               <div className="rounded-2xl overflow-hidden bg-slate-100">
                 {isMobileDevice ? (
                   <img
-                    src={posterUrl(quickViewCard.poster, quickViewCard.priority)}
-                    alt={quickViewCard.title}
+                    src={posterUrl(quickViewCard.poster, quickViewCard.priority || quickViewCard.key.startsWith("easter"))}
+                    alt={quickViewCard.key.startsWith("easter") ? getEasterCardAlt(quickViewCard) : quickViewCard.title}
                     className={`w-full object-cover ${showFullPreview ? "h-96" : "h-64"}`}
                     loading="lazy"
                   />
@@ -1981,7 +1940,7 @@ export default function Home() {
                   <video
                     className={`w-full object-cover ${showFullPreview ? "h-96" : "h-64"}`}
                     src={quickViewCard.src}
-                    poster={posterUrl(quickViewCard.poster, quickViewCard.priority)}
+                    poster={posterUrl(quickViewCard.poster, quickViewCard.priority || quickViewCard.key.startsWith("easter"))}
                     autoPlay
                     loop={!showFullPreview}
                     muted
@@ -2023,13 +1982,13 @@ export default function Home() {
       )}
 
         <ExitIntentModal
-          headline="Wait! Valentine's is almost here"
+          headline="Wait! Easter is almost here"
           subheadline="Don't forget to send something meaningful. Our digital cards plant a tree and deliver instantly."
           offer=""
           ctaOnly
-          ctaText="Browse Valentine Cards"
+          ctaText="Browse Easter Cards"
           onCtaClick={() => {
-            document.getElementById("valentine-collection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            document.getElementById("easter-collection")?.scrollIntoView({ behavior: "smooth", block: "start" });
           }}
         />
       </main>

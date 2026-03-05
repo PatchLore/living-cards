@@ -10,7 +10,7 @@ const nextConfig = {
     ];
   },
   // Prevent edge from serving stale poster images (flash of old images).
-  // Poster URLs already use ?v=valentine for cache-bust; this backs it up.
+  // Poster URLs already use ?v=easter for cache-bust; this backs it up.
   async headers() {
     return [
       {

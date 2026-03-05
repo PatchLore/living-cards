@@ -11,7 +11,7 @@
 ### 1. Meta Tags & Structured Data ✓
 
 #### Title Tags
-- **Updated:** `"Digital Valentine Cards That Plant Real Trees | Eco-Friendly Instant Delivery | CardRoots"`
+- **Updated:** `"Digital Easter Cards That Plant Real Trees | Eco-Friendly Instant Delivery | CardRoots"`
 - **Optimized for:** Primary keywords (digital Valentine cards, plant trees, eco-friendly, instant delivery)
 - **Applied to:** Default title, OpenGraph title, Twitter title
 

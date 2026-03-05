@@ -199,7 +199,7 @@ export default async function ValentineCardPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <CardViewerClient cardKey={cardName} backToHash="valentine-collection" />
+      <CardViewerClient cardKey={cardName} backToHash="easter-collection" />
     </>
   );
 }

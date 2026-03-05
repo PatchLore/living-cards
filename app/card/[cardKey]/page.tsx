@@ -4,18 +4,16 @@ import CardViewerClient from "./CardViewerClient";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
 const baseUrl = siteUrl.replace(/\/$/, "");
 
-// Map card keys → path under /cards/ (Valentine videos in posters/)
+// Map card keys → path under /cards/ (Easter videos in posters/)
 const CARD_VIDEO_MAP: Record<string, string> = {
-  "valentine-rose": "posters/valentine1.mp4",
-  "valentine-heart-glow": "posters/valentine2.mp4",
-  "valentine-blossom": "posters/valentine3.mp4",
-  "valentine-love-light": "posters/valentine4.mp4",
-  "valentine-forever": "posters/valentine5.mp4",
-  "valentine-sweetheart": "posters/Valentine6.mp4",
-  "valentine-together": "posters/Valentine7.mp4",
-  "valentine-spark": "posters/Valentine8.mp4",
-  "valentine-dream": "posters/Valentine9.mp4",
-  "valentine-treasure": "posters/Valentine10.mp4",
+  "easter-morning": "posters/easter1.mp4",
+  "easter-bloom": "posters/easter2.mp4",
+  "easter-bunny": "posters/easter3.mp4",
+  "easter-eggs": "posters/easter4.mp4",
+  "easter-garden": "posters/easter5.mp4",
+  "easter-joy": "posters/easter6.mp4",
+  "easter-sunrise": "posters/easter7.mp4",
+  "easter-wishes": "posters/easter8.mp4",
   "starlit-christmas-tree": "christmas_tree.mp4",
   "christmas-night-moonlight": "moonlight.mp4",
   "snowy-cottage-evening": "Christmas2.mp4",
@@ -32,55 +30,45 @@ const CARD_VIDEO_MAP: Record<string, string> = {
 
 // Card metadata mapping for SEO
 const CARD_METADATA: Record<string, { title: string; occasion: string; description: string }> = {
-  "valentine-rose": {
-    title: "Valentine Rose",
-    occasion: "Valentine's Day",
-    description: "A blooming rose Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  "easter-morning": {
+    title: "Easter Morning",
+    occasion: "Easter",
+    description: "A beautiful Easter morning animation. Digital card that plants a real tree. A thoughtful digital gift delivered instantly.",
   },
-  "valentine-heart-glow": {
-    title: "Valentine Heart Glow",
-    occasion: "Valentine's Day",
-    description: "A radiant heart Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  "easter-bloom": {
+    title: "Easter Bloom",
+    occasion: "Easter",
+    description: "Spring flowers blooming for Easter. Digital card that plants a real tree. A thoughtful digital gift delivered instantly.",
   },
-  "valentine-blossom": {
-    title: "Valentine Blossom",
-    occasion: "Valentine's Day",
-    description: "Soft blossoms Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  "easter-bunny": {
+    title: "Easter Bunny",
+    occasion: "Easter",
+    description: "A cheerful Easter bunny to brighten their day. Digital card that plants a real tree. A thoughtful digital gift delivered instantly.",
   },
-  "valentine-love-light": {
-    title: "Valentine Love Light",
-    occasion: "Valentine's Day",
-    description: "Warm light Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  "easter-eggs": {
+    title: "Easter Eggs",
+    occasion: "Easter",
+    description: "Colourful Easter eggs for a joyful celebration. Digital card that plants a real tree. A thoughtful digital gift delivered instantly.",
   },
-  "valentine-forever": {
-    title: "Valentine Forever",
-    occasion: "Valentine's Day",
-    description: "A timeless Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  "easter-garden": {
+    title: "Easter Garden",
+    occasion: "Easter",
+    description: "A garden in full spring bloom for Easter. Digital card that plants a real tree. A thoughtful digital gift delivered instantly.",
   },
-  "valentine-sweetheart": {
-    title: "Valentine Sweetheart",
-    occasion: "Valentine's Day",
-    description: "A sweet Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  "easter-joy": {
+    title: "Easter Joy",
+    occasion: "Easter",
+    description: "Spreading joy this Easter season. Digital card that plants a real tree. A thoughtful digital gift delivered instantly.",
   },
-  "valentine-together": {
-    title: "Valentine Together",
-    occasion: "Valentine's Day",
-    description: "Celebrate being together — a Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  "easter-sunrise": {
+    title: "Easter Sunrise",
+    occasion: "Easter",
+    description: "A warm Easter sunrise to share with loved ones. Digital card that plants a real tree. A thoughtful digital gift delivered instantly.",
   },
-  "valentine-spark": {
-    title: "Valentine Spark",
-    occasion: "Valentine's Day",
-    description: "A little spark of love — Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "valentine-dream": {
-    title: "Valentine Dream",
-    occasion: "Valentine's Day",
-    description: "A dreamy Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "valentine-treasure": {
-    title: "Valentine Treasure",
-    occasion: "Valentine's Day",
-    description: "You're a treasure — send a Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
+  "easter-wishes": {
+    title: "Easter Wishes",
+    occasion: "Easter",
+    description: "Warm Easter wishes for everyone you love. Digital card that plants a real tree. A thoughtful digital gift delivered instantly.",
   },
   "starlit-christmas-tree": {
     title: "Starlit Christmas Tree",
@@ -199,9 +187,11 @@ export default async function CardViewerPage({ params }: { params: Promise<{ car
         "@context": "https://schema.org",
         "@type": "Product",
         name:
-          cardMeta.occasion === "Valentine's Day"
-            ? `Digital Valentine Card - ${cardMeta.title}`
-            : cardMeta.title,
+          cardMeta.occasion === "Easter"
+            ? `Digital Easter Card - ${cardMeta.title}`
+            : cardMeta.occasion === "Valentine's Day"
+              ? `Digital Valentine Card - ${cardMeta.title}`
+              : cardMeta.title,
         description: cardMeta.description,
         image: `${baseUrl}${CARD_VIDEO_MAP[cardKey] ? `/cards/${CARD_VIDEO_MAP[cardKey]}` : "/og-image.jpg"}`,
         brand: {
@@ -220,7 +210,7 @@ export default async function CardViewerPage({ params }: { params: Promise<{ car
           { "@type": "PropertyValue", name: "Trees Planted", value: "1" },
           { "@type": "PropertyValue", name: "Occasion", value: cardMeta.occasion },
         ],
-        ...(cardMeta.occasion === "Valentine's Day" && {
+        ...((cardMeta.occasion === "Valentine's Day" || cardMeta.occasion === "Easter") && {
           aggregateRating: {
             "@type": "AggregateRating",
             ratingValue: "4.8",

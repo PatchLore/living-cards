@@ -44,6 +44,11 @@ body {
   }
 }
 
+/* Mobile horizontal scroll — momentum on iOS */
+.scroll-touch {
+  -webkit-overflow-scrolling: touch;
+}
+
 .card-panel {
   @apply bg-slate-800/60 backdrop-blur-sm rounded-2xl shadow-xl p-6;
 }

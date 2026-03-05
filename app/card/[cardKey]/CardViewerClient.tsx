@@ -3,18 +3,16 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-// Map card keys → path under /cards/ (Valentine videos in posters/)
+// Map card keys → path under /cards/ (Easter videos in posters/)
 const CARD_VIDEO_MAP: Record<string, string> = {
-  "valentine-rose": "posters/valentine1.mp4",
-  "valentine-heart-glow": "posters/valentine2.mp4",
-  "valentine-blossom": "posters/valentine3.mp4",
-  "valentine-love-light": "posters/valentine4.mp4",
-  "valentine-forever": "posters/valentine5.mp4",
-  "valentine-sweetheart": "posters/Valentine6.mp4",
-  "valentine-together": "posters/Valentine7.mp4",
-  "valentine-spark": "posters/Valentine8.mp4",
-  "valentine-dream": "posters/Valentine9.mp4",
-  "valentine-treasure": "posters/Valentine10.mp4",
+  "easter-morning": "posters/easter1.mp4",
+  "easter-bloom": "posters/easter2.mp4",
+  "easter-bunny": "posters/easter3.mp4",
+  "easter-eggs": "posters/easter4.mp4",
+  "easter-garden": "posters/easter5.mp4",
+  "easter-joy": "posters/easter6.mp4",
+  "easter-sunrise": "posters/easter7.mp4",
+  "easter-wishes": "posters/easter8.mp4",
   "starlit-christmas-tree": "christmas_tree.mp4",
   "christmas-night-moonlight": "moonlight.mp4",
   "snowy-cottage-evening": "Christmas2.mp4",

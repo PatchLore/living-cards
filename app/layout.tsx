@@ -9,24 +9,22 @@ const baseUrl = canonicalUrl.replace(/\/$/, "");
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: "Digital Valentine Cards That Plant Real Trees | Eco-Friendly Instant Delivery | CardRoots",
+    default: "Send Digital Easter Cards That Plant Trees | CardRoots",
     template: "%s | CardRoots",
   },
-  description: "Send beautiful animated Valentine cards instantly via email. Every card plants a verified tree. Eco-friendly alternative to paper cards. £5 per card, delivered in seconds.",
+  description: "Send beautiful animated Easter cards that plant real trees. Eco-friendly digital Easter greetings with instant email delivery. CardRoots.",
   keywords: [
-    "digital Valentine cards",
-    "eco-friendly Valentine cards",
-    "send Valentine card instantly",
-    "Valentine cards that plant trees",
-    "last-minute Valentine gifts",
+    "digital Easter cards",
+    "eco-friendly Easter cards",
+    "send Easter card instantly",
+    "Easter cards that plant trees",
+    "animated Easter cards",
     "sustainable greeting cards",
-    "animated Valentine cards",
-    "email Valentine cards",
+    "email Easter cards",
     "digital cards that plant a tree",
-    "eco-friendly alternative to paper cards",
-    "instant digital Valentine delivery",
+    "eco-friendly digital Easter greetings",
+    "instant email delivery Easter cards",
     "verified tree planting greeting cards",
-    "Valentine gift that plants a real tree",
   ],
   authors: [{ name: "CardRoots" }],
   creator: "CardRoots",
@@ -44,21 +42,21 @@ export const metadata: Metadata = {
     locale: "en_GB",
     url: baseUrl,
     siteName: "CardRoots",
-    title: "Digital Valentine Cards That Plant Real Trees | Eco-Friendly Instant Delivery | CardRoots",
-    description: "Send beautiful animated Valentine cards instantly via email. Every card plants a verified tree. Eco-friendly alternative to paper cards. £5 per card, delivered in seconds.",
+    title: "Send Digital Easter Cards That Plant Trees | CardRoots",
+    description: "Send beautiful animated Easter cards that plant real trees. Eco-friendly digital Easter greetings with instant email delivery. CardRoots.",
     images: [
       {
         url: `${baseUrl}/og-image.jpg`,
         width: 1200,
         height: 630,
-        alt: "CardRoots - Digital Valentine Cards That Plant Real Trees",
+        alt: "CardRoots - Send Digital Easter Cards That Plant Trees",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Digital Valentine Cards That Plant Real Trees | Eco-Friendly Instant Delivery | CardRoots",
-    description: "Send beautiful animated Valentine cards instantly via email. Every card plants a verified tree. Eco-friendly alternative to paper cards. £5 per card, delivered in seconds.",
+    title: "Send Digital Easter Cards That Plant Trees | CardRoots",
+    description: "Send beautiful animated Easter cards that plant real trees. Eco-friendly digital Easter greetings with instant email delivery. CardRoots.",
     images: [`${baseUrl}/og-image.jpg`],
   },
   robots: {
@@ -113,7 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       priceCurrency: "GBP",
       description: "Digital card that plants a real tree",
     },
-    description: "Send beautiful animated digital cards that plant real trees. Eco-friendly digital greeting cards for Valentine's Day, Christmas, birthdays, and special occasions.",
+    description: "Send beautiful animated digital cards that plant real trees. Eco-friendly digital Easter greetings, Christmas, birthdays, and special occasions.",
     url: baseUrl,
     aggregateRating: {
       "@type": "AggregateRating",
@@ -147,7 +145,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Footer trust / drop-service prompt */}
         <footer className="relative z-[40] mt-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm text-[#1A1A1A]/70">
-            Every card plants a tree — helping restore forests and support sustainable projects worldwide.
+            Digital Easter Cards That Plant Real Trees | Eco-Friendly Instant Delivery | CardRoots
+            <div className="mt-2">
+              Every card plants a tree — helping restore forests and support sustainable projects worldwide.
+            </div>
             <div className="mt-2">
               Sending 100+ holiday cards?{" "}
               <a
