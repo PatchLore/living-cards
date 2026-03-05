@@ -368,12 +368,14 @@ function LazyVideo({
         }}
         onError={() => setIsLoaded(true)}
         onMouseEnter={(e) => {
+          isHoveredRef.current = true;
           setShouldLoad(true);
           setShouldPlayOnLoad(true);
           setPlayOnHover(true);
           onMouseEnter?.(e);
         }}
         onMouseLeave={(e) => {
+          isHoveredRef.current = false;
           setPlayOnHover(false);
           if (videoRef.current) {
             videoRef.current.pause();
