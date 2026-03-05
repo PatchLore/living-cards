@@ -322,29 +322,24 @@ function LazyVideo({
   useEffect(() => {
     if (!shouldLoad || !shouldPlayOnLoad || !videoRef.current) return;
     videoRef.current.play().catch(() => undefined);
+    setShouldPlayOnLoad(false);
   }, [shouldLoad, shouldPlayOnLoad]);
 
   // When user hovers, we requestLoad() but state updates async — so play() runs before <source> exists. Play once video is ready (and only if still hovered).
   useEffect(() => {
     if (!shouldLoad || !playOnHover || !videoRef.current) return;
     const v = videoRef.current;
-    const tryPlay = () => {
+    if (v.readyState >= 2) {
+      if (isHoveredRef.current) v.play().catch(() => undefined);
+      setPlayOnHover(false);
+      return;
+    }
+    const onCanPlay = () => {
       if (isHoveredRef.current) v.play().catch(() => undefined);
       setPlayOnHover(false);
     };
-    if (v.readyState >= 2) {
-      tryPlay();
-      return;
-    }
-    const onReady = () => {
-      tryPlay();
-    };
-    v.addEventListener("canplay", onReady, { once: true });
-    v.addEventListener("loadeddata", onReady, { once: true });
-    return () => {
-      v.removeEventListener("canplay", onReady);
-      v.removeEventListener("loadeddata", onReady);
-    };
+    v.addEventListener("canplay", onCanPlay, { once: true });
+    return () => v.removeEventListener("canplay", onCanPlay);
   }, [shouldLoad, playOnHover]);
 
   return (
@@ -375,18 +370,13 @@ function LazyVideo({
         onError={() => setIsLoaded(true)}
         onMouseEnter={(e) => {
           isHoveredRef.current = true;
-          setShouldLoad(true);
-          setShouldPlayOnLoad(true);
+          requestLoad();
           setPlayOnHover(true);
           onMouseEnter?.(e);
         }}
         onMouseLeave={(e) => {
           isHoveredRef.current = false;
           setPlayOnHover(false);
-          if (videoRef.current) {
-            videoRef.current.pause();
-            videoRef.current.currentTime = 0;
-          }
           onMouseLeave?.(e);
         }}
         onFocus={(event) => {
