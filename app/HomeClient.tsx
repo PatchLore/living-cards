@@ -733,8 +733,6 @@ export default function Home() {
     (cardKey: string, force = false) =>
     (event: React.SyntheticEvent<HTMLVideoElement>) => {
       const video = event.currentTarget;
-      const canHover = typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches;
-      if (!force && !canHover) return;
       video.play().catch(() => undefined);
       trackEvent("video_preview_play", { cardKey });
     };
