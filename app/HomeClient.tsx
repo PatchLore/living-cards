@@ -409,7 +409,7 @@ type LazyVideoCardProps = {
   card: CardItem;
   isMobileDevice: boolean;
   onSelect: () => void;
-  onPreviewPlay: () => void;
+  onPreviewPlay: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
   onPreviewPause: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
   onSendThisCard: () => void;
 };
@@ -424,7 +424,7 @@ function LazyVideoCard({ card, isMobileDevice, onSelect, onPreviewPlay, onPrevie
           {card.label}
         </span>
       </div>
-      <div className="relative rounded-2xl overflow-hidden mb-3 bg-slate-100">
+      <div className="relative rounded-2xl overflow-hidden mb-3 bg-slate-100 group/video">
         {isMobileDevice ? (
           <img
             src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
@@ -447,6 +447,15 @@ function LazyVideoCard({ card, isMobileDevice, onSelect, onPreviewPlay, onPrevie
             onMouseLeave={onPreviewPause}
           />
         )}
+        {/* Overlay: "Select This Card" on hover (desktop) / tap opens modal (mobile) */}
+        <div
+          className="absolute inset-0 flex items-center justify-center rounded-2xl bg-easter-primary/0 group-hover/video:bg-easter-primary/20 transition-colors pointer-events-none"
+          aria-hidden
+        >
+          <span className="opacity-0 group-hover/video:opacity-100 transition-opacity text-white font-semibold text-sm px-3 py-1.5 rounded-full bg-easter-primary/90">
+            Select This Card
+          </span>
+        </div>
       </div>
       <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">{card.title}</h3>
       <p className="text-sm text-[#1A1A1A]/70 mb-3 line-clamp-2">{card.desc}</p>
@@ -1732,7 +1741,7 @@ export default function Home() {
               </article>
             ))}
           </div>
-        ) )}
+        )}
       </section>
 
       {/* Personalization Form (hidden until a card is selected) */}
