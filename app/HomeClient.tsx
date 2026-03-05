@@ -369,14 +369,17 @@ function LazyVideo({
         }}
         onError={() => setIsLoaded(true)}
         onMouseEnter={(event) => {
-          isHoveredRef.current = true;
-          requestLoad();
+          setShouldLoad(true);
+          setShouldPlayOnLoad(true);
           setPlayOnHover(true);
           onMouseEnter?.(event);
         }}
         onMouseLeave={(event) => {
-          isHoveredRef.current = false;
           setPlayOnHover(false);
+          if (videoRef.current) {
+            videoRef.current.pause();
+            videoRef.current.currentTime = 0;
+          }
           onMouseLeave?.(event);
         }}
         onFocus={(event) => {
@@ -651,10 +654,12 @@ export default function Home() {
 
   useEffect(() => {
     if (selectedCard && formRef.current) {
-      // small timeout to allow layout changes before scrolling
       setTimeout(() => {
-        formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 80);
+        const el = formRef.current;
+        if (!el) return;
+        const y = el.getBoundingClientRect().top + window.scrollY - 120;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }, 120);
     }
   }, [selectedCard]);
 
