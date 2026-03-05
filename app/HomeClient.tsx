@@ -1200,7 +1200,6 @@ export default function Home() {
                     className="w-full h-44 object-cover"
                     src={card.src}
                     poster={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
-                    playOnHover
                     tapToPlay={false}
                     loop
                     muted
