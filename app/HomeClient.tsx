@@ -328,17 +328,23 @@ function LazyVideo({
   useEffect(() => {
     if (!shouldLoad || !playOnHover || !videoRef.current) return;
     const v = videoRef.current;
-    if (v.readyState >= 2) {
-      if (isHoveredRef.current) v.play().catch(() => undefined);
-      setPlayOnHover(false);
-      return;
-    }
-    const onCanPlay = () => {
+    const tryPlay = () => {
       if (isHoveredRef.current) v.play().catch(() => undefined);
       setPlayOnHover(false);
     };
-    v.addEventListener("canplay", onCanPlay, { once: true });
-    return () => v.removeEventListener("canplay", onCanPlay);
+    if (v.readyState >= 2) {
+      tryPlay();
+      return;
+    }
+    const onReady = () => {
+      tryPlay();
+    };
+    v.addEventListener("canplay", onReady, { once: true });
+    v.addEventListener("loadeddata", onReady, { once: true });
+    return () => {
+      v.removeEventListener("canplay", onReady);
+      v.removeEventListener("loadeddata", onReady);
+    };
   }, [shouldLoad, playOnHover]);
 
   return (
@@ -346,7 +352,7 @@ function LazyVideo({
       {/* Only show loading overlay when no poster — otherwise it would cover the poster and show blank until video loads */}
       {shouldLoad && !isLoaded && !poster && (
         <div
-          className="absolute inset-0 rounded-2xl bg-slate-200/70 animate-pulse"
+          className="absolute inset-0 rounded-2xl bg-slate-200/70 animate-pulse pointer-events-none"
           aria-hidden
         />
       )}
