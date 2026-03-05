@@ -1192,9 +1192,10 @@ export default function Home() {
                   <img
                     src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
                     alt={getEasterCardAlt(card)}
-                    className="w-full h-44 object-cover"
+                    className="w-full h-44 object-cover cursor-pointer"
                     loading={index < 5 ? "eager" : "lazy"}
                     fetchPriority={index < 5 ? "high" : undefined}
+                    onClick={() => setMobilePreviewCard(card)}
                   />
                 ) : (
                   <LazyVideo
@@ -1221,8 +1222,12 @@ export default function Home() {
                 href={`/cards/easter/${card.key}`}
                 onClick={(e) => {
                   e.preventDefault();
-                  setSelectedCard(card.key);
-                  formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  if (isMobileDevice) {
+                    setMobilePreviewCard(card);
+                  } else {
+                    setSelectedCard(card.key);
+                    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
                   trackEvent("easter_send_this_card", { cardKey: card.key });
                 }}
                 className="block w-full min-h-[44px] h-11 rounded-full bg-easter-primary hover:bg-easter-primary-hover text-white font-semibold text-center leading-[2.75rem] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-easter-primary focus:ring-offset-2"
