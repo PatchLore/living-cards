@@ -322,7 +322,6 @@ function LazyVideo({
   useEffect(() => {
     if (!shouldLoad || !shouldPlayOnLoad || !videoRef.current) return;
     videoRef.current.play().catch(() => undefined);
-    setShouldPlayOnLoad(false);
   }, [shouldLoad, shouldPlayOnLoad]);
 
   // When user hovers, we requestLoad() but state updates async — so play() runs before <source> exists. Play once video is ready (and only if still hovered).
@@ -368,19 +367,19 @@ function LazyVideo({
           }
         }}
         onError={() => setIsLoaded(true)}
-        onMouseEnter={(event) => {
+        onMouseEnter={(e) => {
           setShouldLoad(true);
           setShouldPlayOnLoad(true);
           setPlayOnHover(true);
-          onMouseEnter?.(event);
+          onMouseEnter?.(e);
         }}
-        onMouseLeave={(event) => {
+        onMouseLeave={(e) => {
           setPlayOnHover(false);
           if (videoRef.current) {
             videoRef.current.pause();
             videoRef.current.currentTime = 0;
           }
-          onMouseLeave?.(event);
+          onMouseLeave?.(e);
         }}
         onFocus={(event) => {
           isHoveredRef.current = true;
