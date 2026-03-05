@@ -255,6 +255,7 @@ type Testimonial = {
 };
 
 
+// Hover: requestLoad() + setPlayOnHover(true); play() only on canplay (no loadeddata). See docs/LAZYVIDEO_EASTER_REFERENCE.md.
 function LazyVideo({
   src,
   webmSrc,
