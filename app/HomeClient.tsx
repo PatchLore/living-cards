@@ -645,7 +645,7 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [cardsReady, setCardsReady] = useState(false);
   const [mobilePreviewCard, setMobilePreviewCard] = useState<CardItem | null>(null);
-  const isMobileDevice = useIsMobile();
+  const isMobileDevice = useIsMobile(480);
 
   const collectionRef = useRef<HTMLElement | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
