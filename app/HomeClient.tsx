@@ -436,8 +436,6 @@ function LazyVideoCard({ card, isVideoMobile, onSelect, onPreviewPlay, onPreview
             muted
             playsInline
             eagerLoad={false}
-            onMouseEnter={onPreviewPlay}
-            onMouseLeave={onPreviewPause}
           />
         )}
         <div
