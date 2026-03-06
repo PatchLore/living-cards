@@ -30,7 +30,6 @@
     "**/*.tsx"
   ],
   "exclude": [
-    "node_modules",
-    "Cardroots Enhanced Website/**/*"
+    "node_modules"
   ]
 }

@@ -2,37 +2,6 @@
 
 Static poster images (JPG) are used as fallbacks before the living card MP4 plays.
 
-## Easter cards
-
-All 8 Easter living cards have matching posters in this folder. Source MP4s are named `Easter1.mp4`–`Easter8.mp4` (capital E); the app uses lowercase paths `easter1.jpg`/`easter1.mp4` etc.
-
-| File | Card |
-|------|------|
-| `easter1.jpg` | Easter Morning |
-| `easter2.jpg` | Easter Bloom |
-| `easter3.jpg` | Easter Bunny |
-| `easter4.jpg` | Easter Eggs |
-| `easter5.jpg` | Easter Garden |
-| `easter6.jpg` | Easter Joy |
-| `easter7.jpg` | Easter Sunrise |
-| `easter8.jpg` | Easter Wishes |
-
-### Regenerating Easter posters from MP4s
-
-To regenerate first-frame JPGs from the Easter MP4s (requires [ffmpeg](https://ffmpeg.org/)):
-
-```bash
-cd public/cards/posters
-ffmpeg -i Easter1.mp4 -vframes 1 -q:v 2 easter1.jpg -y
-ffmpeg -i Easter2.mp4 -vframes 1 -q:v 2 easter2.jpg -y
-ffmpeg -i Easter3.mp4 -vframes 1 -q:v 2 easter3.jpg -y
-ffmpeg -i Easter4.mp4 -vframes 1 -q:v 2 easter4.jpg -y
-ffmpeg -i Easter5.mp4 -vframes 1 -q:v 2 easter5.jpg -y
-ffmpeg -i Easter6.mp4 -vframes 1 -q:v 2 easter6.jpg -y
-ffmpeg -i Easter7.mp4 -vframes 1 -q:v 2 easter7.jpg -y
-ffmpeg -i Easter8.mp4 -vframes 1 -q:v 2 easter8.jpg -y
-```
-
 ## Valentine cards
 
 All 10 Valentine living cards have matching posters in this folder:
