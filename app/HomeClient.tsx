@@ -1136,8 +1136,12 @@ export default function Home() {
             </div>
             <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-4">
               <button
-                onClick={() => {
-                  document.getElementById("valentine-collection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveFilter("Valentine");
+                  setTimeout(() => {
+                    document.getElementById("collection")?.scrollIntoView({ behavior: "smooth" });
+                  }, 50);
                   trackEvent("cta_browse_hero");
                 }}
                 className="h-[60px] px-10 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold shadow-lg transition"
@@ -1189,89 +1193,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* New Valentine Collection - above fold */}
-      <section id="valentine-collection" className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="new-valentine-collection-heading">
-        <div className="flex items-center gap-3 mb-6">
-          <h2 id="new-valentine-collection-heading" className="text-[28px] md:text-[36px] font-semibold text-[#1A1A1A]">
-            🌹 New Valentine Collection
-          </h2>
-          <span className="text-xs uppercase tracking-wide font-semibold bg-amber-200/80 text-amber-900 px-3 py-1.5 rounded-full">
-            Limited Time
-          </span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-          {valentineCards.map((card, index) => (
-            <article
-              key={card.key}
-              className="group relative w-full min-h-[380px] rounded-3xl bg-white border border-slate-200 p-4 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(244,63,94,0.12)] focus-within:ring-2 focus-within:ring-pink-300 focus-within:ring-offset-2 focus-within:outline-none"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-[11px] uppercase tracking-wide font-semibold bg-pink-100 text-pink-800 px-2 py-1 rounded-full">
-                  Limited Time
-                </span>
-              </div>
-              <div className="relative rounded-2xl overflow-hidden mb-3 bg-slate-100">
-                {card.key === "valentine-heart-glow" && (
-                  <span className="absolute top-2 right-2 z-10 text-[11px] font-semibold px-2 py-1 rounded-md text-white shadow-sm bg-gradient-to-br from-red-500 to-red-600">
-                    🔥 Most Popular
-                  </span>
-                )}
-                {card.key === "valentine-dream" && (
-                  <span className="absolute top-2 right-2 z-10 text-[11px] font-semibold px-2 py-1 rounded-md text-[#333] shadow-sm bg-gradient-to-br from-amber-300 to-amber-500">
-                    ⭐ Staff Pick
-                  </span>
-                )}
-                {card.key === "valentine-treasure" && (
-                  <span className="absolute top-2 right-2 z-10 text-[11px] font-semibold px-2 py-1 rounded-md text-white shadow-sm bg-gradient-to-br from-violet-500 to-violet-700">
-                    🆕 New This Year
-                  </span>
-                )}
-                {isMobileDevice ? (
-                  <img
-                    src={posterUrl(card.poster, card.priority)}
-                    alt={getValentineCardAlt(card)}
-                    className="w-full h-44 object-cover"
-                    loading={index < 5 ? "eager" : "lazy"}
-                    fetchPriority={index < 5 ? "high" : undefined}
-                  />
-                ) : (
-                  <LazyVideo
-                    className="w-full h-44 object-cover"
-                    src={card.src}
-                    poster={posterUrl(card.poster, card.priority)}
-                    tapToPlay={false}
-                    loop
-                    muted
-                    playsInline
-                    eagerLoad={index < 5}
-                    onMouseEnter={handlePreviewPlay(card.key)}
-                    onMouseLeave={handlePreviewPause}
-                  />
-                )}
-              </div>
-              <h3 className="text-lg font-semibold text-[#1A1A1A] mb-1">{card.title}</h3>
-              <p className="text-sm text-[#1A1A1A]/70 mb-3 line-clamp-2">{card.desc}</p>
-              <div className="mb-3">
-                <span className="text-xl font-semibold text-[#2D6A4F]">£5</span>
-                <span className="text-xs text-[#1A1A1A]/60 ml-1">per card</span>
-              </div>
-              <a
-                href={`/cards/valentines/${card.key}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setSelectedCard(card.key);
-                  formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  trackEvent("valentine_send_this_card", { cardKey: card.key });
-                }}
-                className="block w-full min-h-[44px] h-11 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-center leading-[2.75rem] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
-              >
-                Send This Card
-              </a>
-            </article>
-          ))}
         </div>
       </section>
 
