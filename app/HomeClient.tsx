@@ -21,8 +21,8 @@ const CARDS: CardItem[] = [
   // Easter Cards — posters easter1.jpg–easter8.jpg + matching MP4s in public/cards/posters/
   {
     key: "easter-morning",
-    title: "Easter Morning",
-    desc: "A beautiful Easter morning animation.",
+    title: "Easter Parade",
+    desc: "A charming bunny with a cart full of Easter eggs.",
     src: "/cards/posters/Easter1.mp4",
     poster: "/cards/posters/easter1.jpg",
     label: "New Easter Collection",
@@ -32,8 +32,8 @@ const CARDS: CardItem[] = [
   },
   {
     key: "easter-bloom",
-    title: "Easter Bloom",
-    desc: "Spring flowers blooming for Easter.",
+    title: "Easter Chick",
+    desc: "An adorable chick hatching into spring.",
     src: "/cards/posters/Easter2.mp4",
     poster: "/cards/posters/easter2.jpg",
     label: "⭐ Staff Pick",
@@ -54,8 +54,8 @@ const CARDS: CardItem[] = [
   },
   {
     key: "easter-eggs",
-    title: "Easter Eggs",
-    desc: "Colourful Easter eggs for a joyful celebration.",
+    title: "Easter Stream",
+    desc: "Peaceful spring blossoms floating on water.",
     src: "/cards/posters/Easter4.mp4",
     poster: "/cards/posters/easter4.jpg",
     label: "Limited Time",
@@ -76,8 +76,8 @@ const CARDS: CardItem[] = [
   },
   {
     key: "easter-joy",
-    title: "Easter Joy",
-    desc: "Spreading joy this Easter season.",
+    title: "Easter Morning",
+    desc: "A songbird greeting the Easter sunrise in the forest.",
     src: "/cards/posters/Easter6.mp4",
     poster: "/cards/posters/easter6.jpg",
     label: "Limited Time",
@@ -87,8 +87,8 @@ const CARDS: CardItem[] = [
   },
   {
     key: "easter-sunrise",
-    title: "Easter Sunrise",
-    desc: "A warm Easter sunrise to share with loved ones.",
+    title: "Easter Egg Garden",
+    desc: "Beautiful spring flowers in decorative eggshells.",
     src: "/cards/posters/Easter7.mp4",
     poster: "/cards/posters/easter7.jpg",
     label: "Limited Time",
@@ -98,8 +98,8 @@ const CARDS: CardItem[] = [
   },
   {
     key: "easter-wishes",
-    title: "Easter Wishes",
-    desc: "Warm Easter wishes for everyone you love.",
+    title: "Easter Fox",
+    desc: "A cozy fox enjoying Easter tea in a floral cup.",
     src: "/cards/posters/Easter8.mp4",
     poster: "/cards/posters/easter8.jpg",
     label: "🆕 New This Year",
