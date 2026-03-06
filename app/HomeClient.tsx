@@ -645,7 +645,8 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [cardsReady, setCardsReady] = useState(false);
   const [mobilePreviewCard, setMobilePreviewCard] = useState<CardItem | null>(null);
-  const isMobileDevice = useIsMobile(480);
+  const isMobileDevice = useIsMobile(768);
+  const isVideoMobile = useIsMobile(480);
 
   const collectionRef = useRef<HTMLElement | null>(null);
   const formRef = useRef<HTMLDivElement | null>(null);
@@ -1205,7 +1206,7 @@ export default function Home() {
             <LazyVideoCard
               key={card.key}
               card={card}
-              isMobileDevice={isMobileDevice}
+              isMobileDevice={isVideoMobile}
               onSelect={() => setMobilePreviewCard(card)}
               onPreviewPlay={handlePreviewPlay(card.key)}
               onPreviewPause={handlePreviewPause}
