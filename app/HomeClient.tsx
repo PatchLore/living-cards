@@ -156,14 +156,14 @@ const CARDS: CardItem[] = [
   {
     key: "santas-moonlit-ride",
     title: "Santa's Moonlit Ride",
-    desc: "Santa’s sleigh gliding across a quiet night sky.",
+    desc: "Santa's sleigh gliding across a quiet night sky.",
     src: "/cards/Santa.mp4",
     poster: "/cards/posters/Santa.jpg",
     label: "Limited Edition",
     available: 24,
     badges: ["Most Popular"],
   },
-  // Birthday Cards (rose/heart posters removed — only Valentine uses valentine1-5)
+  // Birthday Cards
   {
     key: "elegant-floral-birthday",
     title: "Elegant Floral Birthday",
@@ -198,7 +198,6 @@ const CARDS: CardItem[] = [
   },
 ];
 
-// Descriptive alt text for Easter cards (SEO + accessibility)
 const EASTER_CARD_ALTS: Record<string, string> = {
   "easter-morning": "Easter morning digital card animation that plants a tree",
   "easter-bloom": "Easter bloom spring flowers digital card animation that plants a tree",
@@ -214,7 +213,6 @@ function getEasterCardAlt(card: CardItem): string {
   return EASTER_CARD_ALTS[card.key] ?? `${card.title} digital Easter card animation that plants a tree`;
 }
 
-// Cache-bust poster URLs for seasonal cards so edge/browser don't serve stale cached images
 const POSTER_CACHE_VERSION = "easter";
 function posterUrl(poster: string | undefined, bustCache = false): string {
   if (!poster) return "";
@@ -234,7 +232,6 @@ type LazyVideoProps = {
   loop?: boolean;
   muted?: boolean;
   playsInline?: boolean;
-  /** When true, load video source immediately so poster doesn't show first (no hover-to-reveal). */
   eagerLoad?: boolean;
   onMouseEnter?: React.MouseEventHandler<HTMLVideoElement>;
   onMouseLeave?: React.MouseEventHandler<HTMLVideoElement>;
@@ -252,8 +249,6 @@ type Testimonial = {
   photo?: string;
 };
 
-
-// Hover: requestLoad() + setPlayOnHover(true); play() only on canplay (no loadeddata). See docs/LAZYVIDEO_EASTER_REFERENCE.md.
 function LazyVideo({
   src,
   webmSrc,
@@ -324,7 +319,6 @@ function LazyVideo({
     setShouldPlayOnLoad(false);
   }, [shouldLoad, shouldPlayOnLoad]);
 
-  // When user hovers, we requestLoad() but state updates async — so play() runs before <source> exists. Play once video is ready (and only if still hovered).
   useEffect(() => {
     if (!shouldLoad || !playOnHover || !videoRef.current) return;
     const v = videoRef.current;
@@ -343,7 +337,6 @@ function LazyVideo({
 
   return (
     <div className="relative">
-      {/* Only show loading overlay when no poster — otherwise it would cover the poster and show blank until video loads */}
       {shouldLoad && !isLoaded && !poster && (
         <div
           className="absolute inset-0 rounded-2xl bg-slate-200/70 animate-pulse pointer-events-none"
@@ -394,7 +387,7 @@ function LazyVideo({
           if (tapToPlay) requestPlay();
           onTouchStart?.(event);
         }}
-        onClick={(event) => {
+        onClick={() => {
           if (tapToPlay) requestPlay();
         }}
       >
@@ -407,14 +400,14 @@ function LazyVideo({
 
 type LazyVideoCardProps = {
   card: CardItem;
-  isMobileDevice: boolean;
+  isVideoMobile: boolean;
   onSelect: () => void;
   onPreviewPlay: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
   onPreviewPause: (e: React.SyntheticEvent<HTMLVideoElement>) => void;
   onSendThisCard: () => void;
 };
 
-function LazyVideoCard({ card, isMobileDevice, onSelect, onPreviewPlay, onPreviewPause, onSendThisCard }: LazyVideoCardProps) {
+function LazyVideoCard({ card, isVideoMobile, onSelect, onPreviewPlay, onPreviewPause, onSendThisCard }: LazyVideoCardProps) {
   return (
     <article
       className="flex-shrink-0 snap-start w-[min(85vw,320px)] sm:w-full group relative min-h-[380px] rounded-3xl bg-white border border-slate-200 p-4 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_30px_rgba(123,198,126,0.2)] focus-within:ring-2 focus-within:ring-easter-primary focus-within:ring-offset-2 focus-within:outline-none"
@@ -425,7 +418,7 @@ function LazyVideoCard({ card, isMobileDevice, onSelect, onPreviewPlay, onPrevie
         </span>
       </div>
       <div className="relative rounded-2xl overflow-hidden mb-3 bg-slate-100 group/video">
-        {isMobileDevice ? (
+        {isVideoMobile ? (
           <img
             src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
             alt={card.key.startsWith("easter") ? getEasterCardAlt(card) : card.title}
@@ -447,7 +440,6 @@ function LazyVideoCard({ card, isMobileDevice, onSelect, onPreviewPlay, onPrevie
             onMouseLeave={onPreviewPause}
           />
         )}
-        {/* Overlay: "Select This Card" on hover (desktop) / tap opens modal (mobile) */}
         <div
           className="absolute inset-0 flex items-center justify-center rounded-2xl bg-easter-primary/0 group-hover/video:bg-easter-primary/20 transition-colors pointer-events-none"
           aria-hidden
@@ -467,7 +459,9 @@ function LazyVideoCard({ card, isMobileDevice, onSelect, onPreviewPlay, onPrevie
         href={`/cards/easter/${card.key}`}
         onClick={(e) => {
           e.preventDefault();
-          if (isMobileDevice) onSelect();
+          // Always use onSendThisCard on desktop (scrolls to form)
+          // onSelect opens the mobile modal — only use on actual phones
+          if (isVideoMobile) onSelect();
           else onSendThisCard();
         }}
         className="block w-full min-h-[44px] h-11 rounded-full bg-easter-primary hover:bg-easter-primary-hover text-white font-semibold text-center leading-[2.75rem] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-easter-primary focus:ring-offset-2"
@@ -500,7 +494,7 @@ class ErrorBoundary extends React.Component<
         <section className="max-w-7xl mx-auto py-16">
           <h1 className="text-[32px] font-semibold mb-4">Cards are loading…</h1>
           <p className="text-[16px] text-[#1A1A1A]/70 mb-6">
-            If this doesn’t resolve, please refresh the page.
+            If this doesn't resolve, please refresh the page.
           </p>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {CARDS.map((card) => (
@@ -571,7 +565,6 @@ function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalPro
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-
     video.setAttribute("webkit-playsinline", "true");
     video.setAttribute("x5-playsinline", "true");
   }, []);
@@ -612,9 +605,6 @@ function MobilePreviewModal({ card, onClose, onCheckout }: MobilePreviewModalPro
                 console.error("Video error:", e);
                 setVideoFailed(true);
               }}
-              onLoadedData={() => {
-                console.log("Video loaded successfully");
-              }}
               style={{ WebkitPlaysinline: true } as React.CSSProperties}
             />
           )}
@@ -645,7 +635,11 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [cardsReady, setCardsReady] = useState(false);
   const [mobilePreviewCard, setMobilePreviewCard] = useState<CardItem | null>(null);
+
+  // isMobileDevice: controls UI behaviour (modals, quick-view buttons, article tap) — 768px
   const isMobileDevice = useIsMobile(768);
+  // isVideoMobile: controls whether cards show <LazyVideo> or static <img> — 480px
+  // This means tablets and larger get hover-to-play video; only phones get static poster
   const isVideoMobile = useIsMobile(480);
 
   const collectionRef = useRef<HTMLElement | null>(null);
@@ -681,21 +675,19 @@ export default function Home() {
       title: "Verified Customer",
     },
   ];
+
   const faqItems = [
     {
       question: "How does CardRoots work?",
-      answer:
-        "Choose a card, personalize your message, and send instantly. Every card funds a real tree planting.",
+      answer: "Choose a card, personalize your message, and send instantly. Every card funds a real tree planting.",
     },
     {
       question: "Are the trees really planted? How can I verify?",
-      answer:
-        "We partner with verified planting organizations and can provide confirmation when available.",
+      answer: "We partner with verified planting organizations and can provide confirmation when available.",
     },
     {
       question: "Can I personalize my card with photos or custom designs?",
-      answer:
-        "Custom designs are not available yet, but we can support bespoke requests for bulk or corporate orders.",
+      answer: "Custom designs are not available yet, but we can support bespoke requests for bulk or corporate orders.",
     },
     {
       question: "When will my card be delivered?",
@@ -707,8 +699,7 @@ export default function Home() {
     },
     {
       question: "What happens after I send a card?",
-      answer:
-        "We send your digital card instantly and begin the tree planting process with our partners.",
+      answer: "We send your digital card instantly and begin the tree planting process with our partners.",
     },
     {
       question: "Do you offer bulk or corporate orders?",
@@ -716,11 +707,12 @@ export default function Home() {
     },
     {
       question: "What is your refund policy?",
-      answer:
-        "If there’s a delivery issue, contact support and we’ll make it right.",
+      answer: "If there's a delivery issue, contact support and we'll make it right.",
     },
   ];
 
+  // FIX: Increased timeout to 200ms so React has time to render the form into the DOM
+  // before we try to scroll to it. 120ms was too short on slower devices/connections.
   useEffect(() => {
     if (selectedCard && formRef.current) {
       setTimeout(() => {
@@ -728,7 +720,7 @@ export default function Home() {
         if (!el) return;
         const y = el.getBoundingClientRect().top + window.scrollY - 120;
         window.scrollTo({ top: y, behavior: "smooth" });
-      }, 120);
+      }, 200);
     }
   }, [selectedCard]);
 
@@ -828,14 +820,8 @@ export default function Home() {
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cardKey: cardKey,
-          recipient: recipient,
-          message: message,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardKey, recipient, message }),
       });
 
       const data = await res.json();
@@ -902,15 +888,13 @@ export default function Home() {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
   const baseUrl = siteUrl.replace(/\/$/, "");
-  
-  // Days until Easter (April 20)
+
   const easterDate = new Date(new Date().getFullYear(), 3, 20);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   easterDate.setHours(0, 0, 0, 0);
   const daysUntilEaster = Math.max(0, Math.ceil((easterDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
 
-  // Structured data for Product collection
   const productCollectionSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -931,33 +915,17 @@ export default function Home() {
           availability: "https://schema.org/InStock",
           url: card.priority ? `${baseUrl}/cards/easter/${card.key}` : `${baseUrl}/card/${card.key}`,
         },
-        brand: {
-          "@type": "Brand",
-          name: "CardRoots",
-        },
+        brand: { "@type": "Brand", name: "CardRoots" },
         category: "Digital Greeting Cards",
         additionalProperty: [
-          {
-            "@type": "PropertyValue",
-            name: "Trees Planted",
-            value: "1",
-          },
-          {
-            "@type": "PropertyValue",
-            name: "Delivery Time",
-            value: "Instant",
-          },
-          {
-            "@type": "PropertyValue",
-            name: "Sustainability Feature",
-            value: "Plants one verified tree per card",
-          },
+          { "@type": "PropertyValue", name: "Trees Planted", value: "1" },
+          { "@type": "PropertyValue", name: "Delivery Time", value: "Instant" },
+          { "@type": "PropertyValue", name: "Sustainability Feature", value: "Plants one verified tree per card" },
         ],
       },
     })),
   };
 
-  // FAQ schema for AI discovery (homepage FAQPage JSON-LD)
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -1025,7 +993,6 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
-      {/* Sticky Easter urgency banner */}
       {showSeasonalBanner && (
         <div className="sticky top-0 z-50 w-full bg-easter-primary text-white text-sm px-4 py-2.5 flex items-center justify-center gap-3 shadow-md">
           <span>
@@ -1054,10 +1021,7 @@ export default function Home() {
           <nav className="hidden sm:flex items-center gap-6 text-sm font-medium text-[#1A1A1A]">
             <button
               onClick={() => {
-                document.getElementById("how-it-works")?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
+                document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
                 trackEvent("nav_how_it_works");
               }}
               className="hover:text-[#2D6A4F] transition"
@@ -1098,10 +1062,7 @@ export default function Home() {
           >
             <button
               onClick={() => {
-                document.getElementById("how-it-works")?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
+                document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth", block: "start" });
                 setIsNavOpen(false);
                 trackEvent("nav_how_it_works");
               }}
@@ -1130,13 +1091,11 @@ export default function Home() {
         )}
       </header>
 
-      {/* Hero - Easter first */}
       <section
         className="relative -mx-4 sm:-mx-6 mb-12 md:mb-20 bg-gradient-to-br from-green-100 via-easter-yellow/30 to-[#FAFAF9] overflow-hidden"
         itemScope
         itemType="https://schema.org/SoftwareApplication"
       >
-        {/* Soft heart animation overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-30" aria-hidden>
           <div className="absolute top-20 left-[10%] w-16 h-16 rounded-full bg-easter-primary/40 blur-2xl animate-pulse" />
           <div className="absolute top-40 right-[15%] w-20 h-20 rounded-full bg-easter-lavender/40 blur-2xl animate-pulse" style={{ animationDelay: "1s" }} />
@@ -1191,7 +1150,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* New Easter Collection — single grid, only LazyVideoCard renders Easter cards */}
+      {/* New Easter Collection */}
       <section id="easter-collection" className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="new-easter-collection-heading" ref={collectionRef}>
         <div className="flex items-center gap-3 mb-6">
           <h2 id="new-easter-collection-heading" className="text-[28px] md:text-[36px] font-semibold text-[#1A1A1A]">
@@ -1206,7 +1165,7 @@ export default function Home() {
             <LazyVideoCard
               key={card.key}
               card={card}
-              isMobileDevice={isVideoMobile}
+              isVideoMobile={isVideoMobile}
               onSelect={() => setMobilePreviewCard(card)}
               onPreviewPlay={handlePreviewPlay(card.key)}
               onPreviewPause={handlePreviewPause}
@@ -1239,10 +1198,7 @@ export default function Home() {
             { label: "Support Global Reforestation", desc: "Help restore forests and support sustainable projects worldwide" },
             { label: "Perfect for Long-Distance", desc: "Send instantly to anyone, anywhere - no postal delays" },
           ].map((item) => (
-            <div
-              key={item.label}
-              className="flex flex-col gap-2 bg-white border border-slate-200 rounded-2xl px-4 py-4 shadow-sm"
-            >
+            <div key={item.label} className="flex flex-col gap-2 bg-white border border-slate-200 rounded-2xl px-4 py-4 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#E7F3EC] text-[#2D6A4F] flex items-center justify-center font-semibold flex-shrink-0">
                   ✓
@@ -1255,7 +1211,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Natural Language Q&A Section for AI Discovery */}
+      {/* FAQ Section */}
       <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="faq-heading">
         <div className="text-center mb-8">
           <h2 id="faq-heading" className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A] mb-3">
@@ -1266,34 +1222,33 @@ export default function Home() {
           </p>
         </div>
         <div className="space-y-6">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">What are digital Easter cards?</h3>
-            <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
-              Digital Easter cards are animated greeting cards delivered instantly via email. Unlike traditional paper cards, they're eco-friendly and plant real trees. CardRoots digital cards feature beautiful animations, personalized messages, and verified tree planting through our reforestation partners.
-            </p>
-          </div>
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">How quickly are digital Easter cards delivered?</h3>
-            <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
-              CardRoots digital Easter cards are delivered instantly via email - perfect for last-minute gifts or when you're separated by distance. You can send cards right up until midnight on Easter with no shipping delays or cutoff dates.
-            </p>
-          </div>
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">What makes CardRoots cards eco-friendly?</h3>
-            <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
-              Every CardRoots card plants one verified tree through our reforestation partners. You can track your tree's planting location and environmental impact. Unlike paper cards that end up in landfill, our digital cards create zero waste while actively restoring forests worldwide.
-            </p>
-          </div>
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">Can I send an Easter card on Easter itself?</h3>
-            <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
-              Yes! Our instant email delivery means you can send cards right up until midnight on Easter. No shipping delays or cutoff dates. Perfect for last-minute Easter shoppers or when you realize you forgot to send a card.
-            </p>
-          </div>
+          {[
+            {
+              q: "What are digital Easter cards?",
+              a: "Digital Easter cards are animated greeting cards delivered instantly via email. Unlike traditional paper cards, they're eco-friendly and plant real trees. CardRoots digital cards feature beautiful animations, personalized messages, and verified tree planting through our reforestation partners.",
+            },
+            {
+              q: "How quickly are digital Easter cards delivered?",
+              a: "CardRoots digital Easter cards are delivered instantly via email - perfect for last-minute gifts or when you're separated by distance. You can send cards right up until midnight on Easter with no shipping delays or cutoff dates.",
+            },
+            {
+              q: "What makes CardRoots cards eco-friendly?",
+              a: "Every CardRoots card plants one verified tree through our reforestation partners. You can track your tree's planting location and environmental impact. Unlike paper cards that end up in landfill, our digital cards create zero waste while actively restoring forests worldwide.",
+            },
+            {
+              q: "Can I send an Easter card on Easter itself?",
+              a: "Yes! Our instant email delivery means you can send cards right up until midnight on Easter. No shipping delays or cutoff dates. Perfect for last-minute Easter shoppers or when you realize you forgot to send a card.",
+            },
+          ].map((item) => (
+            <div key={item.q} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">{item.q}</h3>
+              <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">{item.a}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Comparison: Digital vs Traditional Cards */}
+      {/* Comparison */}
       <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="comparison-heading">
         <div className="text-center mb-8">
           <h2 id="comparison-heading" className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A] mb-3">
@@ -1307,57 +1262,29 @@ export default function Home() {
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <h3 className="text-xl font-semibold text-[#1A1A1A] mb-4">Traditional Paper Cards</h3>
             <ul className="space-y-2 text-[16px] text-[#1A1A1A]/70">
-              <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-1">✗</span>
-                <span>Require 2-5 days shipping</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-1">✗</span>
-                <span>Cost £3-8 + £1.50 postage</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-1">✗</span>
-                <span>End up in landfill</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-1">✗</span>
-                <span>Limited personalization</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500 mt-1">✗</span>
-                <span>No environmental benefit</span>
-              </li>
+              {["Require 2-5 days shipping", "Cost £3-8 + £1.50 postage", "End up in landfill", "Limited personalization", "No environmental benefit"].map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <span className="text-red-500 mt-1">✗</span>
+                  <span>{item}</span>
+                </li>
+              ))}
             </ul>
           </div>
           <div className="bg-white border-2 border-[#2D6A4F] rounded-2xl p-6 shadow-sm">
             <h3 className="text-xl font-semibold text-[#1A1A1A] mb-4">CardRoots Digital Cards</h3>
             <ul className="space-y-2 text-[16px] text-[#1A1A1A]/70">
-              <li className="flex items-start gap-2">
-                <span className="text-[#2D6A4F] mt-1">✓</span>
-                <span>Instant email delivery</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#2D6A4F] mt-1">✓</span>
-                <span>£5 including tree planting</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#2D6A4F] mt-1">✓</span>
-                <span>Zero waste, plants a tree</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#2D6A4F] mt-1">✓</span>
-                <span>Fully customizable messages</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#2D6A4F] mt-1">✓</span>
-                <span>Animated and interactive</span>
-              </li>
+              {["Instant email delivery", "£5 including tree planting", "Zero waste, plants a tree", "Fully customizable messages", "Animated and interactive"].map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <span className="text-[#2D6A4F] mt-1">✓</span>
+                  <span>{item}</span>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
       </section>
 
-      {/* Use Cases Section */}
+      {/* Use Cases */}
       <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="use-cases-heading">
         <div className="text-center mb-8">
           <h2 id="use-cases-heading" className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A] mb-3">
@@ -1376,10 +1303,7 @@ export default function Home() {
             { title: "Corporate Campaigns", desc: "Send multiple cards efficiently while supporting reforestation" },
             { title: "Multiple Recipients", desc: "Send to parents, friends, colleagues - all instantly" },
           ].map((item) => (
-            <div
-              key={item.title}
-              className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm"
-            >
+            <div key={item.title} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
               <h3 className="text-lg font-semibold text-[#1A1A1A] mb-2">{item.title}</h3>
               <p className="text-sm text-[#1A1A1A]/70">{item.desc}</p>
             </div>
@@ -1387,6 +1311,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How It Works */}
       <section id="how-it-works" className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="how-it-works-heading">
         <div className="text-center mb-10">
           <h2 id="how-it-works-heading" className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A]">
@@ -1398,40 +1323,22 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            {
-              title: "Choose Your Card",
-              description: "Browse our collection of animated cards.",
-              icon: "💌",
-            },
-            {
-              title: "Personalize Your Message",
-              description: "Add your heartfelt message and recipient details.",
-              icon: "✍️",
-            },
-            {
-              title: "Tree Gets Planted",
-              description: "We plant a real tree and send your card instantly.",
-              icon: "🌱",
-            },
+            { title: "Choose Your Card", description: "Browse our collection of animated cards.", icon: "💌" },
+            { title: "Personalize Your Message", description: "Add your heartfelt message and recipient details.", icon: "✍️" },
+            { title: "Tree Gets Planted", description: "We plant a real tree and send your card instantly.", icon: "🌱" },
           ].map((step) => (
-            <div
-              key={step.title}
-              className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
-            >
+            <div key={step.title} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
               <div className="w-12 h-12 rounded-full bg-[#E7F3EC] text-[#2D6A4F] flex items-center justify-center mb-4 text-xl">
                 <span aria-hidden>{step.icon}</span>
               </div>
-              <h3 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
-                {step.title}
-              </h3>
-              <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">
-                {step.description}
-              </p>
+              <h3 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">{step.title}</h3>
+              <p className="text-[16px] text-[#1A1A1A]/70 leading-[1.6]">{step.description}</p>
             </div>
           ))}
         </div>
       </section>
 
+      {/* Testimonials */}
       <section className="max-w-7xl mx-auto mb-12 md:mb-20">
         <div className="text-center mb-10">
           <h2 className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A]">
@@ -1443,18 +1350,13 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((testimonial) => (
-            <div
-              key={testimonial.name}
-              className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
-            >
+            <div key={testimonial.name} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
               <div className="flex items-center gap-2 text-[#D4AF37] mb-4">
                 {"★★★★★".split("").map((star, index) => (
                   <span key={`${testimonial.name}-${index}`}>{star}</span>
                 ))}
               </div>
-              <p className="text-[16px] text-[#1A1A1A]/80 leading-[1.6]">
-                “{testimonial.quote}”
-              </p>
+              <p className="text-[16px] text-[#1A1A1A]/80 leading-[1.6]">"{testimonial.quote}"</p>
               <div className="mt-5 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#E7F3EC] text-[#2D6A4F] font-semibold flex items-center justify-center">
                   {testimonial.name.charAt(0)}
@@ -1469,7 +1371,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Collection (Easter cards live in #easter-collection above; no duplicate grid) */}
+      {/* Browse Collection */}
       <section id="collection" className="max-w-7xl mx-auto mb-12 md:mb-20">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-8">
           <div>
@@ -1505,10 +1407,7 @@ export default function Home() {
             <p className="text-sm text-[#1A1A1A]/60 mb-4">Loading your cards...</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
               {Array.from({ length: 6 }).map((_, index) => (
-                <div
-                  key={`skeleton-${index}`}
-                  className="w-full lg:min-w-[400px] rounded-3xl border border-slate-200 bg-white p-5 shadow-sm animate-pulse"
-                >
+                <div key={`skeleton-${index}`} className="w-full lg:min-w-[400px] rounded-3xl border border-slate-200 bg-white p-5 shadow-sm animate-pulse">
                   <div className="h-56 rounded-2xl bg-slate-200 mb-4" />
                   <div className="h-5 w-2/3 bg-slate-200 mb-3" />
                   <div className="h-4 w-full bg-slate-200 mb-2" />
@@ -1527,121 +1426,126 @@ export default function Home() {
             ].map((section, sectionIndex) => (
               <div key={section.title}>
                 <div className="flex items-center gap-4 mb-6">
-                  <h3 className="text-[24px] font-semibold text-[#1A1A1A]">
-                    {section.title}
-                  </h3>
+                  <h3 className="text-[24px] font-semibold text-[#1A1A1A]">{section.title}</h3>
                   <div className="flex-1 h-px bg-slate-200" />
                 </div>
                 {section.isEaster ? (
                   <p className="text-[#1A1A1A]/70 mb-4">
-                    Easter cards are in the <a href="#easter-collection" className="text-[#2D6A4F] font-semibold underline hover:no-underline" onClick={(e) => { e.preventDefault(); document.getElementById("easter-collection")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>New Easter Collection</a> above. No duplicate grid.
+                    Easter cards are in the{" "}
+                    <a
+                      href="#easter-collection"
+                      className="text-[#2D6A4F] font-semibold underline hover:no-underline"
+                      onClick={(e) => { e.preventDefault(); document.getElementById("easter-collection")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}
+                    >
+                      New Easter Collection
+                    </a>{" "}
+                    above.
                   </p>
                 ) : (
-                <div className="relative z-10 flex overflow-x-auto snap-x snap-mandatory gap-x-6 gap-y-10 pb-4 scroll-touch md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible">
-                  {section.cards.map((card, index) => (
-                    <article
-                      key={card.key}
-                      className="flex-shrink-0 snap-start w-[min(85vw,340px)] md:w-full group relative min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] focus-within:ring-2 focus-within:ring-slate-300 focus-within:ring-offset-2 focus-within:outline-none animate-fade-in"
-                      style={{ animationDelay: `${(sectionIndex * 6 + index) * 50}ms` }}
-                      onClick={(event) => {
-                        if (!isMobileDevice) return;
-                        const target = event.target as HTMLElement;
-                        if (target.closest("button")) return;
-                        setMobilePreviewCard(card);
-                      }}
-                    >
-                      {!isMobileDevice && (
+                  <div className="relative z-10 flex overflow-x-auto snap-x snap-mandatory gap-x-6 gap-y-10 pb-4 scroll-touch md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible">
+                    {section.cards.map((card, index) => (
+                      <article
+                        key={card.key}
+                        className="flex-shrink-0 snap-start w-[min(85vw,340px)] md:w-full group relative min-h-[420px] rounded-3xl bg-white border border-slate-200 p-5 shadow-sm transition-all duration-200 transform hover:scale-[1.02] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] focus-within:ring-2 focus-within:ring-slate-300 focus-within:ring-offset-2 focus-within:outline-none animate-fade-in"
+                        style={{ animationDelay: `${(sectionIndex * 6 + index) * 50}ms` }}
+                        onClick={(event) => {
+                          if (!isMobileDevice) return;
+                          const target = event.target as HTMLElement;
+                          if (target.closest("button")) return;
+                          setMobilePreviewCard(card);
+                        }}
+                      >
+                        {!isMobileDevice && (
+                          <button
+                            data-quick-view
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setQuickViewCard(card);
+                              setShowFullPreview(false);
+                              trackEvent("quick_view_open", { cardKey: card.key });
+                            }}
+                            className="absolute top-4 right-4 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-[#2D6A4F] hover:bg-[#E7F3EC] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
+                            aria-label="Quick view"
+                          >
+                            👁
+                          </button>
+                        )}
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          {card.label && (
+                            <span className="text-[11px] uppercase tracking-wide text-[#D4AF37] font-semibold bg-[#F5EED6] px-2 py-1 rounded-full">
+                              {card.label}
+                            </span>
+                          )}
+                          {card.badges?.map((badge) => (
+                            <span key={badge} className="text-[11px] uppercase tracking-wide text-[#2D6A4F] font-semibold bg-[#E7F3EC] px-2 py-1 rounded-full">
+                              {badge}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
+                          Limited Edition - Only {card.available} cards available
+                        </div>
+                        <div className="rounded-2xl overflow-hidden mb-4 bg-slate-100">
+                          {isMobileDevice ? (
+                            <img
+                              src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
+                              alt={getCategory(card.key) === "Easter" ? getEasterCardAlt(card) : card.title}
+                              className="w-full h-60 md:h-64 object-cover"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <LazyVideo
+                              className="w-full h-60 md:h-64 object-cover"
+                              src={card.src}
+                              webmSrc={card.webmSrc}
+                              poster={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
+                              tapToPlay={false}
+                              loop
+                              muted
+                              playsInline
+                              eagerLoad={section.title === "Easter Cards" ? index < 5 : false}
+                              onMouseEnter={handlePreviewPlay(card.key)}
+                              onMouseLeave={handlePreviewPause}
+                              onFocus={handlePreviewPlay(card.key)}
+                              onBlur={handlePreviewPause}
+                            />
+                          )}
+                        </div>
+                        <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">{card.title}</h4>
+                        <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">{card.desc}</p>
+                        <div className="mb-4">
+                          <div className="text-[24px] font-semibold text-[#2D6A4F]">£5</div>
+                          <div className="text-sm text-[#1A1A1A]/70">Includes 1 tree planted 🌱</div>
+                        </div>
                         <button
-                          data-quick-view
                           onClick={(event) => {
                             event.stopPropagation();
-                            setQuickViewCard(card);
-                            setShowFullPreview(false);
-                            trackEvent("quick_view_open", { cardKey: card.key });
+                            setSelectedCard(card.key);
+                            formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                            trackEvent("personalize_start", { cardKey: card.key });
                           }}
-                          className="absolute top-4 right-4 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-white/90 border border-slate-200 flex items-center justify-center text-[#2D6A4F] hover:bg-[#E7F3EC] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
-                          aria-label="Quick view"
+                          className="w-full min-h-[44px] h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
                         >
-                          👁
+                          Select This Card
                         </button>
-                      )}
-                      <div className="flex flex-wrap items-center gap-2 mb-3">
-                        {card.label && (
-                          <span className="text-[11px] uppercase tracking-wide text-[#D4AF37] font-semibold bg-[#F5EED6] px-2 py-1 rounded-full">
-                            {card.label}
-                          </span>
-                        )}
-                        {card.badges?.map((badge) => (
-                          <span
-                            key={badge}
-                            className="text-[11px] uppercase tracking-wide text-[#2D6A4F] font-semibold bg-[#E7F3EC] px-2 py-1 rounded-full"
-                          >
-                            {badge}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="text-xs text-[#1A1A1A]/60 font-medium mb-3">
-                        Limited Edition - Only {card.available} cards available
-                      </div>
-                      <div className="rounded-2xl overflow-hidden mb-4 bg-slate-100">
-                        {isMobileDevice ? (
-                          <img
-                            src={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
-                            alt={getCategory(card.key) === "Easter" ? getEasterCardAlt(card) : card.title}
-                            className="w-full h-60 md:h-64 object-cover"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <LazyVideo
-                            className="w-full h-60 md:h-64 object-cover"
-                            src={card.src}
-                            webmSrc={card.webmSrc}
-                            poster={posterUrl(card.poster, card.priority || card.key.startsWith("easter"))}
-                            tapToPlay={false}
-                            loop
-                            muted
-                            playsInline
-                            eagerLoad={section.title === "Easter Cards" ? index < 5 : false}
-                            onMouseEnter={handlePreviewPlay(card.key)}
-                            onMouseLeave={handlePreviewPause}
-                            onFocus={handlePreviewPlay(card.key)}
-                            onBlur={handlePreviewPause}
-                          />
-                        )}
-                      </div>
-                      <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
-                        {card.title}
-                      </h4>
-                      <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
-                        {card.desc}
-                      </p>
-                      <div className="mb-4">
-                        <div className="text-[24px] font-semibold text-[#2D6A4F]">£5</div>
-                        <div className="text-sm text-[#1A1A1A]/70">
-                          Includes 1 tree planted 🌱
-                        </div>
-                      </div>
-                      <button
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          setSelectedCard(card.key);
-                          formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                          trackEvent("personalize_start", { cardKey: card.key });
-                        }}
-                        className="w-full min-h-[44px] h-12 rounded-full bg-[#2D6A4F] text-white font-semibold hover:bg-[#52B788] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#2D6A4F] focus:ring-offset-2"
-                      >
-                  Select This Card
-                </button>
-              </article>
-            ))}
-                </div>
+                      </article>
+                    ))}
+                  </div>
                 )}
               </div>
             ))}
           </div>
         ) : activeFilter === "Easter" ? (
           <p className="text-[#1A1A1A]/70">
-            View the 8 Easter cards in the <a href="#easter-collection" className="text-[#2D6A4F] font-semibold underline hover:no-underline" onClick={(e) => { e.preventDefault(); document.getElementById("easter-collection")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>New Easter Collection</a> above.
+            View the 8 Easter cards in the{" "}
+            <a
+              href="#easter-collection"
+              className="text-[#2D6A4F] font-semibold underline hover:no-underline"
+              onClick={(e) => { e.preventDefault(); document.getElementById("easter-collection")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}
+            >
+              New Easter Collection
+            </a>{" "}
+            above.
           </p>
         ) : (
           <div className="relative z-10 flex overflow-x-auto snap-x snap-mandatory gap-x-6 gap-y-10 pb-4 scroll-touch md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible">
@@ -1679,10 +1583,7 @@ export default function Home() {
                     </span>
                   )}
                   {card.badges?.map((badge) => (
-                    <span
-                      key={badge}
-                      className="text-[11px] uppercase tracking-wide text-[#2D6A4F] font-semibold bg-[#E7F3EC] px-2 py-1 rounded-full"
-                    >
+                    <span key={badge} className="text-[11px] uppercase tracking-wide text-[#2D6A4F] font-semibold bg-[#E7F3EC] px-2 py-1 rounded-full">
                       {badge}
                     </span>
                   ))}
@@ -1716,17 +1617,11 @@ export default function Home() {
                     />
                   )}
                 </div>
-                <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">
-                  {card.title}
-                </h4>
-                <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">
-                  {card.desc}
-                </p>
+                <h4 className="text-[24px] font-semibold text-[#1A1A1A] mb-2">{card.title}</h4>
+                <p className="text-[16px] text-[#1A1A1A]/70 mb-4 leading-[1.6] truncate whitespace-nowrap">{card.desc}</p>
                 <div className="mb-4">
                   <div className="text-[24px] font-semibold text-[#2D6A4F]">£5</div>
-                  <div className="text-sm text-[#1A1A1A]/70">
-                    Includes 1 tree planted 🌱
-                  </div>
+                  <div className="text-sm text-[#1A1A1A]/70">Includes 1 tree planted 🌱</div>
                 </div>
                 <button
                   onClick={(event) => {
@@ -1745,9 +1640,9 @@ export default function Home() {
         )}
       </section>
 
-      {/* Personalization Form (hidden until a card is selected) */}
+      {/* Personalization Form — always rendered but only visible when a card is selected */}
       <div className="max-w-3xl mx-auto mb-12 md:mb-20" ref={formRef}>
-        {selectedCardItem && (
+        {selectedCardItem ? (
           <section className="bg-white rounded-3xl shadow-lg border border-slate-200 p-8">
             <h2 className="text-[28px] font-semibold text-[#1A1A1A] mb-2">
               Personalize Your Card — {selectedCardItem.title}
@@ -1755,7 +1650,6 @@ export default function Home() {
             <p className="text-[16px] text-[#1A1A1A]/70 mb-6">
               Add a personal touch before checkout.
             </p>
-
             <div className="space-y-4">
               <div className="space-y-1">
                 <label className="text-[#1A1A1A] font-medium">Recipient name</label>
@@ -1766,7 +1660,6 @@ export default function Home() {
                   placeholder="e.g., Maya"
                 />
               </div>
-
               <div className="space-y-1">
                 <label className="text-[#1A1A1A] font-medium">Message</label>
                 <textarea
@@ -1778,7 +1671,6 @@ export default function Home() {
                 />
                 <p className="text-xs text-right text-[#1A1A1A]/60">{message.length}/240</p>
               </div>
-
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <button
@@ -1797,17 +1689,22 @@ export default function Home() {
               </div>
             </div>
           </section>
+        ) : (
+          // Invisible placeholder so formRef always exists in the DOM for scrolling
+          <div aria-hidden className="h-1" />
         )}
       </div>
 
-        {mobilePreviewCard && isMobileDevice && (
-          <MobilePreviewModal
-            card={mobilePreviewCard}
-            onClose={() => setMobilePreviewCard(null)}
-            onCheckout={(cardKey) => handleCheckout(cardKey)}
-          />
-        )}
+      {/* Mobile Preview Modal — uses isMobileDevice (768px) so tablets can still use it */}
+      {mobilePreviewCard && isMobileDevice && (
+        <MobilePreviewModal
+          card={mobilePreviewCard}
+          onClose={() => setMobilePreviewCard(null)}
+          onCheckout={(cardKey) => handleCheckout(cardKey)}
+        />
+      )}
 
+      {/* Pricing */}
       <section className="max-w-7xl mx-auto mb-12 md:mb-20">
         <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm text-center">
           <h2 className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A]">
@@ -1859,9 +1756,7 @@ export default function Home() {
                   <span className="text-lg">{isOpen ? "−" : "+"}</span>
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-4 text-[16px] text-[#1A1A1A]/70">
-                    {item.answer}
-                  </div>
+                  <div className="px-5 pb-4 text-[16px] text-[#1A1A1A]/70">{item.answer}</div>
                 )}
               </div>
             );
@@ -1899,10 +1794,7 @@ export default function Home() {
                     </span>
                   )}
                   {quickViewCard.badges?.map((badge) => (
-                    <span
-                      key={badge}
-                      className="text-[11px] uppercase tracking-wide text-[#2D6A4F] font-semibold bg-[#E7F3EC] px-2 py-1 rounded-full"
-                    >
+                    <span key={badge} className="text-[11px] uppercase tracking-wide text-[#2D6A4F] font-semibold bg-[#E7F3EC] px-2 py-1 rounded-full">
                       {badge}
                     </span>
                   ))}
@@ -1912,10 +1804,7 @@ export default function Home() {
                 </p>
               </div>
               <button
-                onClick={() => {
-                  setQuickViewCard(null);
-                  setShowFullPreview(false);
-                }}
+                onClick={() => { setQuickViewCard(null); setShowFullPreview(false); }}
                 className="text-[#1A1A1A]/60 hover:text-[#1A1A1A] transition"
                 aria-label="Close quick view"
               >
@@ -1977,16 +1866,16 @@ export default function Home() {
         </div>
       )}
 
-        <ExitIntentModal
-          headline="Wait! Easter is almost here"
-          subheadline="Don't forget to send something meaningful. Our digital cards plant a tree and deliver instantly."
-          offer=""
-          ctaOnly
-          ctaText="Browse Easter Cards"
-          onCtaClick={() => {
-            document.getElementById("easter-collection")?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
-        />
+      <ExitIntentModal
+        headline="Wait! Easter is almost here"
+        subheadline="Don't forget to send something meaningful. Our digital cards plant a tree and deliver instantly."
+        offer=""
+        ctaOnly
+        ctaText="Browse Easter Cards"
+        onCtaClick={() => {
+          document.getElementById("easter-collection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }}
+      />
       </main>
     </ErrorBoundary>
   );
