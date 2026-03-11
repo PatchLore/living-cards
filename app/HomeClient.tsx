@@ -1095,13 +1095,13 @@ export default function Home() {
               className="text-[36px] md:text-[48px] lg:text-[56px] font-bold text-[#1A1A1A]"
               itemProp="name"
             >
-              Send Digital Easter Cards That Plant Trees
+              Digital Easter Cards That Plant Real Trees
             </h1>
             <p
               className="text-[16px] md:text-[18px] leading-[1.6] text-[#1A1A1A]/80"
               itemProp="description"
             >
-              Easter Sunday is {daysUntilEaster} days away — Send a living card that grows instead of dies
+              Eco-friendly digital Easter cards with animated greetings. Instant email delivery and every card plants a real tree.
             </p>
             <div className="sr-only">
               <p>
