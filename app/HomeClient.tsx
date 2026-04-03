@@ -229,6 +229,7 @@ function posterUrl(poster: string | undefined, bustCache = false): string {
 }
 
 const ExitIntentModal = dynamic(() => import("../components/ExitIntentModal"), { ssr: false });
+const TreesPlantedCounter = dynamic(() => import("./TreesPlantedCounter"), { ssr: false });
 
 type LazyVideoProps = {
   src: string;
@@ -574,6 +575,9 @@ export default function Home() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [showMobileCta, setShowMobileCta] = useState(false);
   const [showSeasonalBanner, setShowSeasonalBanner] = useState(true);
+  const [showAnnouncement, setShowAnnouncement] = useState(true);
+  const [announcementIndex, setAnnouncementIndex] = useState(0);
+  const [announcementFade, setAnnouncementFade] = useState(1);
   const [faqQuery, setFaqQuery] = useState("");
   const [openFaq, setOpenFaq] = useState<string | null>(null);
   const [cardsReady, setCardsReady] = useState(false);
@@ -725,6 +729,25 @@ export default function Home() {
     window.addEventListener("scroll", handleScrollDepth, { passive: true });
     return () => window.removeEventListener("scroll", handleScrollDepth);
   }, []);
+
+  // Announcement bar rotation
+  const ANNOUNCEMENTS = [
+    "🌱 Every card plants a real verified tree",
+    "📧 Instant email delivery — send in minutes",
+    "🎁 Bulk orders from 10 cards — business pricing available",
+  ];
+
+  useEffect(() => {
+    if (!showAnnouncement) return;
+    const interval = setInterval(() => {
+      setAnnouncementFade(0);
+      setTimeout(() => {
+        setAnnouncementIndex((prev) => (prev + 1) % ANNOUNCEMENTS.length);
+        setAnnouncementFade(1);
+      }, 400);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [showAnnouncement]);
 
   const trackEvent = (name: string, data?: Record<string, string | number>) => {
     try {
@@ -969,9 +992,25 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
+      {/* Announcement bar */}
+      {showAnnouncement && (
+        <div className="sticky top-0 z-50 w-full bg-[#E7F3EC] text-[#1B4332] text-sm px-4 py-2.5 flex items-center justify-center gap-3 shadow-sm transition-opacity duration-400" style={{ opacity: announcementFade }}>
+          <span className="text-center font-medium">
+            {ANNOUNCEMENTS[announcementIndex]}
+          </span>
+          <button
+            aria-label="Dismiss announcement"
+            onClick={() => setShowAnnouncement(false)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-[#1B4332]/60 hover:text-[#1B4332] transition"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Sticky Easter urgency banner */}
       {showSeasonalBanner && (
-        <div className="sticky top-0 z-50 w-full bg-red-600 text-white text-sm px-4 py-2.5 flex items-center justify-center gap-3 shadow-md">
+        <div className={`sticky z-50 w-full bg-red-600 text-white text-sm px-4 py-2.5 flex items-center justify-center gap-3 shadow-md transition-all duration-300 ${showAnnouncement ? 'top-[38px]' : 'top-0'}`}>
           <span>
             ⏰ Easter Sunday is April 20, 2025 — Instant email delivery, send anytime before midnight!
           </span>
@@ -992,7 +1031,7 @@ export default function Home() {
         </div>
       )}
 
-      <header className="sticky top-0 z-30 -mx-4 sm:-mx-6 mb-6 bg-[#FAFAF9]/90 backdrop-blur-xl border-b border-slate-200/70">
+      <header className={`sticky z-30 -mx-4 sm:-mx-6 mb-6 bg-[#FAFAF9]/90 backdrop-blur-xl border-b border-slate-200/70 transition-all duration-300 ${showAnnouncement ? 'top-[38px]' : 'top-0'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-base font-semibold text-[#1A1A1A]">CardRoots</div>
           <nav className="hidden sm:flex items-center gap-6 text-sm font-medium text-[#1A1A1A]">
@@ -1074,43 +1113,34 @@ export default function Home() {
         )}
       </header>
 
-      {/* Hero - Easter first */}
+      {/* Hero */}
       <section
-        className="relative -mx-4 sm:-mx-6 mb-12 md:mb-20 bg-gradient-to-br from-pink-100 via-rose-50 to-[#FAFAF9] overflow-hidden"
+        className="relative -mx-4 sm:-mx-6 mb-12 md:mb-20 bg-[#FAFAF9] overflow-hidden"
         itemScope
         itemType="https://schema.org/SoftwareApplication"
       >
-        {/* Soft heart animation overlay */}
-        <div className="absolute inset-0 pointer-events-none opacity-30" aria-hidden>
-          <div className="absolute top-20 left-[10%] w-16 h-16 rounded-full bg-pink-300/50 blur-2xl animate-pulse" />
-          <div className="absolute top-40 right-[15%] w-20 h-20 rounded-full bg-rose-300/40 blur-2xl animate-pulse" style={{ animationDelay: "1s" }} />
-          <div className="absolute bottom-32 left-[20%] w-14 h-14 rounded-full bg-pink-200/50 blur-2xl animate-pulse" style={{ animationDelay: "0.5s" }} />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-20 min-h-[60vh] md:min-h-[70vh] lg:min-h-[80vh] flex flex-col justify-center">
-          <div className="max-w-3xl space-y-5">
-            <p className="text-sm font-semibold tracking-wide text-rose-600 uppercase">
-              Eco-friendly digital greetings
-            </p>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28 lg:py-36 min-h-[60vh] md:min-h-[70vh] flex flex-col justify-center">
+          <div className="max-w-2xl space-y-6">
             <h1
-              className="text-[36px] md:text-[48px] lg:text-[56px] font-bold text-[#1A1A1A]"
+              className="text-[40px] md:text-[56px] lg:text-[64px] font-serif font-bold text-[#1B4332] leading-[1.1] tracking-tight"
               itemProp="name"
             >
-              Digital Easter Cards That Plant Real Trees
+              Send a Card. Plant a Tree.
             </h1>
             <p
-              className="text-[16px] md:text-[18px] leading-[1.6] text-[#1A1A1A]/80"
+              className="text-[18px] md:text-[20px] leading-[1.6] text-[#1A1A1A]/70"
               itemProp="description"
             >
-              Eco-friendly digital Easter cards with animated greetings. Instant email delivery and every card plants a real tree.
+              Beautiful animated greeting cards with real environmental impact. £5 per card, delivered instantly.
             </p>
             <div className="sr-only">
               <p>
-                CardRoots sends digital Easter cards that plant real trees. Eco-friendly digital
-                greeting cards for Easter, Christmas, birthdays, and special occasions.
+                CardRoots sends digital greeting cards that plant real trees. Eco-friendly digital
+                cards for Easter, Christmas, birthdays, and special occasions.
                 Instant delivery with real environmental impact.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
               <button
                 onClick={(e) => {
                   e.preventDefault();
@@ -1120,41 +1150,38 @@ export default function Home() {
                   }, 50);
                   trackEvent("cta_browse_hero");
                 }}
-                className="h-[60px] px-10 rounded-full bg-green-700 hover:bg-green-800 text-white font-semibold shadow-lg transition"
+                className="h-[56px] px-10 rounded-full bg-[#1B4332] hover:bg-[#2D6A4F] text-white font-semibold text-base shadow-lg transition"
               >
-                Browse Easter Cards →
+                Browse Cards →
               </button>
               <a
                 href="/corporate"
-                className="h-[60px] px-8 rounded-full border border-slate-300 text-[#1A1A1A] font-semibold flex items-center justify-center hover:bg-slate-100 transition"
+                className="h-[56px] px-8 rounded-full border-2 border-[#1B4332] text-[#1B4332] font-semibold text-base flex items-center justify-center hover:bg-[#1B4332]/5 transition"
                 onClick={() => trackEvent("cta_business_hero")}
               >
                 For Business
               </a>
             </div>
-            <p className="text-sm text-rose-700 font-medium">
-              Join thousands planting trees, one card at a time 🌱
-            </p>
           </div>
 
-          <div className="mt-10">
-            <div className="grid grid-cols-3 gap-4 max-w-3xl">
+          <div className="mt-14 md:mt-16">
+            <div className="grid grid-cols-3 gap-4 max-w-2xl">
               {heroCards.map((card) => (
                 <div
                   key={`${card.key}-${heroStartIndex}`}
-                  className="rounded-2xl overflow-hidden border border-pink-200/60 bg-white shadow-md animate-fade-in"
+                  className="rounded-2xl overflow-hidden border border-[#1B4332]/10 bg-white shadow-sm animate-fade-in"
                 >
                   {isMobileDevice ? (
                     <img
                       src={posterUrl(card.poster, card.priority)}
                       alt={card.priority ? getEasterCardAlt(card) : card.title}
-                      className="w-full h-32 md:h-40 object-cover"
+                      className="w-full h-28 md:h-36 object-cover"
                       loading="eager"
                       fetchPriority="high"
                     />
                   ) : (
                     <LazyVideo
-                      className="w-full h-32 md:h-40 object-cover"
+                      className="w-full h-28 md:h-36 object-cover"
                       src={card.src}
                       webmSrc={card.webmSrc}
                       poster={posterUrl(card.poster, card.priority)}
@@ -1171,6 +1198,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Trees Planted Counter */}
+      <TreesPlantedCounter />
 
       {/* Why Choose CardRoots? */}
       <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="why-cardroots">
@@ -1384,7 +1414,34 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Social Proof Strip */}
       <section className="max-w-7xl mx-auto mb-12 md:mb-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14">
+          {[
+            { label: "£5 per card", icon: "💳" },
+            { label: "Instant delivery", icon: "⚡" },
+            { label: "1 tree per card", icon: "🌱" },
+            { label: "Verified planting", icon: "✓" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="flex items-center gap-3 bg-white border border-slate-200 rounded-2xl px-5 py-4 shadow-sm"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#E7F3EC] text-[#2D6A4F] flex items-center justify-center text-sm flex-shrink-0">
+                {stat.icon === "✓" ? (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <span aria-hidden>{stat.icon}</span>
+                )}
+              </div>
+              <p className="text-sm font-semibold text-[#1A1A1A]">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Testimonials */}
         <div className="text-center mb-10">
           <h2 className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A]">
             Trusted by thoughtful senders
@@ -1399,15 +1456,17 @@ export default function Home() {
               key={testimonial.name}
               className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
             >
-              <div className="flex items-center gap-2 text-[#D4AF37] mb-4">
-                {"★★★★★".split("").map((star, index) => (
-                  <span key={`${testimonial.name}-${index}`}>{star}</span>
+              <div className="flex items-center gap-1 text-[#D4AF37] mb-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <svg key={`${testimonial.name}-${i}`} className="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                  </svg>
                 ))}
               </div>
-              <p className="text-[16px] text-[#1A1A1A]/80 leading-[1.6]">
-                “{testimonial.quote}”
+              <p className="text-[16px] text-[#1A1A1A]/80 leading-[1.6] mb-5">
+                "{testimonial.quote}"
               </p>
-              <div className="mt-5 flex items-center gap-3">
+              <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#E7F3EC] text-[#2D6A4F] font-semibold flex items-center justify-center">
                   {testimonial.name.charAt(0)}
                 </div>
@@ -1750,24 +1809,48 @@ export default function Home() {
           />
         )}
 
+      {/* Pricing Section */}
       <section className="max-w-7xl mx-auto mb-12 md:mb-20">
-        <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm text-center">
+        <div className="text-center mb-10">
           <h2 className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A]">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-[18px] text-[#2D6A4F] font-semibold mt-3">
-            £5 per card | Bulk discounts available
-          </p>
-          <p className="text-[16px] text-[#1A1A1A]/70 mt-2">
-            Every card includes one tree planted and instant delivery.
-          </p>
-          <div className="mt-4 p-4 rounded-2xl bg-easter-yellow/30 border border-easter-primary/40">
-            <p className="text-[16px] font-semibold text-[#2D5A2F]">
-              Easter Special: Buy 3 cards, get 1 free
+        </div>
+        <div className="max-w-lg mx-auto">
+          <div className="bg-white border-2 border-[#1B4332] rounded-3xl p-8 shadow-sm text-center">
+            <p className="text-[48px] md:text-[56px] font-bold text-[#1B4332] leading-none">
+              £5
             </p>
-            <p className="text-sm text-[#2D5A2F]/90 mt-1">
-              Use code <code className="bg-easter-primary/30 px-2 py-0.5 rounded font-mono font-semibold">EASTER2025</code> at checkout
+            <p className="text-[18px] font-semibold text-[#1A1A1A] mt-2">per card</p>
+            <p className="text-[15px] text-[#1A1A1A]/70 mt-4 leading-[1.6]">
+              Includes: animated card + 1 tree planted + instant email delivery
             </p>
+          </div>
+
+          {/* Volume Pricing Table */}
+          <div className="mt-6 bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+            <div className="px-6 py-3 bg-[#1B4332] text-white text-sm font-semibold text-center">
+              Volume Pricing
+            </div>
+            <div className="divide-y divide-slate-100">
+              <div className="flex items-center justify-between px-6 py-4">
+                <span className="text-[16px] text-[#1A1A1A]">1–9 cards</span>
+                <span className="text-[16px] font-semibold text-[#1A1A1A]">£5 each</span>
+              </div>
+              <div className="flex items-center justify-between px-6 py-4 bg-[#E7F3EC]/40 relative">
+                <span className="text-[16px] text-[#1A1A1A]">10–49 cards</span>
+                <div className="flex items-center gap-2">
+                  <span className="absolute -top-2.5 right-4 text-[10px] uppercase tracking-wide font-semibold text-[#D4AF37] bg-[#F5EED6] px-2 py-0.5 rounded-full">
+                    Most Popular
+                  </span>
+                  <span className="text-[16px] font-semibold text-[#1B4332]">£4 each</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between px-6 py-4">
+                <span className="text-[16px] text-[#1A1A1A]">50+ cards</span>
+                <span className="text-[16px] font-semibold text-[#1A1A1A]">£3.50 each</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1918,6 +2001,41 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* For Business Section */}
+      <section className="relative -mx-4 sm:-mx-6 bg-[#1B4332] text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+          <div className="max-w-2xl space-y-6">
+            <h2 className="text-[32px] md:text-[48px] font-serif font-bold leading-[1.1]">
+              Send 10 or 10,000 Cards
+            </h2>
+            <p className="text-[18px] md:text-[20px] leading-[1.6] text-[#B7E4C7]">
+              Companies use CardRoots for client gifting, staff appreciation, and seasonal campaigns. Bulk pricing available from 10 cards. Branded sending available for enterprise.
+            </p>
+            <a
+              href="mailto:info@cardroots.com"
+              className="inline-flex h-[56px] px-10 items-center justify-center rounded-full bg-white text-[#1B4332] font-semibold text-base hover:bg-[#E7F3EC] transition shadow-lg"
+              onClick={() => trackEvent("business_quote_click")}
+            >
+              Get a Business Quote
+            </a>
+          </div>
+          <div className="mt-12 grid grid-cols-3 gap-6 max-w-lg">
+            {[
+              { icon: "💰", label: "Bulk discounts" },
+              { icon: "🎨", label: "Custom branding" },
+              { icon: "📬", label: "Managed sending" },
+            ].map((feature) => (
+              <div key={feature.label} className="flex flex-col items-center gap-2 text-center">
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-lg">
+                  {feature.icon}
+                </div>
+                <p className="text-sm font-medium text-[#95D5B2]">{feature.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
         <ExitIntentModal
           headline="Wait! Easter is almost here"
