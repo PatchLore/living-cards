@@ -170,7 +170,7 @@ const Pricing = () => {
               <div className="bg-white/10 rounded-xl p-4 mb-8 text-center">
                 <p className="text-sm text-white/80 mb-1">Valentine's Special</p>
                 <p className="text-lg font-bold">Buy 3 cards, get 1 free</p>
-                <p className="text-sm text-white/60 mt-1">Use code <span className="font-mono bg-white/20 px-2 py-0.5 rounded">LOVE2025</span></p>
+                <p className="text-sm text-white/60 mt-1">Use code <span className="font-mono bg-white/20 px-2 py-0.5 rounded">LOVE2026</span></p>
               </div>
 
               {/* CTA */}

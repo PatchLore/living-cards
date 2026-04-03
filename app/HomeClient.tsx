@@ -229,7 +229,6 @@ function posterUrl(poster: string | undefined, bustCache = false): string {
 }
 
 const ExitIntentModal = dynamic(() => import("../components/ExitIntentModal"), { ssr: false });
-const TreesPlantedCounter = dynamic(() => import("./TreesPlantedCounter"), { ssr: false });
 
 type LazyVideoProps = {
   src: string;
@@ -870,8 +869,8 @@ export default function Home() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
   const baseUrl = siteUrl.replace(/\/$/, "");
   
-  // Days until Easter Sunday 2025 (April 20, 2025)
-  const easterDate = new Date("2025-04-20T00:00:00");
+  // Days until Easter Sunday 2026 (April 5, 2026)
+  const easterDate = new Date("2026-04-05T00:00:00");
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   easterDate.setHours(0, 0, 0, 0);
@@ -1012,7 +1011,7 @@ export default function Home() {
       {showSeasonalBanner && (
         <div className={`sticky z-50 w-full bg-red-600 text-white text-sm px-4 py-2.5 flex items-center justify-center gap-3 shadow-md transition-all duration-300 ${showAnnouncement ? 'top-[38px]' : 'top-0'}`}>
           <span>
-            ⏰ Easter Sunday is April 20, 2025 — Instant email delivery, send anytime before midnight!
+            ⏰ Easter Sunday is April 5, 2026 — Instant email delivery, send anytime before midnight!
           </span>
           <button
             aria-label="Dismiss banner"
@@ -1199,8 +1198,33 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trees Planted Counter */}
-      <TreesPlantedCounter />
+      {/* Trust Bar */}
+      <section className="max-w-7xl mx-auto mb-12 md:mb-20">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: "£5 per card", icon: "💳" },
+            { label: "1 tree per card", icon: "🌱" },
+            { label: "Instant delivery", icon: "⚡" },
+            { label: "Verified planting", icon: "✓" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="flex items-center gap-3 bg-white border border-slate-200 rounded-2xl px-5 py-4 shadow-sm"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#E7F3EC] text-[#2D6A4F] flex items-center justify-center text-sm flex-shrink-0">
+                {stat.icon === "✓" ? (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <span aria-hidden>{stat.icon}</span>
+                )}
+              </div>
+              <p className="text-sm font-semibold text-[#1A1A1A]">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Why Choose CardRoots? */}
       <section className="max-w-7xl mx-auto mb-12 md:mb-20" aria-labelledby="why-cardroots">
@@ -1414,34 +1438,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Social Proof Strip */}
+      {/* Testimonials */}
       <section className="max-w-7xl mx-auto mb-12 md:mb-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14">
-          {[
-            { label: "£5 per card", icon: "💳" },
-            { label: "Instant delivery", icon: "⚡" },
-            { label: "1 tree per card", icon: "🌱" },
-            { label: "Verified planting", icon: "✓" },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="flex items-center gap-3 bg-white border border-slate-200 rounded-2xl px-5 py-4 shadow-sm"
-            >
-              <div className="w-8 h-8 rounded-full bg-[#E7F3EC] text-[#2D6A4F] flex items-center justify-center text-sm flex-shrink-0">
-                {stat.icon === "✓" ? (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <span aria-hidden>{stat.icon}</span>
-                )}
-              </div>
-              <p className="text-sm font-semibold text-[#1A1A1A]">{stat.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Testimonials */}
         <div className="text-center mb-10">
           <h2 className="text-[28px] md:text-[42px] font-semibold text-[#1A1A1A]">
             Trusted by thoughtful senders
