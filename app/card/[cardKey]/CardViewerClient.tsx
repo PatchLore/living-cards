@@ -1,160 +1,57 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { CARDS, getCard } from "../../../lib/catalog";
+import CardArt from "../../../components/site/CardArt";
+import { PersonalizePanel } from "../../../components/site/Personalize";
 
-// Map card keys → path under /cards/ (Valentine videos in posters/)
-const CARD_VIDEO_MAP: Record<string, string> = {
-  "valentine-rose": "posters/valentine1.mp4",
-  "valentine-heart-glow": "posters/valentine2.mp4",
-  "valentine-blossom": "posters/valentine3.mp4",
-  "valentine-love-light": "posters/valentine4.mp4",
-  "valentine-forever": "posters/valentine5.mp4",
-  "valentine-sweetheart": "posters/Valentine6.mp4",
-  "valentine-together": "posters/Valentine7.mp4",
-  "valentine-spark": "posters/Valentine8.mp4",
-  "valentine-dream": "posters/Valentine9.mp4",
-  "valentine-treasure": "posters/Valentine10.mp4",
-  "starlit-christmas-tree": "christmas_tree.mp4",
-  "christmas-night-moonlight": "moonlight.mp4",
-  "snowy-cottage-evening": "Christmas2.mp4",
-  "winter-forest-tree": "XmasTree.mp4",
-  "golden-christmas-tree-rise": "Christmas1.mp4",
-  "santas-moonlit-ride": "Santa.mp4",
-  "elegant-floral-birthday": "Birthday2.mp4",
-  "birthday-rose-bloom": "rose.mp4",
-  "thank-you-florals": "Thankyou2.mp4",
-  "golden-heart-glow": "heart2.mp4",
-  "heart-of-light": "heart1.mp4",
-  "warm-wishes": "warm_wishes.mp4",
-};
+export default function CardViewerClient({ cardKey, backToHash }: { cardKey: string; backToHash?: string }) {
+  const card = getCard(cardKey);
+  if (!card) return null;
 
-export default function CardViewerClient({
-  cardKey,
-  backToHash,
-}: {
-  cardKey: string;
-  backToHash?: string;
-}) {
-  const search = useSearchParams();
-  const [recipient, setRecipient] = useState("");
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    const r = search.get("recipient") || "";
-    const m = search.get("message") || "";
-
-    setRecipient(r);
-    setMessage(m);
-  }, [search]);
-
-  const videoFile = CARD_VIDEO_MAP[cardKey];
-
-  if (!videoFile) {
-    return (
-      <main className="min-h-screen flex items-center justify-center text-center p-10">
-        <div>
-          <h1 className="text-3xl font-semibold text-slate-800 mb-3">
-            Card Not Found
-          </h1>
-          <p className="text-slate-600 mb-6">
-            The card you're trying to view doesn't exist.
-          </p>
-          <a
-            href="/"
-            className="px-5 py-3 rounded-xl bg-slate-800 text-white hover:bg-slate-900 transition"
-          >
-            Return Home
-          </a>
-        </div>
-      </main>
-    );
-  }
-
-  const videoSrc = `/cards/${videoFile}`;
+  const backHref = backToHash ? `/#${backToHash}` : card.category === "Christmas" ? "/#christmas" : "/#occasions";
+  const more = CARDS.filter((c) => c.shop && c.category === card.category && c.key !== card.key).slice(0, 4);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 px-6">
-      <div className="max-w-3xl mx-auto mb-6">
-        <a
-          href={backToHash ? `/#${backToHash}` : "/#collection"}
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition"
-          aria-label="Back to card collection"
-        >
-          ← Back to Cards
-        </a>
-      </div>
-      <section className="max-w-3xl mx-auto text-center space-y-4">
-        <h1 className="text-4xl font-semibold text-slate-800">
-          Your Digital Card 💌
-        </h1>
-        <p className="text-lg text-slate-600">
-          Enjoy your beautifully animated card — ready to share.
-        </p>
-      </section>
+    <main className="px-4 pb-20 pt-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl">
+        <Link href={backHref} className="text-sm text-ink/60 hover:text-ink">
+          ← All {card.category === "Valentine" ? "cards" : `${card.category} cards`}
+        </Link>
 
-      <section className="max-w-3xl mx-auto mt-10 bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
-        <video
-          src={videoSrc}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full rounded-2xl shadow-lg mb-6"
-          aria-label="Animated digital card playback"
-        />
-
-        {(recipient || message) && (
-          <div className="text-center space-y-2 mb-8">
-            {recipient && (
-              <p className="text-xl font-semibold text-slate-800">
-                To: {recipient}
-              </p>
-            )}
-            {message && (
-              <p className="text-slate-700 whitespace-pre-wrap">{message}</p>
-            )}
+        {card.retired ? (
+          <div className="mx-auto mt-10 max-w-md text-center">
+            <div className="mx-auto max-w-[280px]">
+              <CardArt card={card} />
+            </div>
+            <h1 className="mt-8 font-display text-3xl text-ink">{card.title}</h1>
+            <p className="mt-3 text-ink/70">This card is no longer available, but our Christmas collection is.</p>
+            <Link href="/#christmas" className="mt-6 inline-flex rounded-full bg-berry px-6 py-3 font-semibold text-white">
+              See Christmas cards
+            </Link>
+          </div>
+        ) : (
+          <div className="mt-8">
+            <PersonalizePanel card={card} />
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
-            href={videoSrc}
-            download={`${cardKey}.mp4`}
-            className="px-6 py-3 rounded-xl bg-amber-500 text-white font-medium shadow-md hover:bg-amber-600 transition"
-            aria-label="Download card video"
-          >
-            Download Video
-          </a>
-
-          <button
-            type="button"
-            onClick={async () => {
-              const shareURL = window.location.href;
-              try {
-                await navigator.clipboard.writeText(shareURL);
-                alert("Share link copied!");
-              } catch {
-                alert("Failed to copy link.");
-              }
-            }}
-            className="px-6 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-md hover:bg-slate-900 transition"
-            aria-label="Copy share link to clipboard"
-          >
-            Copy Share Link
-          </button>
-        </div>
-
-        <div className="mt-10 text-center">
-          <a
-            href="/"
-            className="text-slate-600 hover:text-slate-800 font-medium transition"
-          >
-            Send another card →
-          </a>
-        </div>
-      </section>
+        {more.length > 0 && (
+          <section className="mt-20">
+            <h2 className="font-display text-2xl text-ink">More {card.category} cards</h2>
+            <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-4">
+              {more.map((c) => (
+                <Link key={c.key} href={`/card/${c.key}`} className="group">
+                  <div className="overflow-hidden rounded-2xl shadow-md transition group-hover:-translate-y-1 group-hover:shadow-xl">
+                    <CardArt card={c} hideTitle />
+                  </div>
+                  <p className="mt-2 font-display text-ink">{c.title}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </main>
   );
 }
-

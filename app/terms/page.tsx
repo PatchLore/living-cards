@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Terms & Conditions | CardRoots",
+  title: "Terms & Conditions",
   description: "Terms and Conditions for CardRoots digital greeting cards",
 };
 

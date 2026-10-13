@@ -1,184 +1,158 @@
 "use client";
 
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getCard } from "../../lib/catalog";
+import CardArt from "../../components/site/CardArt";
 
-type SessionData = {
+type Order = {
+  status: "ready";
+  shareId: string;
   cardKey: string;
   recipient: string;
   message: string;
-  shareUrl?: string;
+  emailedTo: string | null;
 };
 
-// Map cardKey to actual video filename
-const CARD_VIDEO_MAP: Record<string, string> = {
-  "starlit-christmas-tree": "christmas_tree",
-  "christmas-night-moonlight": "moonlight",
-  "snowy-cottage-evening": "Christmas2",
-  "winter-forest-tree": "XmasTree",
-  "golden-christmas-tree-rise": "Christmas1",
-  "santas-moonlit-ride": "Santa",
-  "birthday-rose-bloom": "rose",
-  "elegant-floral-birthday": "Birthday2",
-  "thank-you-florals": "Thankyou2",
-  "heart-of-light": "heart1",
-  "golden-heart-glow": "heart2",
-  "warm-wishes": "warm_wishes",
-};
+type State = { kind: "loading" } | { kind: "error"; message: string } | { kind: "ready"; order: Order };
 
 export default function SuccessClient() {
-  const params = useSearchParams();
-  const sessionId = params.get("session_id");
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [data, setData] = useState<SessionData | null>(null);
-  const [shareId, setShareId] = useState<string | null>(null);
+  const sessionId = useSearchParams().get("session_id");
+  const [state, setState] = useState<State>({ kind: "loading" });
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!sessionId) {
-      setError("Missing session ID.");
-      setLoading(false);
+      setState({ kind: "error", message: "We couldn't find your order reference." });
       return;
     }
+    let cancelled = false;
+    let attempt = 0;
 
-    const fetchSession = async () => {
+    const load = async () => {
+      attempt++;
       try {
-        const res = await fetch("/api/get-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId }),
+        const res = await fetch(`/api/order?session_id=${encodeURIComponent(sessionId)}`, { cache: "no-store" });
+        const data = await res.json();
+        if (cancelled) return;
+        if (data.status === "ready") return setState({ kind: "ready", order: data });
+        if (data.status === "pending" && attempt < 15) return void setTimeout(load, 2000);
+        throw new Error(data.error);
+      } catch {
+        if (cancelled) return;
+        if (attempt < 4) return void setTimeout(load, 2000);
+        setState({
+          kind: "error",
+          message:
+            "Your payment went through, but we couldn't load your card just now. We'll email you the link shortly. If it doesn't arrive, contact info@cardroots.com.",
         });
-
-        const json = await res.json();
-        if (!json.ok) {
-          setError("Unable to load purchase details.");
-          setLoading(false);
-          return;
-        }
-
-        const md = json.session.metadata;
-
-        const baseData: SessionData = {
-          cardKey: md.cardKey,
-          recipient: md.recipient,
-          message: md.message,
-        };
-
-        setData(baseData);
-
-        // Create pretty share link
-        try {
-          const shareRes = await fetch("/api/create-share-link", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              cardKey: baseData.cardKey,
-              recipient: baseData.recipient,
-              message: baseData.message,
-            }),
-          });
-
-          const shareJson = await shareRes.json();
-          if (shareJson.ok && shareJson.shareId) {
-            setShareId(shareJson.shareId);
-          }
-        } catch (e) {
-          console.warn("Failed to create share link", e);
-        }
-
-        setLoading(false);
-      } catch (e) {
-        console.error("Error:", e);
-        setError("Something went wrong.");
-        setLoading(false);
       }
     };
-
-    fetchSession();
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [sessionId]);
 
-  if (loading) return <div className="p-10 text-center">Loading your card…</div>;
-  if (error) return <div className="p-10 text-center text-red-600">{error}</div>;
-  if (!data) return <div className="p-10 text-center">No data found.</div>;
+  if (state.kind !== "ready") {
+    return (
+      <main className="flex min-h-[70vh] items-center justify-center bg-night px-4 text-center text-cream">
+        {state.kind === "loading" ? (
+          <div>
+            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-gold/30 border-t-gold" />
+            <p className="mt-5 font-display text-2xl">Wrapping up your card…</p>
+          </div>
+        ) : (
+          <div className="max-w-md">
+            <p className="font-display text-2xl">Thank you for your order</p>
+            <p className="mt-3 text-cream/70">{state.message}</p>
+          </div>
+        )}
+      </main>
+    );
+  }
 
-  // Map cardKey to actual video filename
-  const videoFileName = CARD_VIDEO_MAP[data.cardKey] || data.cardKey;
-  const videoSrc = `/cards/${videoFileName}.mp4`;
+  const { order } = state;
+  const card = getCard(order.cardKey);
+  const shareUrl = `${window.location.origin}/c/${order.shareId}`;
 
-  const copyShareLink = async () => {
-    if (!shareId) return;
-    
-    const shareUrl = `${window.location.origin}/c/${shareId}`;
+  const copy = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
-      alert("Share link copied!");
-    } catch {
-      // Silently fail - no error message per requirements
-    }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  };
+
+  const share = async () => {
+    try {
+      await navigator.share({ title: `A card for ${order.recipient}`, url: shareUrl });
+    } catch {}
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 px-6">
-      <section className="max-w-3xl mx-auto text-center space-y-4">
-        <h1 className="text-4xl font-semibold text-slate-800">
-          Your Card Is Ready 🎉
-        </h1>
-        <p className="text-lg text-slate-600">
-          Every card plants a real tree — thank you for making a positive
-          impact. 🌱
-        </p>
-      </section>
-
-      <section className="max-w-3xl mx-auto mt-10 bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
-        <video
-          src={videoSrc}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full rounded-2xl shadow-lg mb-6"
-        />
-
-        <div className="text-center space-y-2">
-          <p className="text-xl font-semibold text-slate-800">
-            To: {data.recipient}
+    <main className="relative overflow-hidden bg-night px-4 py-12 text-cream sm:py-16">
+      <div className="starfield absolute inset-0 opacity-50" aria-hidden />
+      <div className="relative mx-auto grid max-w-5xl items-center gap-12 md:grid-cols-[minmax(0,360px)_1fr]">
+        <div className="mx-auto w-full max-w-[360px]">
+          {card && <CardArt card={card} recipient={order.recipient} message={order.message} className="shadow-2xl ring-1 ring-white/10" />}
+        </div>
+        <div>
+          <p className="text-sm uppercase tracking-[0.25em] text-gold">Payment complete</p>
+          <h1 className="mt-3 font-display text-4xl leading-tight sm:text-5xl">Your card for {order.recipient} is ready</h1>
+          <p className="mt-4 text-lg text-cream/70">
+            Send them this link however you like: text, WhatsApp, email or social.
           </p>
-          <p className="text-slate-700 whitespace-pre-wrap">{data.message}</p>
-        </div>
 
-        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-          <a
-            href={videoSrc}
-            download={`${data.cardKey}.mp4`}
-            className="px-6 py-3 rounded-xl bg-amber-500 text-white font-medium shadow-md hover:bg-amber-600 transition"
-          >
-            Download Video
-          </a>
+          <div className="mt-6 flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 p-2 pl-4">
+            <span className="min-w-0 flex-1 truncate text-sm text-cream/80">{shareUrl}</span>
+            <button
+              type="button"
+              onClick={copy}
+              className="shrink-0 rounded-xl bg-berry px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-berry-deep"
+            >
+              {copied ? "Copied ✓" : "Copy link"}
+            </button>
+          </div>
 
-          <button
-            onClick={copyShareLink}
-            disabled={!shareId}
-            className={`px-6 py-3 rounded-xl font-medium shadow-md transition ${
-              shareId
-                ? "bg-slate-800 text-white hover:bg-slate-900 cursor-pointer"
-                : "bg-slate-400 text-white cursor-not-allowed"
-            }`}
-          >
-            {shareId ? "Copy Share Link" : "Preparing share link…"}
-          </button>
-        </div>
+          <div className="mt-4 flex flex-wrap gap-3">
+            {typeof navigator !== "undefined" && "share" in navigator && (
+              <button
+                type="button"
+                onClick={share}
+                className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold transition hover:bg-white/10"
+              >
+                Share…
+              </button>
+            )}
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(`I've sent you a card 🎄 ${shareUrl}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold transition hover:bg-white/10"
+            >
+              WhatsApp
+            </a>
+            <Link
+              href={`/c/${order.shareId}`}
+              className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold transition hover:bg-white/10"
+            >
+              Open the card
+            </Link>
+          </div>
 
-        <div className="mt-10 text-center">
-          <a
-            href="/"
-            className="text-slate-600 hover:text-slate-800 font-medium transition"
-          >
+          <p className="mt-8 text-sm text-cream/60">
+            {order.emailedTo
+              ? `We've also emailed this link to ${order.emailedTo}, so you can find it later.`
+              : "We'll also email you this link so you can find it later."}{" "}
+            🌳 A tree is planted with your order.
+          </p>
+          <Link href="/#christmas" className="mt-6 inline-block text-sm font-semibold text-gold hover:underline">
             Send another card →
-          </a>
+          </Link>
         </div>
-      </section>
+      </div>
     </main>
   );
 }
-

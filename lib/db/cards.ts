@@ -66,12 +66,15 @@ function prismaCardToCard(card: {
  * Generates a unique share ID
  * Retries on collision (rare but possible)
  */
-async function generateShareId(maxRetries = 5): Promise<string> {
+async function generateShareId(
+  db: Pick<typeof prisma, "card"> = prisma,
+  maxRetries = 5,
+): Promise<string> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     const shareId = nanoid(10); // 10 characters for good uniqueness
 
     // Check if this share_id already exists
-    const existing = await prisma.card.findUnique({
+    const existing = await db.card.findUnique({
       where: { shareId },
     });
 
@@ -92,8 +95,9 @@ async function generateShareId(maxRetries = 5): Promise<string> {
 }
 
 /**
- * Creates a new card in the database
- * Enforces idempotency based on stripe_session_id
+ * Creates the card for a Stripe checkout session, or returns the existing one.
+ * The webhook and the success page can both call this at the same moment, so
+ * creation runs under a per-session advisory lock to guarantee one card.
  */
 export async function createCard({
   cardKey,
@@ -108,24 +112,17 @@ export async function createCard({
   stripeSessionId: string;
   stripeCustomerEmail?: string | null;
 }): Promise<Card> {
-  try {
-    // Idempotency check: if a card with this stripe_session_id exists, return it
-    const existing = await prisma.card.findFirst({
-      where: { stripeSessionId },
-    });
+  const card = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${stripeSessionId}))`;
 
+    const existing = await tx.card.findFirst({ where: { stripeSessionId } });
     if (existing) {
-      console.log(
-        `[CARDS] Card already exists for session ${stripeSessionId}, returning existing card`
-      );
-      return prismaCardToCard(existing);
+      console.log(`[CARDS] Card already exists for session ${stripeSessionId}`);
+      return existing;
     }
 
-    // Generate a unique share_id
-    const shareId = await generateShareId();
-
-    // Insert the new card
-    const newCard = await prisma.card.create({
+    const shareId = await generateShareId(tx);
+    const created = await tx.card.create({
       data: {
         shareId,
         cardKey,
@@ -135,65 +132,16 @@ export async function createCard({
         stripeCustomerEmail: stripeCustomerEmail ?? null,
       },
     });
+    console.log(`[CARDS] Created card ${shareId} for session ${stripeSessionId}`);
+    return created;
+  });
 
-    console.log(
-      `[CARDS] Created new card with share_id: ${shareId} for session: ${stripeSessionId}`
-    );
+  return prismaCardToCard(card);
+}
 
-    return prismaCardToCard(newCard);
-  } catch (error: unknown) {
-    // Handle unique constraint violations (e.g., share_id collision despite check)
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "P2002"
-    ) {
-      // Prisma unique constraint error
-      const meta = error && typeof error === "object" && "meta" in error ? error.meta : undefined;
-      const target = meta && typeof meta === "object" && "target" in meta && Array.isArray(meta.target) ? meta.target : undefined;
-      const field = target?.[0];
-      if (field === "shareId") {
-        console.warn(
-          `[CARDS] Share ID collision detected, retrying with new ID...`
-        );
-        // Retry once with a new share_id
-        const shareId = await generateShareId();
-        try {
-          const retryCard = await prisma.card.create({
-            data: {
-              shareId,
-              cardKey,
-              recipientName,
-              message,
-              stripeSessionId,
-              stripeCustomerEmail: stripeCustomerEmail ?? null,
-            },
-          });
-          return prismaCardToCard(retryCard);
-        } catch (retryError: unknown) {
-          console.error("[CARDS] Retry failed:", retryError);
-          throw new Error("Failed to create card after retry");
-        }
-      } else if (field === "stripeSessionId") {
-        // This shouldn't happen due to our idempotency check, but handle it
-        console.log(
-          `[CARDS] Card with stripe_session_id already exists (race condition), fetching existing`
-        );
-        const existing = await prisma.card.findFirst({
-          where: { stripeSessionId },
-        });
-        if (existing) {
-          return prismaCardToCard(existing);
-        }
-        throw new Error("Card exists but could not be retrieved");
-      }
-    }
-
-    // Log unexpected errors
-    console.error("[CARDS] Unexpected error creating card:", error);
-    throw error;
-  }
+export async function getCardBySessionId(stripeSessionId: string): Promise<Card | null> {
+  const card = await prisma.card.findFirst({ where: { stripeSessionId } });
+  return card ? prismaCardToCard(card) : null;
 }
 
 /**

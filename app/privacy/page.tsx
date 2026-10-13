@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Privacy Policy | CardRoots",
+  title: "Privacy Policy",
   description: "Privacy Policy for CardRoots digital greeting cards",
 };
 

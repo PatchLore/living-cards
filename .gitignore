@@ -16,3 +16,6 @@ prisma/dev.db
 # TypeScript build cache
 tsconfig.tsbuildinfo
 .env*.local
+
+_backup/
+.email-previews/

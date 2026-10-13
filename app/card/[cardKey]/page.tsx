@@ -1,245 +1,34 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { CARDS, PRICE_LABEL, getCard } from "../../../lib/catalog";
 import CardViewerClient from "./CardViewerClient";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
-const baseUrl = siteUrl.replace(/\/$/, "");
+const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com").replace(/\/$/, "");
 
-// Map card keys → path under /cards/ (Valentine videos in posters/)
-const CARD_VIDEO_MAP: Record<string, string> = {
-  "valentine-rose": "posters/valentine1.mp4",
-  "valentine-heart-glow": "posters/valentine2.mp4",
-  "valentine-blossom": "posters/valentine3.mp4",
-  "valentine-love-light": "posters/valentine4.mp4",
-  "valentine-forever": "posters/valentine5.mp4",
-  "valentine-sweetheart": "posters/Valentine6.mp4",
-  "valentine-together": "posters/Valentine7.mp4",
-  "valentine-spark": "posters/Valentine8.mp4",
-  "valentine-dream": "posters/Valentine9.mp4",
-  "valentine-treasure": "posters/Valentine10.mp4",
-  "starlit-christmas-tree": "christmas_tree.mp4",
-  "christmas-night-moonlight": "moonlight.mp4",
-  "snowy-cottage-evening": "Christmas2.mp4",
-  "winter-forest-tree": "XmasTree.mp4",
-  "golden-christmas-tree-rise": "Christmas1.mp4",
-  "santas-moonlit-ride": "Santa.mp4",
-  "elegant-floral-birthday": "Birthday2.mp4",
-  "birthday-rose-bloom": "rose.mp4",
-  "thank-you-florals": "Thankyou2.mp4",
-  "golden-heart-glow": "heart2.mp4",
-  "heart-of-light": "heart1.mp4",
-  "warm-wishes": "warm_wishes.mp4",
-};
-
-// Card metadata mapping for SEO
-const CARD_METADATA: Record<string, { title: string; occasion: string; description: string }> = {
-  "valentine-rose": {
-    title: "Valentine Rose",
-    occasion: "Valentine's Day",
-    description: "A blooming rose Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "valentine-heart-glow": {
-    title: "Valentine Heart Glow",
-    occasion: "Valentine's Day",
-    description: "A radiant heart Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "valentine-blossom": {
-    title: "Valentine Blossom",
-    occasion: "Valentine's Day",
-    description: "Soft blossoms Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "valentine-love-light": {
-    title: "Valentine Love Light",
-    occasion: "Valentine's Day",
-    description: "Warm light Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "valentine-forever": {
-    title: "Valentine Forever",
-    occasion: "Valentine's Day",
-    description: "A timeless Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "valentine-sweetheart": {
-    title: "Valentine Sweetheart",
-    occasion: "Valentine's Day",
-    description: "A sweet Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "valentine-together": {
-    title: "Valentine Together",
-    occasion: "Valentine's Day",
-    description: "Celebrate being together — a Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "valentine-spark": {
-    title: "Valentine Spark",
-    occasion: "Valentine's Day",
-    description: "A little spark of love — Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "valentine-dream": {
-    title: "Valentine Dream",
-    occasion: "Valentine's Day",
-    description: "A dreamy Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "valentine-treasure": {
-    title: "Valentine Treasure",
-    occasion: "Valentine's Day",
-    description: "You're a treasure — send a Valentine card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "starlit-christmas-tree": {
-    title: "Starlit Christmas Tree",
-    occasion: "Christmas",
-    description: "A calm animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "christmas-night-moonlight": {
-    title: "Christmas Night Moonlight",
-    occasion: "Christmas",
-    description: "A serene animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "snowy-cottage-evening": {
-    title: "Snowy Cottage Evening",
-    occasion: "Christmas",
-    description: "A peaceful animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "winter-forest-tree": {
-    title: "Winter Forest Tree",
-    occasion: "Christmas",
-    description: "A quiet animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "golden-christmas-tree-rise": {
-    title: "Golden Christmas Tree Rise",
-    occasion: "Christmas",
-    description: "A radiant animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "santas-moonlit-ride": {
-    title: "Santa's Moonlit Ride",
-    occasion: "Christmas",
-    description: "A nostalgic animated Christmas card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "birthday-rose-bloom": {
-    title: "Birthday Rose Bloom",
-    occasion: "Birthday",
-    description: "A delicate animated birthday card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "elegant-floral-birthday": {
-    title: "Elegant Floral Birthday",
-    occasion: "Birthday",
-    description: "A graceful animated birthday card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "thank-you-florals": {
-    title: "Thank You Florals",
-    occasion: "Thank You",
-    description: "A minimal animated thank you card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "heart-of-light": {
-    title: "Heart of Light",
-    occasion: "Love",
-    description: "A luminous animated love card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "golden-heart-glow": {
-    title: "Golden Heart Glow",
-    occasion: "Love",
-    description: "A radiant animated love card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-  "warm-wishes": {
-    title: "Warm Wishes",
-    occasion: "General",
-    description: "A warm animated card that plants a real tree. A thoughtful digital gift delivered instantly.",
-  },
-};
+export function generateStaticParams() {
+  return CARDS.filter((c) => !c.retired && c.category !== "Valentine").map((c) => ({ cardKey: c.key }));
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ cardKey: string }> }): Promise<Metadata> {
   const { cardKey } = await params;
-  const cardMeta = CARD_METADATA[cardKey];
+  const card = getCard(cardKey);
+  if (!card) return { title: "Card not found" };
 
-  if (!cardMeta) {
-    return {
-      title: "Card Not Found | CardRoots",
-      description: "The requested digital card could not be found.",
-    };
-  }
-
-  const title = `${cardMeta.title} — Plants a Real Tree | CardRoots`;
-  const url = `${baseUrl}/card/${cardKey}`;
-  const imageUrl = `${baseUrl}${CARD_VIDEO_MAP[cardKey] ? `/cards/${CARD_VIDEO_MAP[cardKey]}` : "/og-image.jpg"}`;
-  
+  const title = `${card.title}: Animated ${card.category} Card`;
+  const description = `${card.description} Personalised with your message, delivered instantly for ${PRICE_LABEL}. Every card helps plant a real tree.`;
+  const url = `${baseUrl}/card/${card.key}`;
   return {
     title,
-    description: cardMeta.description,
-    alternates: {
-      canonical: url,
-    },
-    openGraph: {
-      type: "website",
-      url,
-      title,
-      description: cardMeta.description,
-      siteName: "CardRoots",
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: `${cardMeta.title} - Digital Card That Plants a Tree`,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description: cardMeta.description,
-      images: [imageUrl],
-    },
+    description,
+    alternates: { canonical: url },
+    robots: card.retired ? { index: false } : undefined,
+    openGraph: { type: "website", url, title, description, siteName: "CardRoots", images: [`${baseUrl}${card.poster}`] },
+    twitter: { card: "summary_large_image", title, description, images: [`${baseUrl}${card.poster}`] },
   };
 }
 
-export default async function CardViewerPage({ params }: { params: Promise<{ cardKey: string }> }) {
+export default async function CardPage({ params }: { params: Promise<{ cardKey: string }> }) {
   const { cardKey } = await params;
-  const cardMeta = CARD_METADATA[cardKey];
-
-  // Structured data for Product (Valentine cards include aggregateRating)
-  const productSchema = cardMeta
-    ? {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        name:
-          cardMeta.occasion === "Valentine's Day"
-            ? `Digital Valentine Card - ${cardMeta.title}`
-            : cardMeta.title,
-        description: cardMeta.description,
-        image: `${baseUrl}${CARD_VIDEO_MAP[cardKey] ? `/cards/${CARD_VIDEO_MAP[cardKey]}` : "/og-image.jpg"}`,
-        brand: {
-          "@type": "Brand",
-          name: "CardRoots",
-        },
-        category: `${cardMeta.occasion} Digital Cards`,
-        offers: {
-          "@type": "Offer",
-          price: "5.00",
-          priceCurrency: "GBP",
-          availability: "https://schema.org/InStock",
-          url: `${baseUrl}/card/${cardKey}`,
-        },
-        additionalProperty: [
-          { "@type": "PropertyValue", name: "Trees Planted", value: "1" },
-          { "@type": "PropertyValue", name: "Occasion", value: cardMeta.occasion },
-        ],
-        ...(cardMeta.occasion === "Valentine's Day" && {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "4.8",
-            reviewCount: "127",
-          },
-        }),
-      }
-    : null;
-
-  return (
-    <>
-      {productSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
-        />
-      )}
-      <CardViewerClient cardKey={cardKey} />
-    </>
-  );
+  if (!getCard(cardKey)) notFound();
+  return <CardViewerClient cardKey={cardKey} />;
 }
-

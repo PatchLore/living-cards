@@ -1,58 +1,25 @@
 import type { MetadataRoute } from "next";
-
-const VALENTINE_CARD_KEYS = [
-  "valentine-rose",
-  "valentine-heart-glow",
-  "valentine-blossom",
-  "valentine-love-light",
-  "valentine-forever",
-  "valentine-sweetheart",
-  "valentine-together",
-  "valentine-spark",
-  "valentine-dream",
-  "valentine-treasure",
-];
-
-const OTHER_CARD_KEYS = [
-  "starlit-christmas-tree",
-  "christmas-night-moonlight",
-  "snowy-cottage-evening",
-  "winter-forest-tree",
-  "golden-christmas-tree-rise",
-  "santas-moonlit-ride",
-  "birthday-rose-bloom",
-  "elegant-floral-birthday",
-  "thank-you-florals",
-  "heart-of-light",
-  "golden-heart-glow",
-  "warm-wishes",
-];
+import { CARDS } from "../lib/catalog";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
-  const cleanBaseUrl = baseUrl.replace(/\/$/, "");
+  const base = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com").replace(/\/$/, "");
+  const now = new Date();
 
-  const staticPages = [
-    { url: cleanBaseUrl, lastModified: new Date(), changeFrequency: "daily" as const, priority: 1.0 },
-    { url: `${cleanBaseUrl}/corporate`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.6 },
-    { url: `${cleanBaseUrl}/terms`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.2 },
-    { url: `${cleanBaseUrl}/privacy`, lastModified: new Date(), changeFrequency: "yearly" as const, priority: 0.2 },
+  const pages: MetadataRoute.Sitemap = [
+    { url: base, lastModified: now, changeFrequency: "daily", priority: 1 },
+    { url: `${base}/corporate`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${base}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
   ];
 
-  const valentineCardPages = VALENTINE_CARD_KEYS.map((cardKey) => ({
-    url: `${cleanBaseUrl}/cards/valentines/${cardKey}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.95,
-  }));
-
-  const otherCardPages = OTHER_CARD_KEYS.map((cardKey) => ({
-    url: `${cleanBaseUrl}/card/${cardKey}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.9,
-  }));
-
-  return [...staticPages, ...valentineCardPages, ...otherCardPages];
+  for (const card of CARDS) {
+    if (card.retired) continue;
+    pages.push({
+      url: card.category === "Valentine" ? `${base}/cards/valentines/${card.key}` : `${base}/card/${card.key}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: card.category === "Christmas" ? 0.95 : 0.7,
+    });
+  }
+  return pages;
 }
-

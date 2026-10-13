@@ -84,12 +84,12 @@ export async function generateMetadata({
 
   if (!cardMeta) {
     return {
-      title: "Card Not Found | CardRoots",
+      title: "Card Not Found",
       description: "The requested digital card could not be found.",
     };
   }
 
-  const title = `${cardMeta.title} — Digital Valentine Card That Plants a Tree | CardRoots`;
+  const title = `${cardMeta.title} — Digital Valentine Card That Plants a Tree`;
   const canonicalUrl = `${cleanBase}/cards/valentines/${cardName}`;
   const videoFile = CARD_VIDEO_MAP[cardName];
   const imageUrl = videoFile
@@ -157,11 +157,6 @@ export default async function ValentineCardPage({
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      reviewCount: "127",
-    },
   };
 
   const breadcrumbSchema = {
@@ -199,7 +194,7 @@ export default async function ValentineCardPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <CardViewerClient cardKey={cardName} backToHash="valentine-collection" />
+      <CardViewerClient cardKey={cardName} backToHash="occasions" />
     </>
   );
 }
