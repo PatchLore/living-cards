@@ -29,7 +29,7 @@ export const CARDS: CatalogCard[] = [
   // ---- Christmas: living cards (drawn in code, personalised animation) ----
   {
     key: "live-santa-sleigh",
-    title: "Santa's Moonlit Ride",
+    title: "Santa's Sleigh",
     description: "Santa's sleigh sweeps across a full moon, trailing gold dust over a sleeping town.",
     category: "Christmas",
     kind: "live",
@@ -197,7 +197,7 @@ export const CARDS: CatalogCard[] = [
   },
   {
     key: "santas-moonlit-ride",
-    title: "Santa's Sleigh",
+    title: "Santa's Flight",
     description: "Santa and his reindeer flying past the moon.",
     category: "Christmas",
     kind: "video",
@@ -217,7 +217,7 @@ export const CARDS: CatalogCard[] = [
   },
   {
     key: "winter-forest-tree",
-    title: "Winter Forest Tree",
+    title: "Winter Forest",
     description: "A festive tree in a quiet winter forest.",
     category: "Christmas",
     kind: "video",

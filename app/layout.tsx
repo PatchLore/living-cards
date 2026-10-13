@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     siteName: "CardRoots",
     title: TITLE,
     description: DESCRIPTION,
-    images: [{ url: `${baseUrl}/cards/live/santa-sleigh.jpg`, width: 900, height: 1350, alt: "Santa's Moonlit Ride, a CardRoots Christmas card" }],
+    images: [{ url: `${baseUrl}/cards/live/santa-sleigh.jpg`, width: 900, height: 1350, alt: "Santa's Sleigh, a CardRoots Christmas card" }],
   },
   twitter: {
     card: "summary_large_image",

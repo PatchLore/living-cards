@@ -379,7 +379,7 @@ function draw(ctx: Ctx, t: number) {
 
 export const santaSleigh: LiveScene = {
   id: "santa-sleigh",
-  name: "Santa's Moonlit Ride",
+  name: "Santa's Sleigh",
   draw,
   stillTime: 4.5,
   text: {
