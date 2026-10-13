@@ -32,6 +32,8 @@ type Props = {
   freezeAt?: number;
   /** Hide the greeting title (e.g. on small thumbnails). */
   hideTitle?: boolean;
+  /** Cap the animation frame rate (thumbnails). */
+  maxFps?: number;
   className?: string;
 };
 
@@ -72,6 +74,7 @@ export default function LiveCard({
   playKey = 0,
   freezeAt,
   hideTitle,
+  maxFps,
   className = "",
 }: Props) {
   const textRef = useRef<HTMLDivElement>(null);
@@ -111,7 +114,7 @@ export default function LiveCard({
       className={`relative w-full overflow-hidden rounded-2xl bg-[#05070b] ${className}`}
       style={{ aspectRatio: "2 / 3", containerType: "inline-size" }}
     >
-      {scene && <LiveCanvas scene={scene} playKey={playKey} freezeAt={freezeAt} />}
+      {scene && <LiveCanvas scene={scene} playKey={playKey} freezeAt={freezeAt} maxFps={maxFps} />}
       {video && <CardVideo src={video.src} poster={video.poster} playKey={playKey} />}
       {hasText && (
         <div

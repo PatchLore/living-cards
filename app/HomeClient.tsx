@@ -73,7 +73,7 @@ function CardTile({
         aria-label={`Personalise ${card.title}`}
         className="relative block w-full overflow-hidden rounded-2xl shadow-lg ring-1 ring-ink/5 transition duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl"
       >
-        <CardArt card={card} hideTitle={compact} />
+        <CardArt card={card} hideTitle={compact} maxFps={30} />
         {card.badge && (
           <span className="absolute left-3 top-3 rounded-full bg-cream/95 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-berry shadow">
             {card.badge}
@@ -83,7 +83,7 @@ function CardTile({
       <div className="mt-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className={`font-display text-ink ${compact ? "text-base" : "text-lg sm:text-xl"}`}>{card.title}</h3>
-          {!compact && <p className="mt-1 hidden text-sm leading-relaxed text-ink/60 sm:block">{card.description}</p>}
+          {!compact && <p className="mt-1 hidden text-sm leading-relaxed text-ink/60 sm:block lg:hidden">{card.description}</p>}
         </div>
         <span className="shrink-0 pt-0.5 text-sm font-semibold text-ink/70">{PRICE_LABEL}</span>
       </div>
@@ -184,7 +184,7 @@ export default function Home() {
         <SectionHeading eyebrow="New for Christmas" title="The living Christmas collection">
           Each scene is animated live, so your greeting, their name and your message appear inside the card itself.
         </SectionHeading>
-        <div className="mx-auto mt-12 grid max-w-6xl grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-8 md:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-7xl grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-8 lg:grid-cols-5 lg:gap-x-6">
           {CHRISTMAS_LIVE.map((card) => (
             <CardTile key={card.key} card={card} onPersonalize={setActive} />
           ))}

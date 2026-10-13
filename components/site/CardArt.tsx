@@ -11,6 +11,7 @@ type Props = {
   playKey?: number;
   freezeAt?: number;
   hideTitle?: boolean;
+  maxFps?: number;
   className?: string;
 };
 

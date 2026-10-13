@@ -43,7 +43,7 @@ export default function CardViewerClient({ cardKey, backToHash }: { cardKey: str
               {more.map((c) => (
                 <Link key={c.key} href={`/card/${c.key}`} className="group">
                   <div className="overflow-hidden rounded-2xl shadow-md transition group-hover:-translate-y-1 group-hover:shadow-xl">
-                    <CardArt card={c} hideTitle />
+                    <CardArt card={c} hideTitle maxFps={30} />
                   </div>
                   <p className="mt-2 font-display text-ink">{c.title}</p>
                 </Link>

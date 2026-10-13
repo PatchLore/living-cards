@@ -8,10 +8,12 @@ type Props = {
   playKey?: number;
   /** Render a single still frame at this time (s) instead of animating. */
   freezeAt?: number;
+  /** Cap redraws, e.g. for small thumbnails where 60fps isn't noticeable. */
+  maxFps?: number;
 };
 
 /** Runs a scene on a hi-DPI canvas; pauses while offscreen. */
-export default function LiveCanvas({ scene, playKey = 0, freezeAt }: Props) {
+export default function LiveCanvas({ scene, playKey = 0, freezeAt, maxFps }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -23,7 +25,9 @@ export default function LiveCanvas({ scene, playKey = 0, freezeAt }: Props) {
     const still = freezeAt !== undefined || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let elapsed = freezeAt ?? (still ? scene.stillTime : 0);
     let last = 0;
+    let lastDraw = 0;
     let raf = 0;
+    const minGap = maxFps ? 1000 / maxFps - 2 : 0;
 
     const render = () => {
       ctx.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0);
@@ -43,7 +47,10 @@ export default function LiveCanvas({ scene, playKey = 0, freezeAt }: Props) {
     const loop = (now: number) => {
       elapsed += Math.min((now - last) / 1000, 0.1);
       last = now;
-      render();
+      if (now - lastDraw >= minGap) {
+        lastDraw = now;
+        render();
+      }
       raf = requestAnimationFrame(loop);
     };
 
@@ -67,7 +74,7 @@ export default function LiveCanvas({ scene, playKey = 0, freezeAt }: Props) {
       ro.disconnect();
       io.disconnect();
     };
-  }, [scene, playKey, freezeAt]);
+  }, [scene, playKey, freezeAt, maxFps]);
 
   return <canvas ref={ref} aria-hidden className="absolute inset-0 h-full w-full" />;
 }
