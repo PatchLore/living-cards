@@ -6,6 +6,8 @@ import {
   type CatalogCard,
   CHRISTMAS_CLASSIC,
   CHRISTMAS_LIVE,
+  HALLOWEEN,
+  HALLOWEEN_ENDS,
   OTHER_OCCASIONS,
   PRICE_LABEL,
   getCard,
@@ -60,10 +62,13 @@ function CardTile({
   card,
   onPersonalize,
   compact,
+  dark,
 }: {
   card: CatalogCard;
   onPersonalize: (c: CatalogCard) => void;
   compact?: boolean;
+  /** Light text for tiles on a dark section. */
+  dark?: boolean;
 }) {
   return (
     <article className="group flex flex-col">
@@ -82,10 +87,16 @@ function CardTile({
       </button>
       <div className="mt-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className={`font-display text-ink ${compact ? "text-base" : "text-lg sm:text-xl"}`}>{card.title}</h3>
-          {!compact && <p className="mt-1 hidden text-sm leading-relaxed text-ink/60 sm:block lg:hidden">{card.description}</p>}
+          <h3 className={`font-display ${dark ? "text-cream" : "text-ink"} ${compact ? "text-base" : "text-lg sm:text-xl"}`}>
+            {card.title}
+          </h3>
+          {!compact && (
+            <p className={`mt-1 hidden text-sm leading-relaxed sm:block lg:hidden ${dark ? "text-cream/60" : "text-ink/60"}`}>
+              {card.description}
+            </p>
+          )}
         </div>
-        <span className="shrink-0 pt-0.5 text-sm font-semibold text-ink/70">{PRICE_LABEL}</span>
+        <span className={`shrink-0 pt-0.5 text-sm font-semibold ${dark ? "text-cream/70" : "text-ink/70"}`}>{PRICE_LABEL}</span>
       </div>
       <div className="mt-3 flex gap-2">
         <button
@@ -98,7 +109,9 @@ function CardTile({
         {!compact && (
           <Link
             href={`/card/${card.key}`}
-            className="hidden rounded-full border border-ink/15 px-4 py-2 text-sm font-medium text-ink/80 transition hover:border-ink/30 hover:text-ink sm:inline-flex"
+            className={`hidden rounded-full border px-4 py-2 text-sm font-medium transition sm:inline-flex ${
+              dark ? "border-white/20 text-cream/80 hover:border-white/40 hover:text-cream" : "border-ink/15 text-ink/80 hover:border-ink/30 hover:text-ink"
+            }`}
           >
             View
           </Link>
@@ -112,6 +125,8 @@ export default function Home() {
   const [active, setActive] = useState<CatalogCard | null>(null);
   const [heroName, setHeroName] = useState("Grandma");
   const close = useCallback(() => setActive(null), []);
+  // Hides itself after 31 October without a redeploy (the homepage renders per request).
+  const showHalloween = HALLOWEEN.length > 0 && Date.now() < HALLOWEEN_ENDS.getTime();
 
   return (
     <main>
@@ -125,6 +140,14 @@ export default function Home() {
         />
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-12 sm:px-6 md:pt-20 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:pb-28">
           <div>
+            {showHalloween && (
+              <a
+                href="#halloween"
+                className="mb-4 flex w-fit items-center gap-2 rounded-full bg-[#ff8c2a]/15 px-3 py-1 text-sm font-medium text-[#ffb35c] ring-1 ring-[#ff8c2a]/40 transition hover:bg-[#ff8c2a]/25"
+              >
+                🎃 Halloween cards are here <span aria-hidden>→</span>
+              </a>
+            )}
             <p className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
               ✦ The Christmas collection
             </p>
@@ -178,6 +201,28 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ---------- Halloween (until 31 October) ---------- */}
+      {showHalloween && (
+        <section id="halloween" className="relative scroll-mt-16 overflow-hidden bg-[#1a0c26] px-4 py-20 text-cream sm:px-6 lg:px-8">
+          <div className="starfield absolute inset-0 opacity-40" aria-hidden />
+          <div aria-hidden className="absolute -left-32 top-10 h-80 w-80 rounded-full bg-[#ff8c2a]/10 blur-3xl" />
+          <div className="relative">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#ffa53a]">Until 31 October</p>
+              <h2 className="mt-3 font-display text-3xl leading-tight sm:text-4xl">Halloween cards</h2>
+              <p className="mt-4 text-cream/70 sm:text-lg">
+                Spooky, and not-so-spooky, living cards for friends, family and little ones.
+              </p>
+            </div>
+            <div className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-8 md:grid-cols-3">
+              {HALLOWEEN.map((card) => (
+                <CardTile key={card.key} card={card} onPersonalize={setActive} dark />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ---------- Living Christmas collection ---------- */}
       <section id="christmas" className="scroll-mt-16 px-4 py-20 sm:px-6 lg:px-8">

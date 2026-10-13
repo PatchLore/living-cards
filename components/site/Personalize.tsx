@@ -11,6 +11,11 @@ const SUGGESTIONS: Record<string, string[]> = {
     "Thinking of you this Christmas. Can't wait to see you soon. Lots of love.",
     "Happy holidays! Thank you for everything this year. Here's to the next one.",
   ],
+  Halloween: [
+    "Happy Halloween! Hope your night is full of treats, not tricks.",
+    "Boo! Just a little ghost saying I'm thinking of you.",
+    "Have a frightfully fun Halloween!",
+  ],
   Birthday: [
     "Happy birthday! Wishing you a year full of good things.",
     "Have the best birthday. You deserve every bit of it!",

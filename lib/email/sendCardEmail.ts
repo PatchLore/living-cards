@@ -23,9 +23,12 @@ export function buildCardEmail({
   const name = escapeHtml(recipientName || "your recipient");
   const christmas = card?.category === "Christmas";
 
+  const who = recipientName || "your recipient";
   const subject = christmas
-    ? `Your Christmas card for ${recipientName || "your recipient"} is ready 🎄`
-    : `Your card for ${recipientName || "your recipient"} is ready 🌱`;
+    ? `Your Christmas card for ${who} is ready 🎄`
+    : card?.category === "Halloween"
+      ? `Your Halloween card for ${who} is ready 🎃`
+      : `Your card for ${who} is ready 🌱`;
 
   const html = `<!DOCTYPE html>
 <html lang="en">

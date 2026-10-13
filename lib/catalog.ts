@@ -2,7 +2,7 @@
 // Pages, checkout validation, the share page, emails and the sitemap all read
 // from here, so a card can't be purchasable but missing from the viewer.
 
-export type Category = "Christmas" | "Birthday" | "Thank You" | "Love" | "Valentine" | "Easter";
+export type Category = "Christmas" | "Halloween" | "Birthday" | "Thank You" | "Love" | "Valentine" | "Easter";
 
 export type CatalogCard = {
   key: string;
@@ -128,6 +128,39 @@ export const CARDS: CatalogCard[] = [
     kind: "live",
     sceneId: "moonlit-snow",
     poster: "/cards/live/moonlit-snow.jpg",
+    shop: true,
+  },
+
+  // ---- Halloween: living cards ----
+  {
+    key: "live-pumpkin-glow",
+    title: "Pumpkin Glow",
+    description: "A carved pumpkin flickers to life on a misty doorstep as bats cross the moon.",
+    category: "Halloween",
+    kind: "live",
+    sceneId: "pumpkin-glow",
+    poster: "/cards/live/pumpkin-glow.jpg",
+    shop: true,
+  },
+  {
+    key: "live-haunted-house",
+    title: "Haunted Hill House",
+    description: "Windows light up one by one in a crooked old house while bats circle the full moon.",
+    category: "Halloween",
+    kind: "live",
+    sceneId: "haunted-house",
+    poster: "/cards/live/haunted-house.jpg",
+    shop: true,
+  },
+  {
+    key: "live-friendly-ghost",
+    title: "Friendly Ghost",
+    description: "A cheerful little ghost floats up, blinks and waves hello. Perfect for kids.",
+    category: "Halloween",
+    kind: "live",
+    sceneId: "friendly-ghost",
+    poster: "/cards/live/friendly-ghost.jpg",
+    badge: "For kids",
     shop: true,
   },
 
@@ -323,13 +356,19 @@ export function isPurchasable(key: string | null | undefined): boolean {
 
 export const CHRISTMAS_LIVE = CARDS.filter((c) => c.shop && c.category === "Christmas" && c.kind === "live");
 export const CHRISTMAS_CLASSIC = CARDS.filter((c) => c.shop && c.category === "Christmas" && c.kind === "video");
-export const OTHER_OCCASIONS = CARDS.filter((c) => c.shop && c.category !== "Christmas");
+export const HALLOWEEN = CARDS.filter((c) => c.shop && c.category === "Halloween");
+export const OTHER_OCCASIONS = CARDS.filter((c) => c.shop && c.category !== "Christmas" && c.category !== "Halloween");
+
+/** The Halloween section shows on the homepage until this moment (midnight UK time, 1 Nov). */
+export const HALLOWEEN_ENDS = new Date("2026-11-01T00:00:00Z");
 
 /** Greeting used when a card has no built-in title text (video cards). */
 export function occasionLine(card: CatalogCard | undefined): string {
   switch (card?.category) {
     case "Christmas":
       return "Sent with warm Christmas wishes";
+    case "Halloween":
+      return "A spooky little something for you";
     case "Birthday":
       return "A birthday message just for you";
     case "Thank You":

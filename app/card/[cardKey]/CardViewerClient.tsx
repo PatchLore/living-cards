@@ -9,7 +9,13 @@ export default function CardViewerClient({ cardKey, backToHash }: { cardKey: str
   const card = getCard(cardKey);
   if (!card) return null;
 
-  const backHref = backToHash ? `/#${backToHash}` : card.category === "Christmas" ? "/#christmas" : "/#occasions";
+  const backHref = backToHash
+    ? `/#${backToHash}`
+    : card.category === "Christmas"
+      ? "/#christmas"
+      : card.category === "Halloween"
+        ? "/#halloween"
+        : "/#occasions";
   const more = CARDS.filter((c) => c.shop && c.category === card.category && c.key !== card.key).slice(0, 4);
 
   return (
