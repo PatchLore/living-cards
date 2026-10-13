@@ -81,7 +81,7 @@ export const CARDS: CatalogCard[] = [
   },
   {
     key: "live-northern-lights",
-    title: "Northern Lights Cabin",
+    title: "Northern Lights",
     description: "Aurora curtains ripple over snowy pines and a cabin with flickering windows.",
     category: "Christmas",
     kind: "live",

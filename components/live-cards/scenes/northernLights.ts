@@ -230,7 +230,7 @@ function draw(ctx: Ctx, t: number) {
 
 export const northernLights: LiveScene = {
   id: "northern-lights",
-  name: "Northern Lights Cabin",
+  name: "Northern Lights",
   draw,
   stillTime: 6,
   text: {
