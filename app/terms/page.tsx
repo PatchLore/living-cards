@@ -1,6 +1,7 @@
 export const metadata = {
+  alternates: { canonical: "/terms" },
   title: "Terms & Conditions",
-  description: "Terms and Conditions for CardRoots digital greeting cards",
+  description: "How ordering, instant email delivery, refunds and tree planting work for CardRoots £5 animated digital greeting cards.",
 };
 
 export default function TermsPage() {

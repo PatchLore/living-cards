@@ -1,0 +1,32 @@
+# CardRoots
+
+> CardRoots (cardroots.com) sells animated digital greeting cards for £5 each. The recipient's name and the sender's message appear inside the animated scene. Cards are delivered instantly by email as a link the sender can share by text, WhatsApp, email or social media. Every card sale helps plant a real tree. Cards work worldwide.
+
+## Key facts
+
+- Price: £5 per card (GBP), paid securely through Stripe. No postage or other fees.
+- Delivery: instant. After payment the buyer is emailed a private link to the card.
+- How the recipient views it: they open the link in any web browser on a phone, tablet or computer. No app or account needed.
+- Personalisation: recipient's name and a message of up to 300 characters, shown inside the card.
+- "Living cards" are animated live in the browser (not a video), so the text is part of the scene and stays sharp on any screen.
+- Environmental impact: every card sale contributes to tree planting with planting partners. No paper, postage or landfill.
+- Business and bulk orders: managed sending for companies and long recipient lists via info@cardroots.com.
+- Support and refunds: if a card doesn't arrive or there's a problem, email info@cardroots.com.
+
+## Collections
+
+- [Christmas cards](https://www.cardroots.com/#christmas): 10 living cards (Santa's Sleigh, Snowy Cottage, Christmas Surprise, Starlit Tree, Winter Robin, Northern Lights, Fireside Stockings, Golden Bauble, Snowman's Evening, Moonlit Snowfall) plus 6 classic animated cards.
+- [Halloween cards](https://www.cardroots.com/#halloween): Pumpkin Glow, Haunted Hill House, Friendly Ghost (shown until 31 October).
+- [Birthday, thank you and love cards](https://www.cardroots.com/#occasions): year-round animated cards.
+
+## Pages
+
+- [Home](https://www.cardroots.com/): all collections, how it works and FAQ.
+- [Business and bulk orders](https://www.cardroots.com/corporate)
+- [Terms](https://www.cardroots.com/terms)
+- [Privacy](https://www.cardroots.com/privacy)
+- [Sitemap](https://www.cardroots.com/sitemap.xml): every card page.
+
+## Contact
+
+info@cardroots.com

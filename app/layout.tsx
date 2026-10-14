@@ -5,12 +5,14 @@ import { Metadata } from "next";
 import SiteHeader from "../components/site/SiteHeader";
 import SiteFooter from "../components/site/SiteFooter";
 import { display, sans } from "./fonts";
+import JsonLd from "../components/site/JsonLd";
+import { organizationLd, websiteLd } from "../lib/seo";
 
 const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com").replace(/\/$/, "");
 
 const TITLE = "Animated Digital Christmas Cards That Plant a Tree | CardRoots";
 const DESCRIPTION =
-  "Christmas cards that come alive: your recipient's name and message are written into an animated scene, delivered instantly by email for £5. Every card helps plant a real tree.";
+  "Christmas cards that come alive: their name and your message written into an animated scene, sent instantly by email for £5. Every card helps plant a tree.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -26,7 +28,6 @@ export const metadata: Metadata = {
     "email Christmas card",
   ],
   authors: [{ name: "CardRoots" }],
-  alternates: { canonical: baseUrl },
   formatDetection: { email: false, address: false, telephone: false },
   openGraph: {
     type: "website",
@@ -35,30 +36,20 @@ export const metadata: Metadata = {
     siteName: "CardRoots",
     title: TITLE,
     description: DESCRIPTION,
-    images: [{ url: `${baseUrl}/cards/live/santa-sleigh.jpg`, width: 900, height: 1350, alt: "Santa's Sleigh, a CardRoots Christmas card" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: [`${baseUrl}/cards/live/santa-sleigh.jpg`],
   },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
-};
-
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "CardRoots",
-  url: baseUrl,
-  contactPoint: { "@type": "ContactPoint", email: "info@cardroots.com", contactType: "Customer Service" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-GB" className={`${display.variable} ${sans.variable}`}>
       <body className="min-h-screen">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+        <JsonLd data={[organizationLd, websiteLd]} />
         <SiteHeader />
         {children}
         <SiteFooter />

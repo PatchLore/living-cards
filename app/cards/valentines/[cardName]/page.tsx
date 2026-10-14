@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import CardViewerClient from "../../../card/[cardKey]/CardViewerClient";
+import { getCard } from "../../../../lib/catalog";
 
 const VALENTINE_CARD_KEYS = [
   "valentine-rose",
@@ -17,19 +18,6 @@ const VALENTINE_CARD_KEYS = [
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.cardroots.com";
 const cleanBase = baseUrl.replace(/\/$/, "");
-
-const CARD_VIDEO_MAP: Record<string, string> = {
-  "valentine-rose": "posters/valentine1.mp4",
-  "valentine-heart-glow": "posters/valentine2.mp4",
-  "valentine-blossom": "posters/valentine3.mp4",
-  "valentine-love-light": "posters/valentine4.mp4",
-  "valentine-forever": "posters/valentine5.mp4",
-  "valentine-sweetheart": "posters/Valentine6.mp4",
-  "valentine-together": "posters/Valentine7.mp4",
-  "valentine-spark": "posters/Valentine8.mp4",
-  "valentine-dream": "posters/Valentine9.mp4",
-  "valentine-treasure": "posters/Valentine10.mp4",
-};
 
 const CARD_METADATA: Record<string, { title: string; description: string }> = {
   "valentine-rose": {
@@ -89,12 +77,9 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${cardMeta.title} — Digital Valentine Card That Plants a Tree`;
+  const title = `${cardMeta.title}: Animated Valentine Card`;
   const canonicalUrl = `${cleanBase}/cards/valentines/${cardName}`;
-  const videoFile = CARD_VIDEO_MAP[cardName];
-  const imageUrl = videoFile
-    ? `${cleanBase}/cards/${videoFile}`
-    : `${cleanBase}/og-image.jpg`;
+  const imageUrl = `${cleanBase}${getCard(cardName)?.poster ?? "/og-image.jpg"}`;
 
   return {
     title,
@@ -111,8 +96,8 @@ export async function generateMetadata({
       images: [
         {
           url: imageUrl,
-          width: 1200,
-          height: 630,
+          width: 900,
+          height: 1350,
           alt: `${cardMeta.title} - Digital Valentine Card That Plants a Tree`,
         },
       ],
@@ -138,10 +123,7 @@ export default async function ValentineCardPage({
   }
 
   const cardMeta = CARD_METADATA[cardName];
-  const videoFile = CARD_VIDEO_MAP[cardName];
-  const imageUrl = videoFile
-    ? `${cleanBase}/cards/${videoFile}`
-    : `${cleanBase}/og-image.jpg`;
+  const imageUrl = `${cleanBase}${getCard(cardName)?.poster ?? "/og-image.jpg"}`;
   const canonicalUrl = `${cleanBase}/cards/valentines/${cardName}`;
 
   const productSchema = {

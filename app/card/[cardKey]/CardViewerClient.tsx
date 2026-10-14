@@ -5,7 +5,16 @@ import { CARDS, getCard } from "../../../lib/catalog";
 import CardArt from "../../../components/site/CardArt";
 import { PersonalizePanel } from "../../../components/site/Personalize";
 
-export default function CardViewerClient({ cardKey, backToHash }: { cardKey: string; backToHash?: string }) {
+export default function CardViewerClient({
+  cardKey,
+  backToHash,
+  children,
+}: {
+  cardKey: string;
+  backToHash?: string;
+  /** Server-rendered details shown under the personaliser. */
+  children?: React.ReactNode;
+}) {
   const card = getCard(cardKey);
   if (!card) return null;
 
@@ -41,6 +50,8 @@ export default function CardViewerClient({ cardKey, backToHash }: { cardKey: str
             <PersonalizePanel card={card} />
           </div>
         )}
+
+        {children}
 
         {more.length > 0 && (
           <section className="mt-20">

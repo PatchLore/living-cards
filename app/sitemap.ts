@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly",
       priority: card.category === "Christmas" ? 0.95 : 0.7,
+      images: [`${base}${card.poster}`],
     });
   }
   return pages;

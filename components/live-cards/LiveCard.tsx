@@ -34,6 +34,8 @@ type Props = {
   hideTitle?: boolean;
   /** Cap the animation frame rate (thumbnails). */
   maxFps?: number;
+  /** Still image under a code-drawn scene: shows before it starts and gives search engines an image. */
+  poster?: { src: string; alt: string };
   className?: string;
 };
 
@@ -75,6 +77,7 @@ export default function LiveCard({
   freezeAt,
   hideTitle,
   maxFps,
+  poster,
   className = "",
 }: Props) {
   const textRef = useRef<HTMLDivElement>(null);
@@ -114,6 +117,10 @@ export default function LiveCard({
       className={`relative w-full overflow-hidden rounded-2xl bg-[#05070b] ${className}`}
       style={{ aspectRatio: "2 / 3", containerType: "inline-size" }}
     >
+      {scene && poster && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={poster.src} alt={poster.alt} width={900} height={1350} className="absolute inset-0 h-full w-full object-cover" />
+      )}
       {scene && <LiveCanvas scene={scene} playKey={playKey} freezeAt={freezeAt} maxFps={maxFps} />}
       {video && <CardVideo src={video.src} poster={video.poster} playKey={playKey} />}
       {hasText && (
@@ -123,7 +130,7 @@ export default function LiveCard({
           style={{ padding: "24cqw 8cqw 9cqw", background: text.scrim, color: text.color }}
         >
           {title && (
-            <h2
+            <p
               aria-label={title}
               className={scriptFont.className}
               style={{
@@ -145,7 +152,7 @@ export default function LiveCard({
                   </span>
                 </Fragment>
               ))}
-            </h2>
+            </p>
           )}
           {recipient && (
             <p data-line style={{ fontSize: "5.6cqw", fontStyle: "italic", marginTop: title ? "3cqw" : 0 }}>

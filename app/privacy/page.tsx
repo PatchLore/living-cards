@@ -1,6 +1,7 @@
 export const metadata = {
+  alternates: { canonical: "/privacy" },
   title: "Privacy Policy",
-  description: "Privacy Policy for CardRoots digital greeting cards",
+  description: "How CardRoots handles your data when you send an animated digital card: what we collect, why, and how to contact us.",
 };
 
 export default function PrivacyPage() {

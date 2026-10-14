@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getCard } from "../../../lib/catalog";
 import { getCardByShareId } from "../../../lib/db/cards";
 import SharedCard from "./SharedCard";
 
@@ -14,16 +13,14 @@ export async function generateMetadata({ params }: { params: Promise<{ shareId: 
   const card = await getCardByShareId(shareId);
   if (!card) return { title: "Card not found", robots: { index: false } };
 
-  const catalogCard = getCard(card.card_key);
   const title = `A card for ${card.recipient_name}`;
   const description = "Someone sent you an animated CardRoots card. Tap to open it.";
-  const image = `${baseUrl}${catalogCard?.poster ?? "/og-image.jpg"}`;
   return {
     title,
     description,
     robots: { index: false, follow: false },
-    openGraph: { type: "website", url: `${baseUrl}/c/${shareId}`, title, description, siteName: "CardRoots", images: [image] },
-    twitter: { card: "summary_large_image", title, description, images: [image] },
+    openGraph: { type: "website", url: `${baseUrl}/c/${shareId}`, title, description, siteName: "CardRoots" },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 

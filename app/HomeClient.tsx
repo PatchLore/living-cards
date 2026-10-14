@@ -14,39 +14,10 @@ import {
 } from "../lib/catalog";
 import CardArt from "../components/site/CardArt";
 import { PersonalizeDialog } from "../components/site/Personalize";
+import { FAQ } from "../lib/seo";
 
 const HERO_CARD = getCard("live-santa-sleigh")!;
 
-const FAQ = [
-  {
-    q: "How does my recipient get the card?",
-    a: "Straight after payment we email you a private link to the card. Send that link to them however you like: text, WhatsApp, email or a message on social media. You can also simply forward our email.",
-  },
-  {
-    q: "Is it too late to send a Christmas card?",
-    a: "Never. Cards are ready the moment you pay, so there's no last posting date. They work on Christmas morning just as well as in early December.",
-  },
-  {
-    q: "What does my recipient see?",
-    a: "They open the link and the card plays: the scene animates and your greeting, their name and your message appear inside it. It works on any phone, tablet or computer, with nothing to download.",
-  },
-  {
-    q: "What makes the living cards different?",
-    a: "They're animated live in the browser rather than played as a video, so your words are part of the scene instead of a caption underneath. They also stay crisp on every screen and load fast.",
-  },
-  {
-    q: "Are the trees really planted?",
-    a: "Every card sale contributes to tree planting with our planting partners. If you'd like details for your order, email info@cardroots.com.",
-  },
-  {
-    q: "Can I send cards to lots of people?",
-    a: "Yes. For teams, clients or long lists, see our business page or email info@cardroots.com and we'll handle the sending for you.",
-  },
-  {
-    q: "What if something goes wrong?",
-    a: "If your card doesn't arrive or there's any problem, email info@cardroots.com and we'll put it right or refund you.",
-  },
-];
 
 function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
   return (
@@ -193,6 +164,7 @@ export default function Home() {
             <div aria-hidden className="absolute -inset-6 rounded-[2rem] bg-gold/10 blur-2xl" />
             <CardArt
               card={HERO_CARD}
+              withPoster
               recipient={heroName.trim()}
               message="Wishing you a magical Christmas and a very happy new year. Love from all of us."
               className="shadow-2xl ring-1 ring-white/10"

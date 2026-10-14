@@ -75,11 +75,13 @@ export function PersonalizePanel({ card, initialRecipient = "", layout = "inline
   };
 
   const dialog = layout === "dialog";
+  // On a card's own page the title is the page's main heading.
+  const Heading = dialog ? "h2" : "h1";
 
   return (
     <div className={`grid gap-6 ${dialog ? "md:grid-cols-[minmax(0,320px)_1fr]" : "lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-12"}`}>
       <div className={dialog ? "mx-auto w-full max-w-[220px] md:max-w-none" : "mx-auto w-full max-w-[420px]"}>
-        <CardArt card={card} recipient={recipient.trim()} message={message.trim()} playKey={playKey} className="shadow-2xl" />
+        <CardArt card={card} recipient={recipient.trim()} message={message.trim()} playKey={playKey} withPoster={!dialog} className="shadow-2xl" />
         <button
           type="button"
           onClick={() => setPlayKey((k) => k + 1)}
@@ -91,7 +93,7 @@ export function PersonalizePanel({ card, initialRecipient = "", layout = "inline
 
       <form onSubmit={submit} noValidate className="flex flex-col">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-berry">{card.category}</p>
-        <h2 className="mt-1 font-display text-3xl text-ink">{card.title}</h2>
+        <Heading className="mt-1 font-display text-3xl text-ink">{card.title}</Heading>
         <p className="mt-2 text-ink/70">{card.description}</p>
 
         <label htmlFor={ids.to} className="mt-6 text-sm font-semibold text-ink">

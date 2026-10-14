@@ -12,12 +12,17 @@ type Props = {
   freezeAt?: number;
   hideTitle?: boolean;
   maxFps?: number;
+  /** Include the poster image (for SEO and first paint) under live scenes. */
+  withPoster?: boolean;
   className?: string;
 };
 
 /** Renders any catalog card: code-drawn scenes live, classic cards as video. */
-export default function CardArt({ card, ...rest }: Props) {
+export default function CardArt({ card, withPoster, ...rest }: Props) {
   const scene = card.sceneId ? SCENES_BY_ID[card.sceneId] : undefined;
-  if (scene) return <LiveCard scene={scene} {...rest} />;
+  const poster = withPoster
+    ? { src: card.poster, alt: `${card.title}, an animated ${card.category} card from CardRoots` }
+    : undefined;
+  if (scene) return <LiveCard scene={scene} poster={poster} {...rest} />;
   return <LiveCard video={{ src: card.video ?? "", poster: card.poster }} {...rest} />;
 }
