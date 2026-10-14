@@ -46,7 +46,7 @@ export const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Can I send cards to lots of people?",
-    a: "Yes. For teams, clients or long lists, see our business page or email info@cardroots.com and we'll handle the sending for you.",
+    a: "Yes. For teams, clients or long lists, request a quote on our business page. We reply within one working day with a per-card price for your volume.",
   },
   {
     q: "What if something goes wrong?",

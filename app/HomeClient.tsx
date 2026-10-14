@@ -312,7 +312,7 @@ export default function Home() {
           </div>
           <div className="rounded-3xl border border-ink/10 bg-white p-8 sm:p-10">
             <h3 className="font-display text-2xl text-ink">Sending to clients or your team?</h3>
-            <p className="mt-3 text-ink/70">Bulk orders, custom messages and managed sending for businesses.</p>
+            <p className="mt-3 text-ink/70">Bulk pricing for teams and businesses. Request a quote and we reply within a working day.</p>
             <Link href="/corporate" className="mt-6 inline-flex font-semibold text-berry hover:text-berry-deep">
               Business cards →
             </Link>
