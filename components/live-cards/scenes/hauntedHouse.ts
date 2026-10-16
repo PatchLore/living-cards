@@ -43,12 +43,13 @@ function drawHouse(ctx: Ctx, t: number) {
   ctx.fillStyle = INK;
   ctx.beginPath();
   // main block and roof
-  ctx.rect(232, 372, 150, 112);
+  // walls run down into the hill so the house sits on the ground
+  ctx.rect(232, 372, 150, 132);
   ctx.moveTo(220, 376);
   ctx.lineTo(306, 300);
   ctx.lineTo(394, 376);
   // crooked tower with spire
-  ctx.rect(196, 318, 44, 166);
+  ctx.rect(196, 318, 44, 186);
   ctx.moveTo(188, 322);
   ctx.lineTo(214, 226);
   ctx.lineTo(248, 322);

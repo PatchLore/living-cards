@@ -133,6 +133,17 @@ export const CARDS: CatalogCard[] = [
 
   // ---- Halloween: living cards ----
   {
+    key: "live-witch-broom",
+    title: "Witch's Flight",
+    description: "A witch and her black cat sweep across a huge moon on a broomstick, trailing magic sparkles.",
+    category: "Halloween",
+    kind: "live",
+    sceneId: "witch-broom",
+    poster: "/cards/live/witch-broom.jpg",
+    badge: "New",
+    shop: true,
+  },
+  {
     key: "live-pumpkin-glow",
     title: "Pumpkin Glow",
     description: "A carved pumpkin flickers to life on a misty doorstep as bats cross the moon.",

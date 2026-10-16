@@ -187,7 +187,7 @@ export default function Home() {
                 Spooky, and not-so-spooky, living cards for friends, family and little ones.
               </p>
             </div>
-            <div className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-8 md:grid-cols-3">
+            <div className="mx-auto mt-12 grid max-w-6xl grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-8 lg:grid-cols-4">
               {HALLOWEEN.map((card) => (
                 <CardTile key={card.key} card={card} onPersonalize={setActive} dark />
               ))}
