@@ -94,7 +94,8 @@ function CardDetails({ card }: { card: CatalogCard }) {
 export default async function CardPage({ params }: { params: Promise<{ cardKey: string }> }) {
   const { cardKey } = await params;
   const card = getCard(cardKey);
-  if (!card) notFound();
+  // Retired cards get a real 404 (middleware redirects them first), never a 200 page.
+  if (!card || card.retired) notFound();
 
   const sectionHash = card.category === "Christmas" ? "christmas" : card.category === "Halloween" ? "halloween" : "occasions";
   return (
