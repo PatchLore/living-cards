@@ -56,7 +56,7 @@ function CardTile({
           </span>
         )}
       </button>
-      <div className="mt-3 flex items-start justify-between gap-3">
+      <div className={`mt-3 flex items-start justify-between gap-3 ${compact ? "min-h-[3.25rem]" : "min-h-[4.5rem]"}`}>
         <div className="min-w-0">
           <h3 className={`font-display ${dark ? "text-cream" : "text-ink"} ${compact ? "text-base" : "text-lg sm:text-xl"}`}>
             {card.title}
