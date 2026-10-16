@@ -15,6 +15,9 @@ import { pumpkinGlow } from "./scenes/pumpkinGlow";
 import { hauntedHouse } from "./scenes/hauntedHouse";
 import { friendlyGhost } from "./scenes/friendlyGhost";
 import { witchBroom } from "./scenes/witchBroom";
+import { bubblingCauldron } from "./scenes/bubblingCauldron";
+import { catBookshelf } from "./scenes/catBookshelf";
+import { firesideSkeleton } from "./scenes/firesideSkeleton";
 
 export {
   starlitTree,
@@ -31,6 +34,9 @@ export {
   hauntedHouse,
   friendlyGhost,
   witchBroom,
+  bubblingCauldron,
+  catBookshelf,
+  firesideSkeleton,
 };
 
 export const CHRISTMAS_SCENES = [
@@ -46,7 +52,15 @@ export const CHRISTMAS_SCENES = [
   moonlitSnow,
 ];
 
-export const HALLOWEEN_SCENES = [witchBroom, pumpkinGlow, hauntedHouse, friendlyGhost];
+export const HALLOWEEN_SCENES = [
+  witchBroom,
+  bubblingCauldron,
+  catBookshelf,
+  firesideSkeleton,
+  pumpkinGlow,
+  hauntedHouse,
+  friendlyGhost,
+];
 
 const ALL_SCENES = [...CHRISTMAS_SCENES, ...HALLOWEEN_SCENES];
 export const SCENES_BY_ID: Record<string, (typeof ALL_SCENES)[number]> = Object.fromEntries(

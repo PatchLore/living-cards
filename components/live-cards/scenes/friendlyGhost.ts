@@ -14,6 +14,7 @@ import {
   hash,
   twinkle,
 } from "../engine";
+import { drawCrescent } from "./halloweenParts";
 
 const GX = 300;
 const R = 92;
@@ -143,16 +144,7 @@ function draw(ctx: Ctx, t: number) {
   ctx.globalCompositeOperation = "source-over";
 
   // crescent moon
-  ctx.globalAlpha = fade;
-  ctx.fillStyle = "#fbefc8";
-  ctx.beginPath();
-  ctx.arc(490, 110, 36, 0, TAU);
-  ctx.fill();
-  ctx.fillStyle = "#1f0f35";
-  ctx.beginPath();
-  ctx.arc(506, 98, 32, 0, TAU);
-  ctx.fill();
-  ctx.globalAlpha = 1;
+  drawCrescent(ctx, 490, 110, 36, "#fbefc8", fade);
 
   // rolling hill
   ctx.fillStyle = "#1d0d2b";
