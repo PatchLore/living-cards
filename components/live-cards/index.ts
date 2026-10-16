@@ -18,6 +18,7 @@ import { witchBroom } from "./scenes/witchBroom";
 import { bubblingCauldron } from "./scenes/bubblingCauldron";
 import { catBookshelf } from "./scenes/catBookshelf";
 import { firesideSkeleton } from "./scenes/firesideSkeleton";
+import { velvetVampire } from "./scenes/velvetVampire";
 
 export {
   starlitTree,
@@ -37,6 +38,7 @@ export {
   bubblingCauldron,
   catBookshelf,
   firesideSkeleton,
+  velvetVampire,
 };
 
 export const CHRISTMAS_SCENES = [
@@ -57,6 +59,7 @@ export const HALLOWEEN_SCENES = [
   bubblingCauldron,
   catBookshelf,
   firesideSkeleton,
+  velvetVampire,
   pumpkinGlow,
   hauntedHouse,
   friendlyGhost,

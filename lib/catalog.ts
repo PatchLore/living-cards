@@ -175,6 +175,16 @@ export const CARDS: CatalogCard[] = [
     shop: true,
   },
   {
+    key: "velvet-armchair-vampire",
+    title: "Velvet Vampire",
+    description: "A polite, bespectacled vampire in a velvet armchair swirls his goblet as ruby and gold mist rises.",
+    category: "Halloween",
+    kind: "live",
+    sceneId: "velvet-vampire",
+    poster: "/cards/live/velvet-vampire.jpg",
+    shop: true,
+  },
+  {
     key: "live-pumpkin-glow",
     title: "Pumpkin Glow",
     description: "A carved pumpkin flickers to life on a misty doorstep as bats cross the moon.",
