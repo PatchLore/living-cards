@@ -132,7 +132,7 @@ export default function Home() {
 
             <div className="mt-8 max-w-md rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
               <label htmlFor="hero-name" className="text-sm text-cream/70">
-                Try it: who&apos;s your card for?
+                Who is your card for? Type a name to try it.
               </label>
               <div className="mt-2 flex gap-2">
                 <input
@@ -148,7 +148,7 @@ export default function Home() {
                   onClick={() => setActive(HERO_CARD)}
                   className="shrink-0 rounded-xl bg-berry px-5 py-3 font-semibold text-white transition hover:bg-berry-deep"
                 >
-                  Send it
+                  Add message →
                 </button>
               </div>
             </div>
