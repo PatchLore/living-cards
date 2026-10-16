@@ -261,12 +261,10 @@ export default function Home() {
             <div className="relative col-span-5 overflow-hidden rounded-2xl shadow-lg sm:col-span-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/cards/live/mangrove-forest.jpg" alt="Illustration of a healthy mangrove forest in calm tidal water" className="aspect-[4/3] w-full object-cover" loading="lazy" />
-              <span className="absolute bottom-2 left-2 rounded-full bg-night/70 px-2.5 py-1 text-[11px] text-cream">Illustrative</span>
             </div>
             <div className="relative col-span-5 overflow-hidden rounded-2xl shadow-lg sm:col-span-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/cards/live/mangrove-seedling.jpg" alt="Illustration of a young mangrove seedling sprouting from tidal mud" className="aspect-[4/3] h-full w-full object-cover sm:aspect-auto" loading="lazy" />
-              <span className="absolute bottom-2 left-2 rounded-full bg-night/70 px-2.5 py-1 text-[11px] text-cream">Illustrative</span>
             </div>
           </div>
         </div>
