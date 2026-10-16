@@ -11,10 +11,13 @@ export function buildCardEmail({
   shareId,
   cardKey,
   recipientName,
+  treeLocation,
 }: {
   shareId: string;
   cardKey: string;
   recipientName: string;
+  /** Set once a tree has been registered for this card. */
+  treeLocation?: string;
 }) {
   const base = siteUrl();
   const card = getCard(cardKey);
@@ -52,6 +55,7 @@ export function buildCardEmail({
         </td></tr>
         <tr><td style="padding:28px 32px 8px;font-family:Arial,Helvetica,sans-serif;color:#1f2937;font-size:16px;line-height:1.6;">
           <p style="margin:0 0 16px;">Thank you for your order. Your ${escapeHtml(card?.title ?? "card")} for <strong>${name}</strong> is ready to send.</p>
+          ${treeLocation ? `<p style="margin:0 0 16px;background:#f1f7ee;border-radius:10px;padding:12px 14px;"><strong>🌳 Your tree is registered</strong> in ${escapeHtml(treeLocation)}. Its verified planting certificate, with photos and location, appears on the card page.</p>` : ""}
           <p style="margin:0 0 8px;"><strong>How to send it:</strong> share the link below with ${name} by text, WhatsApp or email, or simply forward them this email.</p>
         </td></tr>
         <tr><td style="padding:16px 32px;text-align:center;">
@@ -70,7 +74,18 @@ export function buildCardEmail({
 </body>
 </html>`;
 
-  const text = `Your card for ${recipientName || "your recipient"} is ready.\n\nOpen it here: ${cardUrl}\n\nShare this link with them, or forward this email.\n\nYour card helps plant a real tree. Questions? info@cardroots.com`;
+  const treeLine = treeLocation
+    ? `Your tree is registered in ${treeLocation}. Its verified planting certificate appears on the card page.
+
+`
+    : "";
+  const text = `Your card for ${recipientName || "your recipient"} is ready.
+
+Open it here: ${cardUrl}
+
+Share this link with them, or forward this email.
+
+${treeLine}Questions? info@cardroots.com`;
 
   return { subject, html, text, cardUrl };
 }
@@ -85,13 +100,15 @@ export async function sendCardEmail({
   shareId,
   cardKey,
   recipientName,
+  treeLocation,
 }: {
   to: string;
   shareId: string;
   cardKey: string;
   recipientName: string;
+  treeLocation?: string;
 }) {
-  const email = buildCardEmail({ shareId, cardKey, recipientName });
+  const email = buildCardEmail({ shareId, cardKey, recipientName, treeLocation });
 
   if (process.env.EMAIL_DRY_RUN === "1") {
     const dir = path.join(process.cwd(), ".email-previews");

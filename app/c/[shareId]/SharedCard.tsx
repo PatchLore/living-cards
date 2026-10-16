@@ -21,12 +21,10 @@ export default function SharedCard({
   cardKey,
   recipient,
   message,
-  certificateUrl,
 }: {
   cardKey: string;
   recipient: string;
   message: string;
-  certificateUrl: string | null;
 }) {
   const card = getCard(cardKey) ?? FALLBACK;
   const [opened, setOpened] = useState(false);
@@ -94,15 +92,7 @@ export default function SharedCard({
               </Link>
             </div>
             <p className="mt-8 text-center text-sm text-cream/60">
-              🌳 This card helps plant a real tree.
-              {certificateUrl && (
-                <>
-                  {" "}
-                  <a href={certificateUrl} target="_blank" rel="noopener noreferrer" className="text-gold underline">
-                    View the tree certificate
-                  </a>
-                </>
-              )}
+              🌳 This card plants a real tree. Its certificate is below.
             </p>
           </>
         )}

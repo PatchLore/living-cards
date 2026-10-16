@@ -240,6 +240,38 @@ export default function Home() {
         </ol>
       </section>
 
+      {/* ---------- Every card plants a mangrove ---------- */}
+      <section id="trees" className="scroll-mt-16 px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-2">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-berry">Every card plants a tree</p>
+            <h2 className="mt-3 font-display text-3xl leading-tight text-ink sm:text-4xl">Mangroves that protect coastlines</h2>
+            <p className="mt-4 leading-relaxed text-ink/70">
+              Each card pays for one mangrove, planted in the Kilifi coast of Kenya through GoodAPI&apos;s verified
+              restoration project. Mangroves protect shorelines from storms, store large amounts of carbon, and give fish
+              and crabs a place to breed.
+            </p>
+            <ol className="mt-6 space-y-3 text-sm text-ink/75">
+              <li><strong className="text-ink">1. You send a card.</strong> One tree is registered for it.</li>
+              <li><strong className="text-ink">2. It's planted and checked.</strong> The planting is verified on the ground, with photos and GPS.</li>
+              <li><strong className="text-ink">3. You get the certificate.</strong> It appears on the card, for you and the person it&apos;s sent to.</li>
+            </ol>
+          </div>
+          <div className="grid grid-cols-5 gap-3">
+            <div className="relative col-span-5 overflow-hidden rounded-2xl shadow-lg sm:col-span-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/cards/live/mangrove-forest.jpg" alt="Illustration of a healthy mangrove forest in calm tidal water" className="aspect-[4/3] w-full object-cover" loading="lazy" />
+              <span className="absolute bottom-2 left-2 rounded-full bg-night/70 px-2.5 py-1 text-[11px] text-cream">Illustrative</span>
+            </div>
+            <div className="relative col-span-5 overflow-hidden rounded-2xl shadow-lg sm:col-span-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/cards/live/mangrove-seedling.jpg" alt="Illustration of a young mangrove seedling sprouting from tidal mud" className="aspect-[4/3] h-full w-full object-cover sm:aspect-auto" loading="lazy" />
+              <span className="absolute bottom-2 left-2 rounded-full bg-night/70 px-2.5 py-1 text-[11px] text-cream">Illustrative</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ---------- Why ---------- */}
       <section className="relative overflow-hidden bg-pine px-4 py-20 text-cream sm:px-6 lg:px-8">
         <div className="snowfall absolute inset-0 opacity-25" aria-hidden />
