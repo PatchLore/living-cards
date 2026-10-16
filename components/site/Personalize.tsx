@@ -80,7 +80,7 @@ export function PersonalizePanel({ card, initialRecipient = "", layout = "inline
 
   return (
     <div className={`grid gap-6 ${dialog ? "md:grid-cols-[minmax(0,320px)_1fr]" : "lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-12"}`}>
-      <div className={dialog ? "mx-auto w-full max-w-[220px] md:max-w-none" : "mx-auto w-full max-w-[420px]"}>
+      <div className={dialog ? "mx-auto w-full max-w-[220px] md:max-w-none" : "mx-auto w-full max-w-[230px] sm:max-w-[420px]"}>
         <CardArt card={card} recipient={recipient.trim()} message={message.trim()} playKey={playKey} withPoster={!dialog} className="shadow-2xl" />
         <button
           type="button"
@@ -155,6 +155,7 @@ export function PersonalizePanel({ card, initialRecipient = "", layout = "inline
         <ul className="mt-4 space-y-1.5 text-sm text-ink/65">
           <li>✉️ We email you the card link straight after payment</li>
           <li>📲 Share it by text, WhatsApp or email, or forward our email</li>
+          <li>🔒 Secure payment by Stripe. Card details never reach us.</li>
           <li>🌳 Every card helps plant a real tree</li>
         </ul>
       </form>
