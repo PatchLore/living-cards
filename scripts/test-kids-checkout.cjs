@@ -76,7 +76,7 @@ async function main() {
   assert.equal(sessions.at(-1).line_items[0].price_data.unit_amount, 1200);
   assert.equal(sessions.at(-1).metadata.scene, "party");
 
-  const bundleWording = { santa: { extraDetail: "Helped at the food bank", customMessage: "Santa saw!" }, advent: { extraDetail: "Loves snow", customMessage: "24 days of fun" } };
+  const bundleWording = { santa: { extraDetail: "Helped at the food bank", customMessage: "Santa saw!" }, advent: { extraDetail: "Loves snow", customMessage: "24 days of fun" }, tooth: { extraDetail: "Tooth #2", customMessage: "So brave!" } };
   const bundleInput = { ...base, scene: "party", packageType: "bundle", bundle: bundleWording };
   assert.equal((await checkout(bundleInput)).status, 200);
   const bundleSession = sessions.at(-1);
@@ -86,9 +86,9 @@ async function main() {
   assert.equal(bundleSession.metadata.santaExtra, "Helped at the food bank");
   const countBeforeBadBundle = sessions.length;
   for (const bundle of [
-    { tooth: bundleWording.santa }, // not part of a party bundle
     { squishy: bundleWording.santa }, // no longer in any bundle
     { party: bundleWording.santa }, // the bought experience uses the top-level fields
+    { advent: bundleWording.santa, extra: bundleWording.santa }, // not an experience
     { santa: { extraDetail: "a".repeat(KIDS_LIMITS.extraDetail + 1), customMessage: "" } },
   ]) assert.equal((await checkout({ ...bundleInput, bundle })).status, 400);
   assert.equal(sessions.length, countBeforeBadBundle, "invalid bundles must not call Stripe");

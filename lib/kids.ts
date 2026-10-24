@@ -33,7 +33,7 @@ export const KIDS_BUNDLE_PRICE = 12;
  */
 export const KIDS_HIDDEN_SCENES: readonly KidsScene[] = ["squishy"];
 /** What every bundle includes, alongside the experience chosen. */
-const BUNDLE_CORE: readonly KidsScene[] = ["santa", "advent"];
+const BUNDLE_CORE: readonly KidsScene[] = ["santa", "advent", "tooth"];
 export const KIDS_LIMITS = { recipientName: 28, extraDetail: 75, customMessage: 300 } as const;
 export const KIDS_SCENES: Record<KidsScene, KidsSceneConfig> = {
   santa: {
