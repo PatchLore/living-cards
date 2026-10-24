@@ -28,7 +28,7 @@ Party RSVP buttons copy a reply for the guest to send to the organiser. Response
 
 ## Printing
 
-Squishy singles and bundles show an A4 portrait template. Full Colour / Colour-In Outline controls change the SVG fills; Print opens the browser print dialog. Print styles isolate the sheet, preserve colours and hide the studio controls. The SVG retains its 640×300 viewBox, dashed outer cutting box, centre fold at x=320 and personalised maker badge.
+Squishy singles and bundles include a six-character printable kit (Berry the Robin, Rudy the Reindeer, Flurry the Snowman, Pip the Penguin, Ginger the Gingerbread, Fern the Fox) plus an Official Squishy Maker certificate. Characters live in `components/kids/squishyCharacters.tsx`; each is a front and a matching back with the child's maker badge on a 640×300 template (dashed cutting box, centre fold at x=320). Each silhouette's cut line is drawn into the SVG (not CSS), so overlapping parts print as one shape. Print pages are portalled under `<body>` (`.kids-print-root`) so printing shows only them: “Print the whole kit” is 4 A4 pages (two templates per page, then the certificate), “Print just …” is one page. Full Colour / Colour-In Outline applies to both. In the studio preview, printing (including from the browser menu) produces a single locked page.
 
 ## Configuration and checks
 

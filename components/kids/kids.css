@@ -65,18 +65,24 @@
   .kids-studio *, .kids-studio *::before, .kids-studio *::after { animation: none !important; transition: none !important; }
 }
 
+/* Print pages are portalled under <body>, so printing shows only them, however many pages. */
+.kids-print-root { display: none; }
+
 @media print {
   @page { size: A4 portrait; margin: 12mm; }
-  body:has(.kids-studio) { background: white !important; margin: 0; padding: 0; min-height: 0 !important; }
-  body:has(.kids-studio) * { visibility: hidden; }
-  body:has(.kids-studio) > :not(.kids-studio):not(:has(.kids-studio)) { display: none !important; }
-  body:has(.kids-studio) > header, body:has(.kids-studio) > footer,
-  .kids-studio .no-print { display: none !important; }
-  .kids-studio { background: white !important; }
-  .kids-studio #squishy-crafts, .kids-studio #squishy-crafts > div { margin: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
-  #printable-squishy-sheet, #printable-squishy-sheet * { visibility: visible !important; }
-  #printable-squishy-sheet { position: absolute; left: 0; top: 0; width: 100%; max-width: 186mm !important; margin: 0 !important; padding: 8mm !important; box-sizing: border-box; box-shadow: none !important; background: white !important; break-inside: avoid; color: #0f291e !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  #printable-squishy-sheet svg { width: 100%; max-height: 130mm; }
+  body:has(.kids-print-root) { background: white !important; margin: 0 !important; padding: 0 !important; min-height: 0 !important; }
+  body:has(.kids-print-root) > :not(.kids-print-root) { display: none !important; }
+  .kids-print-root { display: block; color: #0f291e; font-family: var(--font-kids-inter), system-ui, sans-serif; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .kids-print-root .kids-serif { font-family: var(--font-fraunces), Georgia, serif; }
+  .kids-print-root .print-page { break-after: page; }
+  .kids-print-root .print-page:last-child { break-after: auto; }
+  .kids-print-root .print-header { display: flex; flex-direction: column; gap: 2mm; margin-bottom: 4mm; padding-bottom: 3mm; border-bottom: 1px solid #1b433233; font-size: 9pt; }
+  .kids-print-root .print-header strong { font-family: var(--font-fraunces), Georgia, serif; font-size: 12pt; }
+  .kids-print-root .print-template { break-inside: avoid; margin-bottom: 6mm; }
+  .kids-print-root .print-template-title { margin: 0 0 2mm; font-size: 10pt; font-weight: 700; color: #bc4749; }
+  .kids-print-root .print-template svg { display: block; width: 100%; }
+  .kids-print-root .squishy-certificate { margin-top: 20mm; }
+  .kids-print-root .print-locked { padding-top: 60mm; text-align: center; font-size: 16pt; }
 }
 
 /* Studio preview watermark */

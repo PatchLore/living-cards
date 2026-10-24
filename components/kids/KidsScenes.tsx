@@ -3,10 +3,12 @@
 import { useState } from "react";
 import type { KidsPersonalisation } from "../../lib/kids";
 import AdventVillage from "./AdventVillage";
+import { SQUISHY_CHARACTERS, SquishyPortrait } from "./squishyCharacters";
 
 export default function KidsScenes({ scene, recipientName, extraDetail, customMessage, recipientOnly = false, onRsvp }: KidsPersonalisation & { recipientOnly?: boolean; onRsvp: (attending: boolean) => void }) {
   const [santaView, setSantaView] = useState<"letter" | "cert">("letter");
   const [squish, setSquish] = useState(0);
+  const squishy = SQUISHY_CHARACTERS[squish % SQUISHY_CHARACTERS.length];
   return <>
     {scene === "santa" && (<div id="scene-santa" className="scene-panel relative z-10 flex flex-col h-full justify-between">
               
@@ -99,44 +101,23 @@ export default function KidsScenes({ scene, recipientName, extraDetail, customMe
     {scene === "squishy" && (<div id="scene-squishy" className="scene-panel relative z-10 flex flex-col h-full justify-between">
               <div className="flex items-center justify-between gap-2 mb-3">
                 <span className="inline-flex items-center gap-1.5 bg-berry-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                  <span>✂️ Kid-Tested Squishy Studio</span>
+                  <span>✂️ Squishy Maker Kit · {SQUISHY_CHARACTERS.length} characters</span>
                 </span>
-                <button onClick={() => window.print()} className="inline-flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 text-forest-950 text-xs font-bold px-3.5 py-1.5 rounded-xl shadow transition">
-                  <span>🖨️ Print A4 Squishy Template</span>
-                </button>
+                <a href="#squishy-crafts" className="inline-flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 text-forest-950 text-xs font-bold px-3.5 py-1.5 rounded-xl shadow transition">
+                  <span>🖨️ See the printable kit ↓</span>
+                </a>
               </div>
 
               <div className="bg-parchment-50 text-forest-950 rounded-2xl p-4 sm:p-6 shadow-xl border-2 border-amber-400 flex-1 flex flex-col justify-between">
                 <div className="flex flex-col sm:flex-row items-center gap-5">
-                  
-                  <div role="button" tabIndex={0} aria-label="Squish Berry the Robin" onClick={() => setSquish(squish + 1)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSquish(squish + 1); } }} className="cursor-pointer group relative bg-gradient-to-b from-emerald-100 to-amber-100 p-4 rounded-2xl border-2 border-dashed border-forest-700/40 text-center shrink-0 w-44">
+
+                  <div role="button" tabIndex={0} aria-label={`Squish ${squishy.name} and meet the next squishy`} onClick={() => setSquish(squish + 1)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSquish(squish + 1); } }} className="cursor-pointer group relative bg-gradient-to-b from-emerald-100 to-amber-100 p-4 rounded-2xl border-2 border-dashed border-forest-700/40 text-center shrink-0 w-44">
                     <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-forest-900 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
                       👆 Tap to Squish Me!
                     </span>
-                    
-                    <svg id="squishySvgHero" key={squish} className="w-28 h-28 mx-auto animate-squish squish-active transition-transform" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      
-                      <rect x="8" y="8" width="104" height="104" rx="28" fill="#ffffff" stroke="#bc4749" strokeWidth="2.5" strokeDasharray="6 4"/>
-                      
-                      <ellipse cx="60" cy="66" rx="34" ry="32" fill="#7f4f24"/>
-                      
-                      <ellipse cx="60" cy="72" rx="22" ry="20" fill="#e63946"/>
-                      
-                      <circle cx="46" cy="54" r="5.5" fill="#1b4332"/>
-                      <circle cx="44.5" cy="52" r="2" fill="#ffffff"/>
-                      <circle cx="74" cy="54" r="5.5" fill="#1b4332"/>
-                      <circle cx="72.5" cy="52" r="2" fill="#ffffff"/>
-                      
-                      <ellipse cx="37" cy="60" rx="4.5" ry="2.5" fill="#ff8fa3"/>
-                      <ellipse cx="83" cy="60" rx="4.5" ry="2.5" fill="#ff8fa3"/>
-                      
-                      <polygon points="56,57 64,57 60,63" fill="#ffb703"/>
-                      
-                      <path d="M35 42 C45 20, 75 20, 86 42 Z" fill="#bc4749"/>
-                      <rect x="32" y="38" width="56" height="8" rx="4" fill="#ffffff"/>
-                      <circle cx="60" cy="22" r="6" fill="#ffffff"/>
-                    </svg>
-                    <p className="text-[11px] font-bold text-forest-800 mt-1">“Berry the Robin” Squishy</p>
+                    <span key={squish} className="block animate-squish squish-active"><SquishyPortrait character={squishy} className="w-28 h-28 mx-auto" /></span>
+                    <p className="text-[11px] font-bold text-forest-800 mt-1">“{squishy.name}” Squishy</p>
+                    <p className="text-[10px] text-forest-700">{squish % SQUISHY_CHARACTERS.length + 1} of {SQUISHY_CHARACTERS.length} in the kit</p>
                   </div>
 
                   
