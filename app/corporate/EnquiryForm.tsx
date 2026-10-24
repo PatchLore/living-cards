@@ -48,7 +48,8 @@ export default function EnquiryForm() {
     <form onSubmit={submit} className="grid gap-5 sm:grid-cols-2" noValidate>
       <label className="text-sm font-semibold text-ink">
         Your name *
-        <input name="name" required autoComplete="name" className={field} />
+        <input name="name" required autoComplete="given-name" className={field} />
+        <span className="mt-1 block text-sm font-normal text-ink/65">Your first name is fine.</span>
       </label>
       <label className="text-sm font-semibold text-ink">
         Email *
@@ -90,6 +91,7 @@ export default function EnquiryForm() {
       <label className="text-sm font-semibold text-ink sm:col-span-2">
         Anything else we should know?
         <textarea name="notes" rows={4} maxLength={1000} className={`${field} resize-none`} placeholder="Roughly who the cards are for, and anything you'd like included." />
+        <span className="mt-1 block text-sm font-normal text-ink/65">Please don’t include recipients’ names or personal details here; we’ll ask for those when your cards are made.</span>
       </label>
 
       {/* Honeypot: hidden from people, filled in by spam bots. */}

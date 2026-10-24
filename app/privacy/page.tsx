@@ -45,7 +45,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold mb-3 text-slate-900">4. Data Storage</h2>
             <p>
-              Your card data (including messages and recipient names) is stored securely in our database. We retain this information to ensure your cards remain accessible via shareable links. Payment information is handled exclusively by Stripe and is not stored on our servers.
+              Your card data (including messages and recipient names) is stored securely in our database so your card’s private link works. Each link stays open for 12 months from purchase; after that, the recipient’s name, your message and your email address are deleted automatically, and we keep only the order record (product, date and any tree planted). Payment information is handled exclusively by Stripe and is not stored on our servers.
             </p>
           </section>
 

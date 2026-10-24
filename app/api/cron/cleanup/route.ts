@@ -1,21 +1,24 @@
 import { NextResponse } from "next/server";
 import { cleanUpRsvps } from "../../../../lib/rsvp";
+import { deleteExpiredCardContent } from "../../../../lib/cardRetention";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Called daily by Vercel Cron (vercel.json): enforces the party RSVP retention limits.
+// Called daily by Vercel Cron (vercel.json): enforces the retention limits for
+// party RSVPs and for card content once a card's link has expired.
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
   try {
-    const result = await cleanUpRsvps();
-    console.log(`[CLEANUP] RSVPs: ${result.deleted} deleted, ${result.hashesCleared} IP hashes cleared`);
-    return NextResponse.json({ ok: true, ...result });
+    const rsvps = await cleanUpRsvps();
+    const cards = await deleteExpiredCardContent();
+    console.log(`[CLEANUP] RSVPs: ${rsvps.deleted} deleted, ${rsvps.hashesCleared} IP hashes cleared; expired cards cleared: ${cards.cardsCleared} (+${cards.legacyOrdersCleared} legacy), ${cards.rsvpsDeleted} RSVPs`);
+    return NextResponse.json({ ok: true, ...rsvps, ...cards });
   } catch (err) {
-    console.error("[CLEANUP] RSVP cleanup failed:", err instanceof Error ? err.message : err);
+    console.error("[CLEANUP] Cleanup failed:", err instanceof Error ? err.message : err);
     return NextResponse.json({ ok: false }, { status: 500 });
   }
 }

@@ -21,7 +21,7 @@ function PrintButton({ label }: { label: string }) {
   );
 }
 
-export default function KidsScenes({ scene, recipientName, extraDetail, customMessage, recipientOnly = false, shareId, workshop, onWorkshop }: KidsPersonalisation & { recipientOnly?: boolean; shareId?: string; workshop?: WorkshopDesign | null; onWorkshop?: (design: WorkshopDesign) => void }) {
+export default function KidsScenes({ scene, recipientName, extraDetail, customMessage, recipientOnly = false, shareId, serverNow, workshop, onWorkshop }: KidsPersonalisation & { recipientOnly?: boolean; shareId?: string; serverNow?: number; workshop?: WorkshopDesign | null; onWorkshop?: (design: WorkshopDesign) => void }) {
   const keepsake = { recipientName, extraDetail, customMessage };
   const [santaView, setSantaView] = useState<"letter" | "cert">("letter");
   return <>
@@ -48,7 +48,7 @@ export default function KidsScenes({ scene, recipientName, extraDetail, customMe
               {recipientOnly && <PrintSheet label="Nice List certificate"><NiceListCertificate {...keepsake} /></PrintSheet>}
             </div>)}
 
-    {scene === "advent" && <AdventVillage recipientName={recipientName} extraDetail={extraDetail} customMessage={customMessage} recipientOnly={recipientOnly} />}
+    {scene === "advent" && <AdventVillage recipientName={recipientName} extraDetail={extraDetail} customMessage={customMessage} recipientOnly={recipientOnly} serverNow={serverNow} />}
     {scene === "squishy" && (<div id="scene-squishy" className="scene-panel relative z-10 flex flex-col h-full justify-between gap-3">
               <SquishyWorkshop recipientName={recipientName} extraDetail={extraDetail} customMessage={customMessage} design={workshop ?? null} onDesign={design => onWorkshop?.(design)} />
               <a href="#squishy-crafts" className="self-center rounded-xl bg-amber-400 px-4 py-2 text-xs font-bold text-forest-950 shadow transition hover:bg-amber-300">🖨️ See the whole printable kit ↓</a>

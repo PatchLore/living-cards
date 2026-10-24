@@ -59,8 +59,27 @@ async function main() {
   process.env.STRIPE_SECRET_KEY = "sk_test_offline";
   process.env.STRIPE_PRICE_ID = "price_legacy_offline";
   const { POST } = require("../app/api/checkout/route.ts");
-  const checkout = (body) => POST(new Request("https://cardroots.test/api/checkout", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }));
+  // Every order form sends the ticked immediate-supply consent unless a test says otherwise.
+  const checkout = (body) => POST(new Request("https://cardroots.test/api/checkout", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ immediateSupplyConsent: true, ...body }) }));
   const base = { scene: "santa", recipientName: "Leo", extraDetail: "Kind to friends", customMessage: "Keep shining!", packageType: "single" };
+  const consent = { supplyConsent: "immediate-supply-v1" };
+
+  // Sales are closed unless CHECKOUT_ENABLED is exactly "true": refused before Stripe is called.
+  for (const value of [undefined, "false", "TRUE", "1"]) {
+    if (value === undefined) delete process.env.CHECKOUT_ENABLED; else process.env.CHECKOUT_ENABLED = value;
+    const closed = await checkout(base);
+    assert.equal(closed.status, 503);
+    assert.equal((await closed.json()).closed, true);
+  }
+  assert.equal(sessions.length, 0, "a closed checkout must never create a Stripe session");
+  process.env.CHECKOUT_ENABLED = "true";
+
+  // Immediate supply needs the buyer's explicit, ticked consent.
+  for (const immediateSupplyConsent of [false, undefined, "true", 1]) {
+    assert.equal((await checkout({ ...base, immediateSupplyConsent })).status, 400);
+    assert.equal((await checkout({ cardKey: "live-santa-sleigh", recipient: "Maya", message: "Hi", immediateSupplyConsent })).status, 400);
+  }
+  assert.equal(sessions.length, 0, "orders without consent must never create a Stripe session");
 
   for (const [scene, price] of [["santa", 500], ["advent", 1000], ["tooth", 500], ["party", 700]]) {
     const input = { ...base, scene, amount: 1, price: 1 };
@@ -68,7 +87,7 @@ async function main() {
     const session = sessions.at(-1);
     assert.equal(session.line_items[0].price_data.unit_amount, price);
     assert.equal(session.line_items[0].price_data.currency, "gbp");
-    assert.deepEqual(session.metadata, { product: "kids", kidsVersion: "1", cardKey: kidsCardKey(input), ...base, scene });
+    assert.deepEqual(session.metadata, { product: "kids", kidsVersion: "1", cardKey: kidsCardKey(input), ...base, scene, ...consent });
     assert(!session.success_url.includes("Leo"));
   }
   delete process.env.STRIPE_PRICE_ID;
@@ -111,7 +130,7 @@ async function main() {
   const oldInput = { cardKey: "live-santa-sleigh", recipient: "Maya", message: "Merry Christmas" };
   assert.equal((await checkout(oldInput)).status, 200);
   assert.deepEqual(sessions.at(-1).line_items, [{ price: "price_legacy_offline", quantity: 1 }]);
-  assert.deepEqual(sessions.at(-1).metadata, oldInput);
+  assert.deepEqual(sessions.at(-1).metadata, { ...oldInput, ...consent });
   assert.equal((await checkout({ ...oldInput, cardKey: "not-a-card" })).status, 400);
 
   for (const scene of Object.keys(KIDS_SCENES)) {
@@ -171,7 +190,7 @@ async function main() {
   assert.equal(legacyPreview.eyebrow, "You've got a card");
   assert.equal(legacyMetadata.referrer, undefined);
   assert.deepEqual(legacyMetadata.robots, { index: false, follow: false });
-  console.log("Kids checks passed: all prices, bundle, validation, legacy checkout, paid fulfillment, retry idempotency, token payloads, email escaping and private social metadata.");
+  console.log("Kids checks passed: closed checkout, supply consent, all prices, bundle, validation, legacy checkout, paid fulfillment, retry idempotency, token payloads, email escaping and private social metadata.");
 }
 
 main().catch((error) => { console.error(error); process.exitCode = 1; }).finally(() => { Module._load = load; });

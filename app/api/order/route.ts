@@ -47,6 +47,7 @@ export async function GET(req: Request) {
       message: kids?.customMessage ?? card.message,
       ...(kids ? { kids } : {}),
       emailedTo: card.email_sent ? maskEmail(card.stripe_customer_email) : null,
+      createdAt: card.created_at,
     });
   } catch (err) {
     console.error(`[ORDER] Failed to load ${sessionId}:`, err instanceof Error ? err.message : err);

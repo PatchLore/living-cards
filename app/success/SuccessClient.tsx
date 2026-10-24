@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { getCard } from "../../lib/catalog";
 import CardArt from "../../components/site/CardArt";
 import { KIDS_SCENES, type KidsPersonalisation } from "../../lib/kids";
+import { IMMEDIATE_SUPPLY_CONFIRMATION, cardLinkExpiresAt, formatUkDate } from "../../lib/sales";
 
 type Order = {
   status: "ready";
@@ -14,6 +15,7 @@ type Order = {
   recipient: string;
   message: string;
   emailedTo: string | null;
+  createdAt: string;
   kids?: KidsPersonalisation;
 };
 
@@ -160,6 +162,10 @@ export default function SuccessClient() {
               : "We'll also email you this link so you can find it later."}{" "}
             🌳 A tree is planted with your order.
           </p>
+          <p className="mt-3 text-sm text-cream/60">
+            The private link works until {formatUkDate(cardLinkExpiresAt(order.createdAt))}. After that, the name and message are deleted.
+          </p>
+          <p className="mt-3 text-sm text-cream/60">{IMMEDIATE_SUPPLY_CONFIRMATION}</p>
           <Link href={kids ? "/kids" : "/#christmas"} className="mt-6 inline-block text-sm font-semibold text-gold hover:underline">
             {kids ? "Create more kids magic →" : "Send another card →"}
           </Link>

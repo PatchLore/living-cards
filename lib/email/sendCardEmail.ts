@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { getCard } from "../catalog";
 import { siteUrl } from "../siteUrl";
 import { KIDS_SCENES, parseKidsCardKey } from "../kids";
+import { IMMEDIATE_SUPPLY_CONFIRMATION, cardLinkExpiresAt, formatUkDate } from "../sales";
 
 const escapeHtml = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -13,13 +14,17 @@ export function buildCardEmail({
   cardKey,
   recipientName,
   treeLocation,
+  createdAt,
 }: {
   shareId: string;
   cardKey: string;
   recipientName: string;
   /** Set once a tree has been registered for this card. */
   treeLocation?: string;
+  /** When the card was made; its link expires a set time later. Defaults to now. */
+  createdAt?: string | Date;
 }) {
+  const expires = formatUkDate(cardLinkExpiresAt(createdAt ?? new Date()));
   const base = siteUrl();
   const card = getCard(cardKey);
   const kids = parseKidsCardKey(cardKey);
@@ -72,6 +77,10 @@ export function buildCardEmail({
           <p style="margin:0 0 6px;font-size:13px;color:#6b7280;">Card link</p>
           <p style="margin:0;font-size:14px;color:#0f1d2e;word-break:break-all;"><a href="${cardUrl}" style="color:#0f1d2e;">${cardUrl}</a></p>
         </td></tr>
+        <tr><td style="padding:4px 32px 20px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.55;color:#4b5563;">
+          <p style="margin:0 0 8px;">This private link works until <strong>${escapeHtml(expires)}</strong>. After that, the name and message are deleted.</p>
+          <p style="margin:0;">${escapeHtml(IMMEDIATE_SUPPLY_CONFIRMATION)}</p>
+        </td></tr>
         <tr><td style="padding:20px 32px 28px;border-top:1px solid #eee4d3;background:#faf6ee;font-family:Arial,Helvetica,sans-serif;text-align:center;">
           <p style="margin:0;font-size:13px;line-height:1.5;color:#4b5563;">🌳 Your card helps plant a real tree.<br>Questions? Reply to this email or write to info@cardroots.com.</p>
         </td></tr>
@@ -81,6 +90,11 @@ export function buildCardEmail({
 </body>
 </html>`;
 
+  const partyLine = kids?.scene === "party"
+    ? `Guests can reply on the invite. We’ll email you each reply (their first name and whether they can come).
+
+`
+    : "";
   const treeLine = treeLocation
     ? `Your tree is registered in ${treeLocation}. Its verified planting certificate appears on the card page.
 
@@ -92,7 +106,11 @@ Open it here: ${cardUrl}
 
 Share this link with them, or forward this email.
 
-${treeLine}Questions? info@cardroots.com`;
+${partyLine}${treeLine}This private link works until ${expires}. After that, the name and message are deleted.
+
+${IMMEDIATE_SUPPLY_CONFIRMATION}
+
+Questions? info@cardroots.com`;
 
   return { subject, html, text, cardUrl };
 }
@@ -108,14 +126,16 @@ export async function sendCardEmail({
   cardKey,
   recipientName,
   treeLocation,
+  createdAt,
 }: {
   to: string;
   shareId: string;
   cardKey: string;
   recipientName: string;
   treeLocation?: string;
+  createdAt?: string | Date;
 }) {
-  const email = buildCardEmail({ shareId, cardKey, recipientName, treeLocation });
+  const email = buildCardEmail({ shareId, cardKey, recipientName, treeLocation, createdAt });
 
   if (process.env.EMAIL_DRY_RUN === "1") {
     const dir = path.join(process.cwd(), ".email-previews");

@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { KIDS_BUNDLE_PRICE, KIDS_LIMITS, KIDS_SCENES, isKidsSceneForSale, kidsBundleValue, kidsIncludedScenes, kidsPrice, kidsSceneDetails, type KidsPersonalisation, type KidsScene, type KidsSceneDetails } from "../../lib/kids";
+import { CARD_LINK_MONTHS, CHECKOUT_CLOSED_MESSAGE, IMMEDIATE_SUPPLY_CONSENT } from "../../lib/sales";
+import { useSalesOpen } from "../site/SalesStatus";
 import KidsScenes from "./KidsScenes";
 import { kidsFontVariables } from "./kidsFonts";
 import { isWorkshopDesign, type WorkshopDesign } from "./workshopOptions";
@@ -58,7 +60,7 @@ function PreviewWatermark() {
   );
 }
 
-export default function KidsStudio({ initialData, recipientOnly = false, shareId, sceneFromUrl = false }: { initialData?: KidsPersonalisation; recipientOnly?: boolean; shareId?: string; sceneFromUrl?: boolean }) {
+export default function KidsStudio({ initialData, recipientOnly = false, shareId, sceneFromUrl = false, serverNow }: { initialData?: KidsPersonalisation; recipientOnly?: boolean; shareId?: string; sceneFromUrl?: boolean; serverNow?: number }) {
   const start = initialData || defaults;
   const [data, setData] = useState<KidsPersonalisation>(start);
   // The experience being bought; `data.scene` is the one on screen, which in a bundle can be another included one.
@@ -70,6 +72,8 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const salesOpen = useSalesOpen();
   const [workshop, setWorkshop] = useState<WorkshopDesign | null>(null);
   const [workshopLoaded, setWorkshopLoaded] = useState(!recipientOnly);
   const [draftReady, setDraftReady] = useState(recipientOnly);
@@ -158,9 +162,11 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
     if (busy) return;
     setError("");
     if (!data.recipientName.trim()) { setError("Please add the child’s first name."); return; }
+    if (!salesOpen) { setError(CHECKOUT_CLOSED_MESSAGE); return; }
+    if (!consent) { setError("Please tick the box to confirm you want your order delivered straight away."); return; }
     setBusy(true);
     try {
-      const response = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(checkoutBody()) });
+      const response = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...checkoutBody(), immediateSupplyConsent: consent }) });
       const result = await response.json();
       if (!response.ok || !result.url) throw new Error(result.error || "We couldn’t start checkout. Please try again.");
       window.location.assign(result.url);
@@ -202,7 +208,7 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2 px-1 text-sm text-parchment-100"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />{preview ? "Your personalised creation" : "Live interactive preview · Updates as you type"}</span><button type="button" onClick={() => setReplay(value => value + 1)} className="min-h-[44px] rounded-full bg-forest-800 px-4 font-semibold text-amber-300 hover:bg-forest-700">↻ Replay animation</button></div>
               <div id="sceneViewport" className="relative flex min-h-[480px] flex-col justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-[#0b1f17] via-[#133326] to-[#0a1912] p-4 sm:min-h-[540px] sm:p-7">
                 <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-75" aria-hidden>{Array.from({ length: 18 }, (_, i) => <span key={i} className="animate-twinkle absolute select-none text-amber-200/60" style={{ left: `${i * 19 % 96}%`, top: `${i * 29 % 92}%`, animationDelay: `${i * .35}s`, fontSize: `${10 + i % 8}px` }}>{["✨", "❄️", "⭐", "•"][i % 4]}</span>)}</div>
-                {(workshopLoaded || data.scene !== "squishy") && <KidsScenes key={`${data.scene}-${preview}-${replay}`} {...displayData} recipientOnly={recipientOnly} shareId={shareId} workshop={workshop} onWorkshop={saveWorkshop} />}
+                {(workshopLoaded || data.scene !== "squishy") && <KidsScenes key={`${data.scene}-${preview}-${replay}`} {...displayData} recipientOnly={recipientOnly} shareId={shareId} serverNow={serverNow} workshop={workshop} onWorkshop={saveWorkshop} />}
                 {!recipientOnly && <PreviewWatermark />}
               </div>
             </div>
@@ -217,17 +223,28 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
             </div>}
             <p className="mb-5 rounded-xl border border-forest-600/20 bg-forest-100/70 p-3 text-sm leading-relaxed text-forest-800">🔒 <strong>Our parent privacy promise:</strong> First names only. Please leave out surnames, photos, birthdays, contact details and home addresses.</p>
             <div className="space-y-4">
-              <div><label htmlFor="childNameInput" className="mb-1.5 block text-sm font-semibold text-forest-900">Child’s first name</label><input id="childNameInput" name="recipientName" required autoComplete="off" maxLength={KIDS_LIMITS.recipientName} value={data.recipientName} onChange={e => setData({ ...data, recipientName: e.target.value })} placeholder="e.g. Leo, Maya, Oliver…" className="kids-input" /></div>
+              <div><label htmlFor="childNameInput" className="mb-1.5 block text-sm font-semibold text-forest-900">Child’s first name</label><input id="childNameInput" name="recipientName" required autoComplete="off" maxLength={KIDS_LIMITS.recipientName} value={data.recipientName} onChange={e => setData({ ...data, recipientName: e.target.value })} placeholder="e.g. Leo, Maya, Oliver…" aria-describedby="childNameHint" className="kids-input" /><p id="childNameHint" className="mt-1.5 text-sm text-forest-700">First name only, please. No surnames, birthdays or addresses.</p></div>
               <div><label htmlFor="extraFieldInput" className="mb-1.5 block text-sm font-semibold text-forest-900">{config.extraLabel}</label><input id="extraFieldInput" name="extraDetail" autoComplete="off" maxLength={KIDS_LIMITS.extraDetail} value={data.extraDetail} onChange={e => setData({ ...data, extraDetail: e.target.value })} className="kids-input" /></div>
               <div><div className="mb-1.5 flex justify-between gap-3 text-sm"><label htmlFor="customMessageInput" className="font-semibold text-forest-900">Your personal message</label><span className="text-forest-700">{data.customMessage.length} / {KIDS_LIMITS.customMessage}</span></div><textarea id="customMessageInput" name="customMessage" rows={4} maxLength={KIDS_LIMITS.customMessage} value={data.customMessage} onChange={e => setData({ ...data, customMessage: e.target.value })} className="kids-input resize-y" /><div className="mt-2 flex flex-wrap gap-1.5">{config.chips.map(chip => <button type="button" key={chip} onClick={() => setData({ ...data, customMessage: chip })} className="rounded-lg border border-parchment-300 bg-parchment-100 px-2.5 py-1.5 text-left text-sm text-forest-800 hover:bg-parchment-200">+ “{chip}”</button>)}</div></div>
               <fieldset className="border-t border-parchment-200 pt-4"><legend className="mb-2 text-sm font-bold uppercase tracking-wider text-forest-700">3. Choose your package</legend><div className="space-y-2.5">
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-3 ${data.packageType === "single" ? "border-forest-800 bg-forest-100/50" : "border-parchment-300"}`}><input type="radio" name="packageOption" value="single" checked={data.packageType === "single"} onChange={() => setPackage("single")} /><span className="min-w-0 flex-1"><strong className="block text-sm text-forest-900">Single: {KIDS_SCENES[primary].shortTitle}</strong><span className="text-sm text-forest-700">Instant link + 1 real tree</span></span><strong className="font-serif text-xl text-forest-900">£{KIDS_SCENES[primary].price}</strong></label>
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-3 ${data.packageType === "bundle" ? "border-forest-800 bg-forest-100/50" : "border-parchment-300"}`}><input type="radio" name="packageOption" value="bundle" checked={data.packageType === "bundle"} onChange={() => setPackage("bundle")} /><span className="min-w-0 flex-1"><strong className="block text-sm text-forest-950">🌟 Complete Kids Magical Bundle</strong><span className="mt-1 block text-sm leading-relaxed text-forest-700">Santa Scroll + Nice List + 24-Day Advent + Tooth Fairy Receipt + 1 tree{primary === "party" ? ` + ${KIDS_SCENES[primary].shortTitle}` : ""}</span></span><span className="shrink-0 text-right"><span className="block text-sm text-forest-700 line-through">£{kidsBundleValue(primary)}</span><strong className="font-serif text-xl text-forest-900">£{KIDS_BUNDLE_PRICE}</strong></span></label>
               </div></fieldset>
-              <button type="submit" disabled={busy} className="flex w-full items-center justify-between gap-2 rounded-2xl bg-forest-900 px-4 py-3.5 font-semibold text-white shadow-lg transition hover:bg-forest-800 disabled:cursor-wait disabled:opacity-60"><span>{busy ? "Opening secure checkout…" : "🌲 Continue to Checkout"}</span><span className="shrink-0 rounded-xl bg-amber-400 px-3 py-1 text-sm font-bold text-forest-950">£{price} · {data.packageType === "bundle" ? "Bundle" : "Single"}</span></button>
+              {salesOpen ? (<>
+                <label htmlFor="supplyConsent" className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-forest-800">
+                  <input id="supplyConsent" type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-0.5 h-5 w-5 shrink-0" />
+                  <span>{IMMEDIATE_SUPPLY_CONSENT}</span>
+                </label>
+                <button type="submit" disabled={busy} className="flex w-full items-center justify-between gap-2 rounded-2xl bg-forest-900 px-4 py-3.5 font-semibold text-white shadow-lg transition hover:bg-forest-800 disabled:cursor-wait disabled:opacity-60"><span>{busy ? "Opening secure checkout…" : "🌲 Continue to Checkout"}</span><span className="shrink-0 rounded-xl bg-amber-400 px-3 py-1 text-sm font-bold text-forest-950">£{price} · {data.packageType === "bundle" ? "Bundle" : "Single"}</span></button>
+              </>) : (
+                <div role="status" className="rounded-2xl border border-amber-400/60 bg-amber-50 p-4 text-forest-900">
+                  <p className="font-serif text-lg font-bold">Opening soon ✨</p>
+                  <p className="mt-1 text-sm">{CHECKOUT_CLOSED_MESSAGE}</p>
+                </div>
+              )}
               {error && <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{error}</p>}
-              {includedScenes.includes("advent") && new Date().getMonth() !== 11 && <p className="text-sm leading-relaxed text-forest-700">🏘️ The Advent Village link works straight away, and its first door opens on 1 December.</p>}
-              <p className="text-sm leading-relaxed text-forest-700">This is a watermarked preview. After payment you get a private link to the full creation to share with them.</p>
+              {includedScenes.includes("advent") && <p className="text-sm leading-relaxed text-forest-700">🏘️ The Advent Village link works straight away. A new door opens at midnight (UK time) each day from 1 to 24 December.</p>}
+              <p className="text-sm leading-relaxed text-forest-700">This is a watermarked preview. After payment you get a private link to the full creation to share with them. The link stays open for {CARD_LINK_MONTHS} months, then the name and messages are deleted.</p>
             </div>
           </form>}
         </div>

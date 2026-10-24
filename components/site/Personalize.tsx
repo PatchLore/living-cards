@@ -3,7 +3,9 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { track } from "@vercel/analytics";
 import { type CatalogCard, LIMITS, PRICE_LABEL } from "../../lib/catalog";
+import { CARD_LINK_MONTHS, CHECKOUT_CLOSED_MESSAGE, IMMEDIATE_SUPPLY_CONSENT } from "../../lib/sales";
 import CardArt from "./CardArt";
+import { useSalesOpen } from "./SalesStatus";
 
 const SUGGESTIONS: Record<string, string[]> = {
   Christmas: [
@@ -37,8 +39,10 @@ export function PersonalizePanel({ card, initialRecipient = "", layout = "inline
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const salesOpen = useSalesOpen();
   const [playKey, setPlayKey] = useState(0);
-  const ids = { to: useId(), msg: useId() };
+  const ids = { to: useId(), msg: useId(), consent: useId(), toHint: useId() };
   const suggestions = SUGGESTIONS[card.category] ?? SUGGESTIONS.default;
 
   // A browser "back" from Stripe can restore this page with busy=true.
@@ -54,6 +58,8 @@ export function PersonalizePanel({ card, initialRecipient = "", layout = "inline
     const m = message.trim();
     if (!r) return setError("Add who the card is for.");
     if (!m) return setError("Write a short message for the card.");
+    if (!salesOpen) return setError(CHECKOUT_CLOSED_MESSAGE);
+    if (!consent) return setError("Please tick the box to confirm you want your card delivered straight away.");
     setError(null);
     setBusy(true);
     try {
@@ -63,7 +69,7 @@ export function PersonalizePanel({ card, initialRecipient = "", layout = "inline
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cardKey: card.key, recipient: r, message: m }),
+        body: JSON.stringify({ cardKey: card.key, recipient: r, message: m, immediateSupplyConsent: consent }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.url) throw new Error(data.error || "We couldn't start checkout. Please try again.");
@@ -106,8 +112,11 @@ export function PersonalizePanel({ card, initialRecipient = "", layout = "inline
           maxLength={LIMITS.recipient}
           placeholder="e.g. Grandma, Sam, The Patels"
           autoComplete="off"
+          aria-describedby={ids.toHint}
           className="mt-2 rounded-xl border border-ink/15 bg-white px-4 py-3 text-ink placeholder:text-ink/35 focus:border-berry focus:outline-none focus:ring-2 focus:ring-berry/20"
         />
+
+        <p id={ids.toHint} className="mt-1.5 text-sm text-ink/65">First names only, please. No surnames, addresses or other personal details.</p>
 
         <div className="mt-5 flex items-baseline justify-between">
           <label htmlFor={ids.msg} className="text-sm font-semibold text-ink">
@@ -145,15 +154,29 @@ export function PersonalizePanel({ card, initialRecipient = "", layout = "inline
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={busy}
-          className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-berry px-6 py-3.5 text-base font-semibold text-white shadow-md transition hover:bg-berry-deep disabled:cursor-wait disabled:opacity-70"
-        >
-          {busy ? "Opening secure checkout…" : `Continue to payment · ${PRICE_LABEL}`}
-        </button>
+        {salesOpen ? (
+          <>
+            <label htmlFor={ids.consent} className="mt-5 flex cursor-pointer items-start gap-3 text-sm text-ink/80">
+              <input id={ids.consent} type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 h-5 w-5 shrink-0 accent-berry" />
+              <span>{IMMEDIATE_SUPPLY_CONSENT}</span>
+            </label>
+            <button
+              type="submit"
+              disabled={busy}
+              className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-berry px-6 py-3.5 text-base font-semibold text-white shadow-md transition hover:bg-berry-deep disabled:cursor-wait disabled:opacity-70"
+            >
+              {busy ? "Opening secure checkout…" : `Continue to payment · ${PRICE_LABEL}`}
+            </button>
+          </>
+        ) : (
+          <div className="mt-6 rounded-2xl border border-gold/50 bg-gold/15 px-4 py-3 text-ink" role="status">
+            <p className="font-semibold">Opening soon ✨</p>
+            <p className="mt-1 text-sm text-ink/75">{CHECKOUT_CLOSED_MESSAGE}</p>
+          </div>
+        )}
         <ul className="mt-4 space-y-1.5 text-sm text-ink/65">
           <li>✉️ We email you the card link straight after payment</li>
+          <li>🗓️ The private link stays open for {CARD_LINK_MONTHS} months, then the name and message are deleted</li>
           <li>📲 Share it by text, WhatsApp or email, or forward our email</li>
           <li>🔒 Secure payment by Stripe. Card details never reach us.</li>
           <li>🌳 Every card helps plant a real tree</li>

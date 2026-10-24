@@ -86,6 +86,7 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
       cardKey: card.card_key,
       recipientName: card.recipient_name,
       treeLocation: card.tree_id ? TREE_LOCATION : undefined,
+      createdAt: card.created_at,
     });
     console.log(`[FULFIL] Emailed card ${card.share_id} for session ${session.id}`);
   } catch (err) {

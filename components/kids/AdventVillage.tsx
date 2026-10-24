@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { adventDoorsOpen, sleepsUntilAdvent } from "../../lib/adventCalendar";
 import { ADVENT_DAYS, personaliseAdvent } from "./advent";
 import AdventIcon from "./adventIcons";
 
@@ -24,12 +25,6 @@ function saveOpenedDays(days: number[]) {
   } catch {}
 }
 
-/** Whole days from today until 1 December (this year, or next once Christmas has passed). */
-function sleepsUntilAdvent(date: Date) {
-  const year = date.getMonth() === 11 ? date.getFullYear() + 1 : date.getFullYear();
-  const today = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-  return Math.round((Date.UTC(year, 11, 1) - today) / 86_400_000);
-}
 
 const DoorStar = () => (
   <svg aria-hidden="true" viewBox="0 0 20 20" className="h-3 w-3"><path d="M10 1 L12.4 7.6 L19 10 L12.4 12.4 L10 19 L7.6 12.4 L1 10 L7.6 7.6 Z" fill="currentColor" /></svg>
@@ -68,9 +63,11 @@ type Props = {
   extraDetail: string;
   customMessage: string;
   recipientOnly: boolean;
+  /** The server's clock when the page was made, so a wrong device clock can't open doors early. */
+  serverNow?: number;
 };
 
-export default function AdventVillage({ recipientName, extraDetail, customMessage, recipientOnly }: Props) {
+export default function AdventVillage({ recipientName, extraDetail, customMessage, recipientOnly, serverNow }: Props) {
   const [demoUnlocked, setDemoUnlocked] = useState(!recipientOnly);
   const [openedDays, setOpenedDays] = useState<number[]>([]);
   const [activeDay, setActiveDay] = useState<number | null>(null);
@@ -86,15 +83,18 @@ export default function AdventVillage({ recipientName, extraDetail, customMessag
   // The studio preview opens a taster of three doors; the full calendar comes with a purchase.
   const unlockedThrough = !recipientOnly && demoUnlocked ? PREVIEW_DOORS : currentDay;
 
+  // Doors open at midnight UK time; time is taken from the server, kept ticking by the device.
   useEffect(() => {
+    const offset = serverNow ? serverNow - Date.now() : 0;
     const updateDay = () => {
-      const date = new Date();
-      setCurrentDay(date.getMonth() === 11 ? Math.min(date.getDate(), 24) : 0);
-      setSleeps(sleepsUntilAdvent(date));
+      const now = Date.now() + offset;
+      setCurrentDay(adventDoorsOpen(now));
+      setSleeps(sleepsUntilAdvent(now));
     };
     updateDay();
     const timer = window.setInterval(updateDay, 60_000);
     return () => window.clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -145,13 +145,13 @@ export default function AdventVillage({ recipientName, extraDetail, customMessag
           {unlockedThrough
             ? "Tap a door to open today’s chapter of Berry’s Lantern"
             : sleeps && sleeps > 0
-              ? `${sleeps} ${sleeps === 1 ? "sleep" : "sleeps"} until the first door opens on 1 December`
+              ? `${sleeps} ${sleeps === 1 ? "sleep" : "sleeps"} until the first door opens on 1 December (UK time)`
               : "Your first door opens on 1 December"}
         </p>
         <p className="mt-1 text-xs leading-relaxed text-parchment-100">
           {!recipientOnly && demoUnlocked
-            ? `Read the first ${PREVIEW_DOORS} chapters in this preview. After purchase, a new chapter opens each day from 1–24 December, ending on Christmas Eve.`
-            : `Berry the Robin needs one spark of Christmas magic each day so ${recipientName} can light the Christmas Star. A new chapter opens every day from 1–24 December, and earlier doors can be opened again.`}
+            ? `Read the first ${PREVIEW_DOORS} chapters in this preview. After purchase, a new chapter opens at midnight (UK time) each day from 1–24 December, ending on Christmas Eve.`
+            : `Berry the Robin needs one spark of Christmas magic each day so ${recipientName} can light the Christmas Star. A new chapter opens at midnight (UK time) every day from 1–24 December, and earlier doors can be opened again.`}
         </p>
         <p className="mt-2 text-xs text-parchment-200">Made for {recipientName} — featuring {extraDetail}.</p>
       </div>

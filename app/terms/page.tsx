@@ -41,9 +41,12 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3 text-slate-900">5. Refunds</h2>
+            <h2 className="text-xl font-semibold mb-3 text-slate-900">5. Cancellations and Refunds</h2>
             <p>
-              Due to the digital nature of our service and immediate tree planting commitments, we are unable to offer refunds once a card has been created and delivered. If you experience technical issues accessing your card, please contact us and we will resolve the matter promptly.
+              Cards are digital content made and delivered straight away. Before paying, you tick a box to ask us to deliver your order immediately and to acknowledge that you lose your 14-day right to cancel once it has been delivered; your confirmation email repeats this. Because of this, and our immediate tree planting commitments, we are unable to offer refunds once a card has been created and delivered. This does not affect your statutory rights if a card is faulty or not as described. If you experience technical issues accessing your card, please contact us and we will resolve the matter promptly.
+            </p>
+            <p className="mt-3">
+              Card links: each card’s private link stays open for 12 months from purchase. After that the link shows that the card has expired, and the recipient’s name and your message are deleted. Kids advent calendar doors open at midnight UK time each day from 1 to 24 December.
             </p>
           </section>
 
