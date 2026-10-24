@@ -1,4 +1,5 @@
-@import "tailwindcss";
+/* Only scan the site's own source; automatic detection also picked up old prototypes and Remotion files. */
+@import "tailwindcss" source(none);
 
 @source "../app";
 @source "../components";
