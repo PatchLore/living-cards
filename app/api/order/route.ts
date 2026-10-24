@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCardBySessionId } from "../../../lib/db/cards";
 import { NotPaidError, fulfillCheckoutSession, getStripe } from "../../../lib/fulfillment";
+import { parseKidsCard } from "../../../lib/kids";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -37,12 +38,14 @@ export async function GET(req: Request) {
       }
     }
 
+    const kids = parseKidsCard(card.card_key, card.message);
     return NextResponse.json({
       status: "ready",
       shareId: card.share_id,
       cardKey: card.card_key,
       recipient: card.recipient_name,
-      message: card.message,
+      message: kids?.customMessage ?? card.message,
+      ...(kids ? { kids } : {}),
       emailedTo: card.email_sent ? maskEmail(card.stripe_customer_email) : null,
     });
   } catch (err) {

@@ -1,7 +1,8 @@
 import Link from "next/link";
 
-const NAV = [
+const NAV: { href: string; label: string; isNew?: boolean }[] = [
   { href: "/#christmas", label: "Christmas cards" },
+  { href: "/kids", label: "✨ For Kids", isNew: true },
   { href: "/#how", label: "How it works" },
   { href: "/#occasions", label: "Other occasions" },
   { href: "/#faq", label: "FAQ" },
@@ -16,10 +17,11 @@ export default function SiteHeader() {
           <span aria-hidden className="text-xl">🌲</span>
           <span className="font-display text-xl tracking-tight">CardRoots</span>
         </Link>
-        <nav aria-label="Main" className="hidden items-center gap-7 text-sm text-cream/80 md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-5 text-sm text-cream/80 lg:flex">
           {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className="transition hover:text-gold">
+            <Link key={n.href} href={n.href} className="flex items-center gap-1.5 whitespace-nowrap transition hover:text-gold">
               {n.label}
+              {n.isNew && <span className="rounded-full bg-gold/20 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-gold">NEW</span>}
             </Link>
           ))}
         </nav>
@@ -30,6 +32,14 @@ export default function SiteHeader() {
           Send a card
         </Link>
       </div>
+      <nav aria-label="Main (mobile)" className="no-scrollbar flex items-center gap-5 overflow-x-auto border-t border-white/10 px-4 py-3 text-sm text-cream/80 sm:px-6 lg:hidden">
+        {NAV.map((n) => (
+          <Link key={n.href} href={n.href} className="flex shrink-0 items-center gap-1.5 whitespace-nowrap transition hover:text-gold">
+            {n.label}
+            {n.isNew && <span className="rounded-full bg-gold/20 px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-gold">NEW</span>}
+          </Link>
+        ))}
+      </nav>
     </header>
   );
 }

@@ -19,7 +19,15 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/", req.url), 301);
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  // The public studio is indexable; URLs containing personalisation or recipient
+  // details must stay out of search results and cached search previews.
+  if (/^\/kids\/?$/.test(url.pathname) && url.search.length > 0) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  }
+
+  return response;
 }
 
 export const config = {

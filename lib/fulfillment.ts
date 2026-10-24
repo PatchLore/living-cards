@@ -3,6 +3,7 @@ import prisma from "./prisma";
 import { type Card, createCard } from "./db/cards";
 import { sendCardEmail } from "./email/sendCardEmail";
 import { TREE_LOCATION, plantTreeForCard } from "./goodapi";
+import { isKidsCardKey, kidsCardKey, kidsPrice, parseKidsCheckoutMetadata, serializeKidsPersonalisation } from "./kids";
 
 export async function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -27,11 +28,19 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
 
   const md = session.metadata ?? {};
   if (!md.cardKey) console.error(`[FULFIL] Session ${session.id} has no cardKey metadata`);
+  const kidsOrder = md.product === "kids" || isKidsCardKey(md.cardKey);
+  const kids = kidsOrder ? parseKidsCheckoutMetadata(md) : null;
+  if (kidsOrder && (!kids || md.kidsVersion !== "1" || md.cardKey !== kidsCardKey(kids))) {
+    throw new Error(`Invalid kids personalisation on session ${session.id}`);
+  }
+  if (kids && (session.currency !== "gbp" || session.amount_total !== kidsPrice(kids) * 100)) {
+    throw new Error(`Unexpected kids payment amount on session ${session.id}`);
+  }
 
   let card = await createCard({
     cardKey: md.cardKey || "unknown",
-    recipientName: md.recipient?.trim() || "you",
-    message: md.message?.trim() || "",
+    recipientName: kids?.recipientName || md.recipient?.trim() || "you",
+    message: kids ? serializeKidsPersonalisation(kids) : md.message?.trim() || "",
     stripeSessionId: session.id,
     stripeCustomerEmail: session.customer_details?.email ?? null,
   });

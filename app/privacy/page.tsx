@@ -75,7 +75,14 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3 text-slate-900">8. Contact</h2>
+            <h2 className="text-xl font-semibold mb-3 text-slate-900">8. CardRoots For Kids</h2>
+            <p>
+              Children’s Personalisation Data (CardRoots For Kids): When purchasing or personalising a CardRoots Kids creation, we ask only for a child’s first name, one short detail and a message. We never ask for children’s photographs, surnames, dates of birth, email addresses or home addresses, and we ask buyers not to include them. Purchased creations open from a private link that is excluded from search engines and never listed publicly; anyone the link is shared with can open it.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-3 text-slate-900">9. Contact</h2>
             <p>
               If you have questions about this privacy policy, please contact us at{" "}
               <a href="mailto:info@cardroots.com" className="text-blue-600 hover:underline">

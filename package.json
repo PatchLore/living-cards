@@ -9,6 +9,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "next dev",
+    "render:videos": "tsx scripts/render-card-videos.ts",
+    "remotion:studio": "remotion studio remotion/index.ts",
+    "remotion:render": "remotion render remotion/index.ts HalloweenShort out/halloween-short.mp4",
     "postinstall": "node scripts/prisma-generate.js",
     "build": "node scripts/prisma-generate.js && next build"
   },
@@ -31,12 +34,17 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "^1.0.11",
+    "@remotion/cli": "^4.0.536",
+    "@remotion/transitions": "^4.0.536",
     "@tailwindcss/postcss": "^4.1.17",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",
+    "remotion": "^4.0.536",
     "tailwindcss": "^4.1.17",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3"
   }
 }

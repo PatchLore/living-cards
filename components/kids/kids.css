@@ -1,0 +1,94 @@
+.kids-studio { background: #faf6f0; color: #0f291e; font-family: var(--font-kids-inter), system-ui, sans-serif; }
+.kids-studio .font-serif, .kids-studio .kids-serif { font-family: var(--font-fraunces), Georgia, serif; }
+.kids-studio .font-hand { font-family: var(--font-kids-caveat), cursive; }
+.kids-studio [id] { scroll-margin-top: 100px; }
+.kids-studio .scene-panel { overflow-wrap: anywhere; }
+.kids-studio #scene-santa > div:first-child, .kids-studio #scene-tooth > div:first-child { flex-wrap: wrap; gap: .5rem; }
+.kids-studio #santaBtnLetter, .kids-studio #santaBtnCert { white-space: nowrap; }
+.kids-studio button, .kids-studio a, .kids-studio input, .kids-studio textarea { -webkit-tap-highlight-color: transparent; }
+.kids-studio button:focus-visible, .kids-studio a:focus-visible, .kids-studio [role=button]:focus-visible { outline: 3px solid #d4a373; outline-offset: 4px; }
+.kids-studio input[type=radio], .kids-studio input[type=checkbox] { accent-color: #1b4332; }
+.kids-input { width: 100%; border: 1px solid #e5d5bc; border-radius: .75rem; padding: .65rem .875rem; color: #081710; font-size: .875rem; }
+.kids-input:focus { outline: 2px solid #40916c55; border-color: #2d6a4f; outline-offset: 1px; }
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1.5deg); }
+}
+@keyframes unrollScroll {
+  0% { transform: scaleY(0.08); opacity: 0; }
+  60% { transform: scaleY(1.03); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+@keyframes stampPop {
+  0% { transform: scale(2.8) rotate(-25deg); opacity: 0; }
+  70% { transform: scale(.9) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-6deg); opacity: 1; }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: .25; transform: scale(.8); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+@keyframes squishBounce {
+  0%, 100% { transform: scale(1, 1); }
+  30% { transform: scale(1.14, .86); }
+  60% { transform: scale(.94, 1.06); }
+}
+.kids-studio .animate-float { animation: floatSlow 4s ease-in-out infinite; }
+.kids-studio .animate-unroll { transform-origin: top center; animation: unrollScroll .85s cubic-bezier(.22, 1, .36, 1) forwards; }
+.kids-studio .animate-stamp { animation: stampPop .65s cubic-bezier(.34, 1.56, .64, 1) .45s both; }
+.kids-studio .animate-twinkle { animation: twinkle 2.4s ease-in-out infinite; }
+.kids-studio .animate-squish:hover, .kids-studio .squish-active { animation: squishBounce .65s ease-in-out; }
+#santaBtnLetter[aria-pressed=false], #santaBtnCert[aria-pressed=false] { background: transparent; color: #f3eadb; }
+#santaBtnLetter[aria-pressed=true], #santaBtnCert[aria-pressed=true] { background: #facc15; color: #081710; font-weight: 700; }
+
+.kids-studio .advent-door { position: relative; isolation: isolate; aspect-ratio: .82; min-width: 0; border: 1px solid #d4a37380; border-radius: .75rem .75rem .4rem .4rem; background: radial-gradient(circle, #facc1544, #081710 75%); perspective: 500px; cursor: pointer; }
+.kids-studio .advent-door-surprise { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(1.25rem, 4vw, 2rem); }
+.kids-studio .advent-door-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .25rem; border: 1px solid #d4a373aa; border-radius: inherit; background: linear-gradient(145deg, #2d6a4f, #0f291e); box-shadow: inset 0 0 0 4px #08171066, inset 0 0 0 5px #d4a37340; transform-origin: left center; backface-visibility: hidden; transition: transform .65s cubic-bezier(.22, 1, .36, 1), filter .2s; }
+.kids-studio .advent-door:not(:disabled):hover .advent-door-face { filter: brightness(1.2); }
+.kids-studio .advent-door-number { font-family: var(--font-fraunces), Georgia, serif; font-size: 1.15rem; font-weight: 700; color: #facc15; }
+.kids-studio .advent-door-decoration { color: #d4a373; font-size: .8rem; }
+.kids-studio .advent-door-handle { position: absolute; right: 12%; top: 55%; width: 4px; height: 4px; border-radius: 50%; background: #facc15; box-shadow: 0 0 4px #facc1555; }
+.kids-studio .advent-door[data-open=true] .advent-door-face { transform: rotateY(-108deg); }
+.kids-studio .advent-door-opened { position: absolute; right: 3px; bottom: 2px; font-size: .7rem; color: #a7f3d0; }
+.kids-studio .advent-door:disabled { cursor: not-allowed; border-color: #2d6a4f; }
+.kids-studio .advent-door:disabled .advent-door-face { background: #0f291e; border-color: #2d6a4f; box-shadow: inset 0 0 0 4px #08171066; }
+.kids-studio .advent-door:disabled .advent-door-number { color: #e5d5bc88; }
+.kids-studio .advent-surprise-dialog { position: fixed; inset: 0; width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow: auto; border: 2px solid #d4a373; border-radius: 1.5rem; color: #0f291e; background: #fdfbf7; box-shadow: 0 24px 80px #0008; }
+.kids-studio .advent-surprise-dialog::backdrop { background: #081710c9; backdrop-filter: blur(5px); }
+.kids-studio .advent-surprise-content { position: relative; padding: 2.5rem 1.5rem 1.75rem; text-align: center; overflow-wrap: anywhere; }
+.kids-studio .advent-surprise-close { position: absolute; top: .5rem; right: .65rem; display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; color: #1b4332; font-size: 1.75rem; cursor: pointer; }
+.kids-studio .advent-surprise-close:hover { background: #e8f5ee; }
+.kids-studio .advent-surprise-icon { margin: 1rem auto; font-size: 4rem; animation: stampPop .5s cubic-bezier(.34, 1.56, .64, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kids-studio *, .kids-studio *::before, .kids-studio *::after { animation: none !important; transition: none !important; }
+}
+
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+  body:has(.kids-studio) { background: white !important; margin: 0; padding: 0; min-height: 0 !important; }
+  body:has(.kids-studio) * { visibility: hidden; }
+  body:has(.kids-studio) > :not(.kids-studio):not(:has(.kids-studio)) { display: none !important; }
+  body:has(.kids-studio) > header, body:has(.kids-studio) > footer,
+  .kids-studio .no-print { display: none !important; }
+  .kids-studio { background: white !important; }
+  .kids-studio #squishy-crafts, .kids-studio #squishy-crafts > div { margin: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
+  #printable-squishy-sheet, #printable-squishy-sheet * { visibility: visible !important; }
+  #printable-squishy-sheet { position: absolute; left: 0; top: 0; width: 100%; max-width: 186mm !important; margin: 0 !important; padding: 8mm !important; box-sizing: border-box; box-shadow: none !important; background: white !important; break-inside: avoid; color: #0f291e !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  #printable-squishy-sheet svg { width: 100%; max-height: 130mm; }
+}
+
+/* Studio preview watermark */
+.kids-watermark span {
+  position: absolute;
+  white-space: nowrap;
+  transform: rotate(-24deg);
+  font: 700 22px/1 var(--font-kids-inter, system-ui), sans-serif;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.16);
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.25);
+}
+.kids-watermark--print span {
+  color: rgba(27, 67, 50, 0.16);
+}

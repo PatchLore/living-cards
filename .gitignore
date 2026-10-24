@@ -19,3 +19,7 @@ tsconfig.tsbuildinfo
 
 _backup/
 .email-previews/
+
+# Remotion promo renders and large source media (kept locally, not deployed)
+out/
+remotion/public/

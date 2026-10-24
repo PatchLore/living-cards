@@ -3,6 +3,7 @@ import { z } from "zod";
 import { LIMITS, isPurchasable } from "../../../lib/catalog";
 import { getStripe } from "../../../lib/fulfillment";
 import { siteUrl } from "../../../lib/siteUrl";
+import { KIDS_LIMITS, KIDS_SCENES, isKidsScene, kidsCardKey, kidsCheckoutMetadata, kidsPrice, parseKidsPersonalisation } from "../../../lib/kids";
 
 export const runtime = "nodejs";
 
@@ -20,15 +21,29 @@ const Body = z.object({
     .max(LIMITS.message, `Keep the message under ${LIMITS.message} characters`),
 });
 
+const KidsDetails = z.object({
+  extraDetail: z.string().trim().max(KIDS_LIMITS.extraDetail, `Keep each detail under ${KIDS_LIMITS.extraDetail} characters`),
+  customMessage: z.string().trim().max(KIDS_LIMITS.customMessage, `Keep each message under ${KIDS_LIMITS.customMessage} characters`),
+});
+
+const KidsBody = z.object({
+  scene: z.string().refine(isKidsScene, "Please choose a kids creation"),
+  recipientName: z.string().trim().min(1, "Please add the child's first name").max(KIDS_LIMITS.recipientName, `Keep the first name under ${KIDS_LIMITS.recipientName} characters`),
+  extraDetail: z.string().trim().max(KIDS_LIMITS.extraDetail, `Keep the detail under ${KIDS_LIMITS.extraDetail} characters`),
+  customMessage: z.string().trim().max(KIDS_LIMITS.customMessage, `Keep the message under ${KIDS_LIMITS.customMessage} characters`),
+  packageType: z.enum(["single", "bundle"]),
+  bundle: z.record(z.string(), KidsDetails).optional(),
+});
+
 export async function POST(req: Request) {
-  const parsed = Body.safeParse(await req.json().catch(() => null));
+  const body = await req.json().catch(() => null);
+  const kidsRequest = body && typeof body === "object" && ("scene" in body || "packageType" in body);
+  const parsed = kidsRequest ? KidsBody.safeParse(body) : Body.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid request" }, { status: 400 });
   }
-  const { cardKey, recipient, message } = parsed.data;
-
-  if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_PRICE_ID) {
-    console.error("[CHECKOUT] STRIPE_SECRET_KEY or STRIPE_PRICE_ID is missing");
+  if (!process.env.STRIPE_SECRET_KEY || (!kidsRequest && !process.env.STRIPE_PRICE_ID)) {
+    console.error("[CHECKOUT] Stripe payment configuration is missing");
     return NextResponse.json({ error: "Payments are not configured" }, { status: 500 });
   }
 
@@ -39,14 +54,30 @@ export async function POST(req: Request) {
 
   try {
     const stripe = await getStripe();
-    // Price amount and currency live on the Stripe Price (STRIPE_PRICE_ID).
+    const kids = kidsRequest ? KidsBody.parse(parsed.data) : null;
+    const legacy = kidsRequest ? null : Body.parse(parsed.data);
+    // A kids price is always chosen here, never from a client-supplied amount.
+    const product = kids ? parseKidsPersonalisation(kids) : null;
+    if (kids && !product) return NextResponse.json({ error: "Please check the bundle personalisation" }, { status: 400 });
+    const cardKey = product ? kidsCardKey(product) : legacy!.cardKey;
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
+      line_items: product
+        ? [{
+            price_data: {
+              currency: "gbp",
+              unit_amount: kidsPrice(product) * 100,
+              product_data: { name: product.packageType === "bundle" ? "CardRoots Complete Kids Magical Bundle" : KIDS_SCENES[product.scene].title },
+            },
+            quantity: 1,
+          }]
+        : [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
       success_url: successUrl,
       cancel_url: cancelUrl,
       // Stripe metadata values max out at 500 characters; LIMITS keeps us under.
-      metadata: { cardKey, recipient, message },
+      metadata: product
+        ? kidsCheckoutMetadata(product)
+        : { cardKey, recipient: legacy!.recipient, message: legacy!.message },
       payment_intent_data: { description: `CardRoots card: ${cardKey}` },
     });
 

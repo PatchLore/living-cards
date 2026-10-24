@@ -3,6 +3,7 @@ import path from "path";
 import { Resend } from "resend";
 import { getCard } from "../catalog";
 import { siteUrl } from "../siteUrl";
+import { KIDS_SCENES, parseKidsCardKey } from "../kids";
 
 const escapeHtml = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
@@ -21,13 +22,17 @@ export function buildCardEmail({
 }) {
   const base = siteUrl();
   const card = getCard(cardKey);
+  const kids = parseKidsCardKey(cardKey);
+  const productTitle = kids ? (kids.packageType === "bundle" ? "Complete Kids Magical Bundle" : KIDS_SCENES[kids.scene].title) : card?.title ?? "card";
   const cardUrl = `${base}/c/${shareId}`;
   const image = `${base}${card?.poster ?? "/og-image.jpg"}`;
   const name = escapeHtml(recipientName || "your recipient");
   const christmas = card?.category === "Christmas";
 
   const who = recipientName || "your recipient";
-  const subject = christmas
+  const subject = kids
+    ? `Your CardRoots Kids creation for ${who} is ready ✨`
+    : christmas
     ? `Your Christmas card for ${who} is ready 🎄`
     : card?.category === "Halloween"
       ? `Your Halloween card for ${who} is ready 🎃`
@@ -50,11 +55,12 @@ export function buildCardEmail({
         </td></tr>
         <tr><td style="background:#0f1d2e;padding:20px 32px 28px;text-align:center;">
           <a href="${cardUrl}" style="text-decoration:none;">
-            <img src="${image}" width="240" alt="${escapeHtml(card?.title ?? "Your card")}" style="display:block;margin:0 auto;width:240px;max-width:100%;border-radius:12px;border:1px solid #2a3a52;">
+            <img src="${image}" width="240" alt="${escapeHtml(productTitle)}" style="display:block;margin:0 auto;width:240px;max-width:100%;border-radius:12px;border:1px solid #2a3a52;">
           </a>
         </td></tr>
         <tr><td style="padding:28px 32px 8px;font-family:Arial,Helvetica,sans-serif;color:#1f2937;font-size:16px;line-height:1.6;">
-          <p style="margin:0 0 16px;">Thank you for your order. Your ${escapeHtml(card?.title ?? "card")} for <strong>${name}</strong> is ready to send.</p>
+          <p style="margin:0 0 16px;">Thank you for your order. Your ${escapeHtml(productTitle)} for <strong>${name}</strong> is ready to send.</p>
+          ${kids?.packageType === "bundle" ? '<p style="margin:0 0 16px;">Your bundle includes the Santa Scroll and Nice List Certificate, Advent Village and printable Paper Squishy Kit. Open the link to explore them together.</p>' : ""}
           ${treeLocation ? `<p style="margin:0 0 16px;background:#f1f7ee;border-radius:10px;padding:12px 14px;"><strong>🌳 Your tree is registered</strong> in ${escapeHtml(treeLocation)}. Its verified planting certificate, with photos and location, appears on the card page.</p>` : ""}
           <p style="margin:0 0 8px;"><strong>How to send it:</strong> share the link below with ${name} by text, WhatsApp or email, or simply forward them this email.</p>
         </td></tr>

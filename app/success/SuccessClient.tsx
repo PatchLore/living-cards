@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCard } from "../../lib/catalog";
 import CardArt from "../../components/site/CardArt";
+import { KIDS_SCENES, type KidsPersonalisation } from "../../lib/kids";
 
 type Order = {
   status: "ready";
@@ -13,6 +14,7 @@ type Order = {
   recipient: string;
   message: string;
   emailedTo: string | null;
+  kids?: KidsPersonalisation;
 };
 
 type State = { kind: "loading" } | { kind: "error"; message: string } | { kind: "ready"; order: Order };
@@ -75,6 +77,7 @@ export default function SuccessClient() {
 
   const { order } = state;
   const card = getCard(order.cardKey);
+  const kids = order.kids;
   const shareUrl = `${window.location.origin}/c/${order.shareId}`;
 
   const copy = async () => {
@@ -97,6 +100,15 @@ export default function SuccessClient() {
       <div className="relative mx-auto grid max-w-5xl items-center gap-12 md:grid-cols-[minmax(0,360px)_1fr]">
         <div className="mx-auto w-full max-w-[360px]">
           {card && <CardArt card={card} recipient={order.recipient} message={order.message} className="shadow-2xl ring-1 ring-white/10" />}
+          {kids && (
+            <div className="rounded-[2rem] border border-gold/30 bg-cream p-8 text-center text-night shadow-2xl">
+              <span className="text-7xl" aria-hidden>{KIDS_SCENES[kids.scene].icon}</span>
+              <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em]">CardRoots For Kids</p>
+              <h2 className="mt-3 font-display text-3xl">{kids.packageType === "bundle" ? "Complete Kids Magical Bundle" : KIDS_SCENES[kids.scene].title}</h2>
+              <p className="mt-4 text-sm text-night/70">Personalised for {order.recipient}, ready to open and share.</p>
+              {kids.packageType === "bundle" && <p className="mt-4 text-sm text-night/70">Santa Scroll, Advent Village and Paper Squishy Kit included.</p>}
+            </div>
+          )}
         </div>
         <div>
           <p className="text-sm uppercase tracking-[0.25em] text-gold">Payment complete</p>
@@ -127,7 +139,7 @@ export default function SuccessClient() {
               </button>
             )}
             <a
-              href={`https://wa.me/?text=${encodeURIComponent(`I've sent you a card 🎄 ${shareUrl}`)}`}
+              href={`https://wa.me/?text=${encodeURIComponent(`I've sent you ${kids ? "some CardRoots Kids magic ✨" : "a card 🎄"} ${shareUrl}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold transition hover:bg-white/10"
@@ -148,8 +160,8 @@ export default function SuccessClient() {
               : "We'll also email you this link so you can find it later."}{" "}
             🌳 A tree is planted with your order.
           </p>
-          <Link href="/#christmas" className="mt-6 inline-block text-sm font-semibold text-gold hover:underline">
-            Send another card →
+          <Link href={kids ? "/kids" : "/#christmas"} className="mt-6 inline-block text-sm font-semibold text-gold hover:underline">
+            {kids ? "Create more kids magic →" : "Send another card →"}
           </Link>
         </div>
       </div>
