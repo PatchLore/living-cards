@@ -20,26 +20,45 @@ model CardOrder {
 }
 
 model Card {
-  id                  String   @id @default(uuid())
-  shareId             String   @unique
-  cardKey             String
-  recipientName       String
-  message             String
+  id            String @id @default(uuid())
+  shareId       String @unique
+  cardKey       String
+  recipientName String
+  message       String
 
   stripeSessionId     String?
   stripeCustomerEmail String?
 
-  treeCertificateUrl  String?
-  treeId              String?
-  treeSpecies         String?
-  treeLocation        String?
-  treeDatePlanted     DateTime?
+  treeCertificateUrl String?
+  treeId             String?
+  treeSpecies        String?
+  treeLocation       String?
+  treeDatePlanted    DateTime?
 
-  emailSent           Boolean  @default(false)
+  emailSent Boolean @default(false)
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  rsvps PartyRsvp[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([shareId])
   @@index([stripeSessionId])
+}
+
+/// A guest's reply to a Kids birthday invite. Holds only a first name and
+/// yes/no; ipHash (a keyed hash, never the raw IP) exists for rate limiting and
+/// is cleared after a day. Rows are deleted by the daily cleanup cron.
+model PartyRsvp {
+  id        String   @id @default(uuid())
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  guestName String
+  attending Boolean
+  ipHash    String?
+  createdAt DateTime @default(now())
+
+  @@index([cardId, createdAt])
+  @@index([ipHash, createdAt])
+  @@index([createdAt])
 }

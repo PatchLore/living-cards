@@ -61,6 +61,7 @@ export function buildCardEmail({
         <tr><td style="padding:28px 32px 8px;font-family:Arial,Helvetica,sans-serif;color:#1f2937;font-size:16px;line-height:1.6;">
           <p style="margin:0 0 16px;">Thank you for your order. Your ${escapeHtml(productTitle)} for <strong>${name}</strong> is ready to send.</p>
           ${kids?.packageType === "bundle" ? '<p style="margin:0 0 16px;">Your bundle includes the Santa Scroll and Nice List Certificate, the 24-chapter Advent Village story and a Tooth Fairy Receipt. Open the link to explore them together.</p>' : ""}
+          ${kids?.scene === "party" ? '<p style="margin:0 0 16px;">Guests can reply on the invite. We’ll email you each reply (their first name and whether they can come).</p>' : ""}
           ${treeLocation ? `<p style="margin:0 0 16px;background:#f1f7ee;border-radius:10px;padding:12px 14px;"><strong>🌳 Your tree is registered</strong> in ${escapeHtml(treeLocation)}. Its verified planting certificate, with photos and location, appears on the card page.</p>` : ""}
           <p style="margin:0 0 8px;"><strong>How to send it:</strong> share the link below with ${name} by text, WhatsApp or email, or simply forward them this email.</p>
         </td></tr>

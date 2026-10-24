@@ -79,6 +79,12 @@ export default function PrivacyPage() {
             <p>
               Children’s Personalisation Data (CardRoots For Kids): When purchasing or personalising a CardRoots Kids creation, we ask only for a child’s first name, one short detail and a message. We never ask for children’s photographs, surnames, dates of birth, email addresses or home addresses, and we ask buyers not to include them. Purchased creations open from a private link that is excluded from search engines and never listed publicly; anyone the link is shared with can open it.
             </p>
+            <p className="mt-3">
+              Party invitation replies: Guests who open a CardRoots Kids birthday invitation can reply to it. We collect only the first name they type (up to 30 characters) and whether they can come. Each reply is emailed to the person who bought the invitation and to no one else. We never ask guests for an email address, phone number or any other detail. To prevent abuse, we keep a scrambled code made from the guest’s internet (IP) address; it cannot be turned back into the address and is erased after 24 hours. Replies are deleted automatically 90 days after they are sent.
+            </p>
+            <p className="mt-3">
+              Analytics: We do not run analytics on private card links. On our other pages, including the Kids studio, we count visits with Vercel Web Analytics, which does not use cookies, and we remove anything after the page address (such as order references) before it is sent. While you personalise a Kids creation, your draft is kept only in your own browser tab and is cleared when you close it.
+            </p>
           </section>
 
           <section>
