@@ -7,7 +7,7 @@ The `/kids` studio adapts the root implementation prompt and HTML reference into
 | Scene | Single purchase | Interaction |
 | --- | ---: | --- |
 | `santa` | £5 | Santa letter / Nice List certificate toggle |
-| `advent` | £10 | 24 animated opening doors with surprise dialogs; the studio preview opens the first three doors; purchased links follow the device’s December date, count down the sleeps before 1 December and remember opened doors per link in that browser’s localStorage |
+| `advent` | £10 | 24 doors telling “Berry’s Lantern”, a personalised 24-chapter story (`components/kids/advent.ts`: title, four-line rhyme, chapter and a real-world “spark” activity per day, `{name}` replaced with the child’s name) with drawn icons (`adventIcons.tsx`, reusing the squishy characters) and an optional browser read-aloud; the studio preview opens the first three doors; purchased links follow the device’s December date, count down the sleeps before 1 December and remember opened doors per link in that browser’s localStorage |
 | `squishy` | £6 | Animated Berry the Robin and personalised printable template |
 | `tooth` | £5 | Tooth Fairy receipt and note |
 | `party` | £7 | Birthday invitation and copyable RSVP replies |
