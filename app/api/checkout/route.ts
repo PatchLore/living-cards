@@ -3,6 +3,7 @@ import { z } from "zod";
 import { LIMITS, isPurchasable } from "../../../lib/catalog";
 import { getStripe } from "../../../lib/fulfillment";
 import { siteUrl } from "../../../lib/siteUrl";
+import { CHECKOUT_CLOSED_MESSAGE, IMMEDIATE_SUPPLY_CONSENT_VERSION, checkoutOpen } from "../../../lib/sales";
 import { KIDS_LIMITS, KIDS_SCENES, isKidsSceneForSale, kidsCardKey, kidsCheckoutMetadata, kidsPrice, parseKidsPersonalisation } from "../../../lib/kids";
 
 export const runtime = "nodejs";
@@ -36,7 +37,16 @@ const KidsBody = z.object({
 });
 
 export async function POST(req: Request) {
+  // Sales are closed until launch: refuse before anything reaches Stripe.
+  if (!checkoutOpen()) {
+    console.warn("[CHECKOUT] Refused: checkout is closed (CHECKOUT_ENABLED is not true)");
+    return NextResponse.json({ error: CHECKOUT_CLOSED_MESSAGE, closed: true }, { status: 503 });
+  }
   const body = await req.json().catch(() => null);
+  // Digital content: the buyer must expressly ask for immediate supply (unticked box on the form).
+  if (!body || typeof body !== "object" || body.immediateSupplyConsent !== true) {
+    return NextResponse.json({ error: "Please tick the box to confirm you want your order delivered straight away." }, { status: 400 });
+  }
   const kidsRequest = body && typeof body === "object" && ("scene" in body || "packageType" in body);
   const parsed = kidsRequest ? KidsBody.safeParse(body) : Body.safeParse(body);
   if (!parsed.success) {
@@ -75,9 +85,11 @@ export async function POST(req: Request) {
       success_url: successUrl,
       cancel_url: cancelUrl,
       // Stripe metadata values max out at 500 characters; LIMITS keeps us under.
-      metadata: product
-        ? kidsCheckoutMetadata(product)
-        : { cardKey, recipient: legacy!.recipient, message: legacy!.message },
+      metadata: {
+        ...(product ? kidsCheckoutMetadata(product) : { cardKey, recipient: legacy!.recipient, message: legacy!.message }),
+        // The record of the immediate-supply consent the buyer ticked.
+        supplyConsent: IMMEDIATE_SUPPLY_CONSENT_VERSION,
+      },
       payment_intent_data: { description: `CardRoots card: ${cardKey}` },
     });
 

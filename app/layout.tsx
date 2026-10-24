@@ -1,6 +1,8 @@
 import "./globals.css";
 import React from "react";
 import PrivateAnalytics from "../components/site/PrivateAnalytics";
+import { SalesStatusProvider } from "../components/site/SalesStatus";
+import { checkoutOpen } from "../lib/sales";
 import { Metadata } from "next";
 import SiteHeader from "../components/site/SiteHeader";
 import SiteFooter from "../components/site/SiteFooter";
@@ -50,9 +52,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en-GB" className={`${display.variable} ${sans.variable}`}>
       <body className="min-h-screen">
         <JsonLd data={[organizationLd, websiteLd]} />
-        <SiteHeader />
-        {children}
-        <SiteFooter />
+        <SalesStatusProvider open={checkoutOpen()}>
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </SalesStatusProvider>
         <PrivateAnalytics />
       </body>
     </html>
