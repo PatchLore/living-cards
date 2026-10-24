@@ -1,6 +1,6 @@
 import "./globals.css";
 import React from "react";
-import { Analytics } from "@vercel/analytics/react";
+import PrivateAnalytics from "../components/site/PrivateAnalytics";
 import { Metadata } from "next";
 import SiteHeader from "../components/site/SiteHeader";
 import SiteFooter from "../components/site/SiteFooter";
@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         {children}
         <SiteFooter />
-        <Analytics />
+        <PrivateAnalytics />
       </body>
     </html>
   );
