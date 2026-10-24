@@ -157,7 +157,8 @@ async function main() {
   sharedCard = { card_key: kidsCardKey(base), recipient_name: "PrivateChildName" };
   const kidsPreview = await image(params);
   const kidsMetadata = await generateMetadata(params);
-  assert.equal(kidsPreview.title, "A little CardRoots magic for you");
+  assert.equal(kidsPreview.title, "A letter from the North Pole");
+  assert.equal(kidsPreview.posters[0], "/cards/kids/santa.jpg");
   assert.equal(kidsPreview.eyebrow, "CardRoots For Kids");
   assert(!JSON.stringify(kidsPreview).includes("PrivateChildName"));
   assert(!JSON.stringify(kidsMetadata).includes("PrivateChildName"));

@@ -73,7 +73,8 @@
 .kids-print-root { display: none; }
 
 @media print {
-  @page { size: A4 portrait; margin: 12mm; }
+  /* No forced paper size, so A4 and A5 both work; the sheets scale to the page. */
+  @page { margin: 12mm; }
   body:has(.kids-print-root) { background: white !important; margin: 0 !important; padding: 0 !important; min-height: 0 !important; }
   body:has(.kids-print-root) > :not(.kids-print-root) { display: none !important; }
   .kids-print-root { display: block; color: #0f291e; font-family: var(--font-kids-inter), system-ui, sans-serif; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
@@ -101,4 +102,94 @@
 }
 .kids-watermark--print span {
   color: rgba(27, 67, 50, 0.16);
+}
+
+/* ===== Keepsakes: Nice List certificate, Santa's letter, Tooth Fairy receipt =====
+   Sized in container units (cqw) with a 14px floor, so one markup serves a phone
+   screen and an A4/A5 print sheet. */
+.kc-sheet { container-type: inline-size; width: 100%; overflow-wrap: break-word; --kc-ink: #0f291e; --kc-gold: #b8862f; --kc-berry: #bc4749; }
+.kc-sheet--receipt { max-width: 440px; margin: 0 auto; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, .45)); transform: rotate(-1deg); }
+.kc-fit { display: block; font-size: calc(var(--fit-size) * var(--fit, 1)); line-height: 1.12; overflow-wrap: normal; word-break: normal; }
+.kc-fit[data-wrap=anywhere] { overflow-wrap: anywhere; }
+.kc-eyebrow { font: 700 clamp(14px, 2.6cqw, 17px)/1.35 var(--font-kids-inter), system-ui, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: var(--kc-berry); text-align: center; }
+.kc-signature { display: flex; min-width: 0; flex-direction: column; align-items: center; text-align: center; color: #7a1f24; }
+.kc-signature-name { font: 700 clamp(26px, 6.6cqw, 42px)/1 var(--font-kids-caveat), cursive; overflow-wrap: normal; }
+.kc-signature-lead { margin-bottom: .25em; font: 500 clamp(15px, 3cqw, 18px)/1.3 var(--font-kids-inter), system-ui, sans-serif; color: #2d6a4f; }
+.kc-signature-role { margin-top: .2em; font: 600 clamp(14px, 2.4cqw, 15px)/1.3 var(--font-kids-inter), system-ui, sans-serif; color: #2d6a4f; }
+.kc-flourish { display: block; width: min(100%, 11em); height: clamp(9px, 2.4cqw, 15px); }
+.kc-signature--left { align-items: flex-start; text-align: left; }
+
+.kc-cert { position: relative; padding: clamp(30px, 9cqw, 64px) clamp(20px, 7cqw, 56px) clamp(24px, 6cqw, 44px); border: max(5px, 1.2cqw) double var(--kc-gold); border-radius: 6px; color: var(--kc-ink); text-align: center;
+  background: radial-gradient(120% 90% at 50% 38%, #fffaf0 0%, #fbf3e1 62%, #f0dfbd 100%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .35), inset 0 0 0 max(6px, 1.8cqw) #fffaf0, inset 0 0 0 calc(max(6px, 1.8cqw) + 1px) rgba(184, 134, 47, .55);
+  print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.kc-cert-corner { position: absolute; width: max(28px, 10cqw); height: max(28px, 10cqw); }
+.kc-cert-title { margin-top: .35em; font: 700 clamp(27px, 7.4cqw, 52px)/1.06 var(--font-fraunces), Georgia, serif; }
+.kc-cert-title span { display: block; color: var(--kc-berry); font-style: italic; }
+.kc-holly { display: block; width: min(62%, 280px); margin: clamp(8px, 2.4cqw, 16px) auto; }
+.kc-cert-lead { font: italic 500 clamp(16px, 3.3cqw, 21px)/1.4 var(--font-fraunces), Georgia, serif; color: #2d6a4f; }
+.kc-cert-name { --fit-size: clamp(36px, 11.5cqw, 84px); max-width: 94%; margin: .08em auto .1em; padding-bottom: .1em; border-bottom: 2px solid rgba(184, 134, 47, .65); font-family: var(--font-fraunces), Georgia, serif; font-weight: 700; color: var(--kc-berry); }
+.kc-cert-body { max-width: 32em; margin: clamp(10px, 2.6cqw, 18px) auto 0; font: 500 clamp(15px, 3.2cqw, 20px)/1.5 var(--font-kids-inter), system-ui, sans-serif; }
+.kc-cert-footer { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: clamp(6px, 2cqw, 18px); margin-top: clamp(16px, 5cqw, 36px); }
+.kc-cert-seal { width: clamp(72px, 22cqw, 150px); }
+.kc-cert-number { margin-top: clamp(12px, 3cqw, 22px); font: 600 clamp(14px, 2.4cqw, 15px)/1.3 ui-monospace, "Cascadia Mono", "Courier New", monospace; letter-spacing: .04em; color: #6b4a3a; }
+
+.kc-letter { position: relative; padding: clamp(22px, 7cqw, 52px) clamp(18px, 6.4cqw, 48px); border: 1px solid #e5d5bc; border-radius: 4px 4px 12px 12px; color: var(--kc-ink);
+  background: linear-gradient(180deg, #fffaf0, #f7ecd6); box-shadow: 0 18px 40px rgba(0, 0, 0, .35); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.kc-letter .kc-eyebrow { text-align: left; }
+.kc-letter-stamp { float: right; width: clamp(92px, 26cqw, 160px); margin: -.4em -.4em .4em .8em; transform: rotate(4deg); }
+.kc-letter-greeting { margin-top: .35em; font-family: var(--font-fraunces), Georgia, serif; font-weight: 700; }
+.kc-letter-name { --fit-size: clamp(30px, 8.6cqw, 54px); }
+.kc-letter-name span { color: var(--kc-berry); text-decoration: underline wavy rgba(212, 163, 115, .85); text-decoration-thickness: .055em; text-underline-offset: .2em; }
+.kc-letter-report { clear: both; margin-top: clamp(12px, 3cqw, 20px); padding: .8em 1em; border: 1px dashed rgba(184, 134, 47, .75); border-radius: 12px; background: rgba(250, 204, 21, .12); font: 500 clamp(15px, 3.1cqw, 18px)/1.5 var(--font-kids-inter), system-ui, sans-serif; }
+.kc-letter-report em { font-style: normal; font-weight: 700; color: #9e3537; }
+.kc-letter-message { margin-top: clamp(14px, 3.4cqw, 24px); font: 600 clamp(23px, 6.2cqw, 36px)/1.32 var(--font-kids-caveat), cursive; color: #1e2a4a; }
+.kc-letter-signoff { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: clamp(14px, 4cqw, 28px); }
+.kc-letter-seal { flex-shrink: 0; width: clamp(68px, 19cqw, 124px); transform: rotate(-8deg); }
+
+.kc-receipt { --perf: max(5px, 1.5cqw); position: relative; padding: clamp(28px, 8cqw, 48px) clamp(18px, 7cqw, 40px) clamp(30px, 8cqw, 48px); background: #fffdf7; color: #1f2937; text-align: center;
+  font-family: ui-monospace, "Cascadia Mono", "Courier New", monospace; print-color-adjust: exact; -webkit-print-color-adjust: exact;
+  -webkit-mask: radial-gradient(var(--perf) at 50% 0, #0000 97%, #000) 50% 0 / calc(var(--perf) * 3) 51% repeat-x, radial-gradient(var(--perf) at 50% 100%, #0000 97%, #000) 50% 100% / calc(var(--perf) * 3) 51% repeat-x;
+  mask: radial-gradient(var(--perf) at 50% 0, #0000 97%, #000) 50% 0 / calc(var(--perf) * 3) 51% repeat-x, radial-gradient(var(--perf) at 50% 100%, #0000 97%, #000) 50% 100% / calc(var(--perf) * 3) 51% repeat-x; }
+.kc-receipt-crest { display: block; width: clamp(84px, 28cqw, 140px); margin: 0 auto; }
+.kc-receipt-title { margin-top: .3em; font: 700 clamp(21px, 6cqw, 32px)/1.15 var(--font-fraunces), Georgia, serif; color: #1e1b4b; }
+.kc-receipt-sub { margin-top: .5em; font-size: clamp(14px, 2.9cqw, 15px); line-height: 1.4; color: #4338ca; }
+.kc-rule { margin: clamp(10px, 3cqw, 18px) 0; border-top: 2px dashed #9ca3af; }
+.kc-rule--double { border-top: 4px double #374151; }
+.kc-receipt-from { font-size: clamp(14px, 2.9cqw, 15px); letter-spacing: .16em; text-transform: uppercase; color: #4b5563; }
+.kc-receipt-name { --fit-size: clamp(30px, 9.6cqw, 56px); margin-top: .12em; font-family: var(--font-fraunces), Georgia, serif; font-weight: 700; color: #312e81; }
+.kc-lines { display: grid; gap: .5em; font-size: clamp(14px, 3.3cqw, 17px); line-height: 1.35; text-align: left; }
+.kc-line { display: flex; align-items: baseline; gap: .4em; }
+.kc-line dt { display: flex; flex: 1; min-width: 0; }
+.kc-line dt::after { content: ""; flex: 1; min-width: 1em; margin: 0 .2em .28em .5em; border-bottom: 2px dotted #9ca3af; }
+.kc-line dd { font-weight: 700; text-align: right; }
+.kc-line--note { flex-direction: column; align-items: stretch; }
+.kc-line--note dt::after { display: none; }
+.kc-line--note dd { margin-top: .15em; overflow-wrap: anywhere; font-weight: 600; text-align: left; color: #4338ca; }
+.kc-line--total { justify-content: space-between; font-size: clamp(17px, 4.4cqw, 23px); font-weight: 800; text-transform: uppercase; }
+.kc-receipt-tree { margin-top: .4em; font-size: clamp(14px, 2.9cqw, 15px); text-align: right; color: #166534; }
+.kc-receipt-message { font: 600 clamp(23px, 6.4cqw, 34px)/1.32 var(--font-kids-caveat), cursive; color: #1e1b4b; }
+.kc-signature--receipt { margin-top: clamp(10px, 3cqw, 18px); color: #3730a3; }
+.kc-barcode { display: block; width: 72%; height: clamp(36px, 10cqw, 56px); margin: clamp(14px, 3.4cqw, 22px) auto .4em; }
+.kc-receipt-thanks { font-size: clamp(14px, 2.9cqw, 15px); line-height: 1.45; color: #4b5563; }
+.kc-receipt-total { position: relative; }
+.kc-receipt-stamp { position: absolute; top: -.6em; left: 50%; width: clamp(118px, 36cqw, 200px); transform: translateX(-50%) rotate(-12deg); mix-blend-mode: multiply; pointer-events: none; }
+
+/* Party invite: balloons float up once, then rest. */
+@keyframes balloonRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.kids-studio .kc-balloons svg { animation: balloonRise .9s cubic-bezier(.34, 1.56, .64, 1) both; }
+.kc-invite-title { line-height: 1.1; }
+
+/* Print-only keepsakes wait off-screen (so text fitting can measure them) until printed. */
+.kids-print-root.kc-print { display: block; position: fixed; top: 0; left: -10000px; width: 186mm; visibility: hidden; pointer-events: none; }
+/* Laid out exactly as printed, so the off-screen copy measures true. */
+.kc-print .kc-print-sheet { break-inside: avoid; }
+.kc-print .kc-cert, .kc-print .kc-letter { box-shadow: none; }
+.kc-print .kc-sheet--receipt { width: 120mm; max-width: none; filter: none; transform: none; }
+@media print {
+  .kids-print-root.kc-print { position: static; width: 186mm; visibility: visible; margin: 0 auto; }
+}
+/* A5 (and other small paper): the A4-width sheet is scaled down to the page. */
+@media print and (max-width: 160mm) {
+  .kids-print-root.kc-print { zoom: .667; }
 }

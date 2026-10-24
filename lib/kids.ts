@@ -88,7 +88,7 @@ export const KIDS_SCENES: Record<KidsScene, KidsSceneConfig> = {
     description: "A woodland celebration with a playful animated invitation.",
     extraLabel: "Party day, time & venue name (no home address)",
     defaultExtra: "Saturday 14th Nov · 2:00pm at Woodland Explorers HQ",
-    defaultMessage: "Join us for cake, games, crafts and adventure! Tap RSVP below so we know how many party bags to pack.",
+    defaultMessage: "Join us for cake, games, crafts and adventure! Let us know below if you can come.",
     chips: ["Join us for cake, crafts and party games!", "Turning 7! Come celebrate with woodland fun & pizza!", "Tap RSVP below so we save you a giant slice of cake!"],
   },
 };
@@ -123,6 +123,20 @@ export function kidsBundleValue(scene: KidsScene): number {
 export function kidsSceneDetails(data: KidsPersonalisation, scene: KidsScene): KidsSceneDetails {
   if (scene === data.scene) return { extraDetail: data.extraDetail, customMessage: data.customMessage };
   return data.bundle?.[scene] ?? { extraDetail: KIDS_SCENES[scene].defaultExtra, customMessage: KIDS_SCENES[scene].defaultMessage };
+}
+
+/**
+ * What a shared Kids link shows in WhatsApp and other previews. Deliberately
+ * the same for everyone: previews get cached, so they never carry a name.
+ */
+export function kidsSharePreview(cardKey: string | null | undefined) {
+  const scene = cardKey ? parseKidsCardKey(cardKey)?.scene : undefined;
+  switch (scene) {
+    case "santa": return { poster: "/cards/kids/santa.jpg", title: "A letter from the North Pole", description: "Father Christmas has written to you. Open your letter and Nice List certificate." };
+    case "tooth": return { poster: "/cards/kids/tooth.jpg", title: "The Tooth Fairy left you something", description: "Your official receipt from Queen Celeste’s Tooth Exchange." };
+    case "party": return { poster: "/cards/kids/party.jpg", title: "You’re invited to a birthday party!", description: "Open your invitation and let them know if you can come." };
+    default: return { poster: "/cards/live/winter-robin.jpg", title: "A little CardRoots magic for you", description: "Someone sent you a personalised CardRoots Kids creation. Open your woodland surprise." };
+  }
 }
 
 export function isKidsCardKey(value: string | null | undefined): boolean {

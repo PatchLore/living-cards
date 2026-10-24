@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import KidsStudio from "../../components/kids/KidsStudio";
-import { isKidsSceneForSale, KIDS_LIMITS, KIDS_SCENES, type KidsPersonalisation } from "../../lib/kids";
+import { isKidsSceneForSale, KIDS_SCENES, type KidsPersonalisation } from "../../lib/kids";
 
 type Params = Record<string, string | string[] | undefined>;
 type Props = { searchParams: Promise<Params> };
@@ -25,13 +25,15 @@ export default async function KidsPage({ searchParams }: Props) {
   const requestedScene = first(params.scene);
   const scene = isKidsSceneForSale(requestedScene) ? requestedScene : "santa";
   const config = KIDS_SCENES[scene];
+  // Only the product and package come from the URL. Names and messages stay in
+  // the studio's session draft, never in links, history or analytics.
   const initialData: KidsPersonalisation = {
     scene,
-    recipientName: (first(params.name) || "Leo").slice(0, KIDS_LIMITS.recipientName),
-    extraDetail: (first(params.extra) || config.defaultExtra).slice(0, KIDS_LIMITS.extraDetail),
-    customMessage: (first(params.msg) || config.defaultMessage).slice(0, KIDS_LIMITS.customMessage),
+    recipientName: "Leo",
+    extraDetail: config.defaultExtra,
+    customMessage: config.defaultMessage,
     packageType: first(params.package) === "single" ? "single" : "bundle",
   };
   // The full, unwatermarked experience is only served from a purchased /c/ link.
-  return <KidsStudio key={JSON.stringify(initialData)} initialData={initialData} />;
+  return <KidsStudio key={JSON.stringify(initialData)} initialData={initialData} sceneFromUrl={isKidsSceneForSale(requestedScene)} />;
 }

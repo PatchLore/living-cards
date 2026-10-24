@@ -4,7 +4,7 @@ import { getCardByShareId } from "../../../lib/db/cards";
 import SharedCard from "./SharedCard";
 import TreeCertificate from "../../../components/site/TreeCertificate";
 import { getTreeEvidence } from "../../../lib/goodapi";
-import { isKidsCardKey, parseKidsCard } from "../../../lib/kids";
+import { isKidsCardKey, kidsSharePreview, parseKidsCard } from "../../../lib/kids";
 import KidsStudio from "../../../components/kids/KidsStudio";
 
 export const runtime = "nodejs";
@@ -18,8 +18,9 @@ export async function generateMetadata({ params }: { params: Promise<{ shareId: 
   if (!card) return { title: "Card not found", robots: { index: false } };
 
   const kids = isKidsCardKey(card.card_key);
-  const title = kids ? "A little CardRoots magic for you" : `A card for ${card.recipient_name}`;
-  const description = kids ? "Someone sent you a personalised CardRoots Kids creation. Open your woodland surprise." : "Someone sent you an animated CardRoots card. Tap to open it.";
+  const preview = kids ? kidsSharePreview(card.card_key) : null;
+  const title = preview ? preview.title : `A card for ${card.recipient_name}`;
+  const description = preview ? preview.description : "Someone sent you an animated CardRoots card. Tap to open it.";
   return {
     title,
     description,
@@ -41,7 +42,7 @@ export default async function SharedCardPage({ params }: { params: Promise<{ sha
 
   return (
     <>
-      {kids ? <KidsStudio initialData={kids} recipientOnly /> : <SharedCard cardKey={card.card_key} recipient={card.recipient_name} message={card.message} />}
+      {kids ? <KidsStudio initialData={kids} recipientOnly shareId={shareId} /> : <SharedCard cardKey={card.card_key} recipient={card.recipient_name} message={card.message} />}
       {card.tree_id && (
         <div className="bg-night px-4 pb-16">
           <TreeCertificate treeId={card.tree_id} evidence={evidence} />

@@ -1,22 +1,13 @@
 import type { ReactNode } from "react";
 import type { SquishyCharacter } from "./squishyCharacters";
+import { BODIES, FACES, PALETTES, TOPPERS, type WorkshopDesign } from "./workshopOptions";
 
 /**
  * Squishy Workshop parts. A design is a few choices; makeWorkshopCharacter turns
  * it into a normal SquishyCharacter, so the child's creature gets the same cut
  * line, maker badge and printable template as the rest of the kit.
  */
-export const BODIES = ["mochi", "kitty", "frog", "mushroom", "acorn"] as const;
-export const FACES = ["sparkle", "happy", "wink", "sleepy"] as const;
-export const TOPPERS = ["none", "santa", "crown", "sprout", "bobble"] as const;
-export const PALETTES = ["cherry", "mint", "honey", "lavender", "sky"] as const;
-
-export type WorkshopDesign = {
-  body: (typeof BODIES)[number];
-  face: (typeof FACES)[number];
-  topper: (typeof TOPPERS)[number];
-  palette: (typeof PALETTES)[number];
-};
+export { BODIES, FACES, PALETTES, TOPPERS, isWorkshopDesign, type WorkshopDesign } from "./workshopOptions";
 
 export const DEFAULT_DESIGN: WorkshopDesign = { body: "mochi", face: "sparkle", topper: "santa", palette: "cherry" };
 
@@ -37,12 +28,6 @@ export const PALETTE_COLOURS: Record<WorkshopDesign["palette"], { label: string;
   sky: { label: "Sky", body: "#a2d2ff", belly: "#eaf6ff", accent: "#0077b6" },
 };
 
-export function isWorkshopDesign(value: unknown): value is WorkshopDesign {
-  if (!value || typeof value !== "object") return false;
-  const design = value as Record<string, unknown>;
-  return (BODIES as readonly unknown[]).includes(design.body) && (FACES as readonly unknown[]).includes(design.face)
-    && (TOPPERS as readonly unknown[]).includes(design.topper) && (PALETTES as readonly unknown[]).includes(design.palette);
-}
 
 export function randomDesign(): WorkshopDesign {
   const pick = <T,>(items: readonly T[]) => items[Math.floor(Math.random() * items.length)];
