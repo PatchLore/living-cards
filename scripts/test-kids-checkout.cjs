@@ -62,7 +62,7 @@ async function main() {
   const checkout = (body) => POST(new Request("https://cardroots.test/api/checkout", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }));
   const base = { scene: "santa", recipientName: "Leo", extraDetail: "Kind to friends", customMessage: "Keep shining!", packageType: "single" };
 
-  for (const [scene, price] of [["santa", 500], ["advent", 1000], ["squishy", 600], ["tooth", 500], ["party", 700]]) {
+  for (const [scene, price] of [["santa", 500], ["advent", 1000], ["tooth", 500], ["party", 700]]) {
     const input = { ...base, scene, amount: 1, price: 1 };
     assert.equal((await checkout(input)).status, 200);
     const session = sessions.at(-1);
@@ -76,7 +76,7 @@ async function main() {
   assert.equal(sessions.at(-1).line_items[0].price_data.unit_amount, 1200);
   assert.equal(sessions.at(-1).metadata.scene, "party");
 
-  const bundleWording = { santa: { extraDetail: "Helped at the food bank", customMessage: "Santa saw!" }, advent: { extraDetail: "Loves snow", customMessage: "24 days of fun" }, squishy: { extraDetail: "Robin edition", customMessage: "Squish away" } };
+  const bundleWording = { santa: { extraDetail: "Helped at the food bank", customMessage: "Santa saw!" }, advent: { extraDetail: "Loves snow", customMessage: "24 days of fun" } };
   const bundleInput = { ...base, scene: "party", packageType: "bundle", bundle: bundleWording };
   assert.equal((await checkout(bundleInput)).status, 200);
   const bundleSession = sessions.at(-1);
@@ -87,6 +87,7 @@ async function main() {
   const countBeforeBadBundle = sessions.length;
   for (const bundle of [
     { tooth: bundleWording.santa }, // not part of a party bundle
+    { squishy: bundleWording.santa }, // no longer in any bundle
     { party: bundleWording.santa }, // the bought experience uses the top-level fields
     { santa: { extraDetail: "a".repeat(KIDS_LIMITS.extraDetail + 1), customMessage: "" } },
   ]) assert.equal((await checkout({ ...bundleInput, bundle })).status, 400);
@@ -97,6 +98,8 @@ async function main() {
 
   const countBeforeInvalid = sessions.length;
   for (const input of [
+    // Off sale while it's redesigned, as a single or as a bundle's chosen experience.
+    { ...base, scene: "squishy" }, { ...base, scene: "squishy", packageType: "bundle" },
     { ...base, scene: "__proto__" }, { ...base, packageType: "free" },
     { ...base, recipientName: " " }, { ...base, recipientName: "a".repeat(KIDS_LIMITS.recipientName + 1) },
     { ...base, extraDetail: "a".repeat(KIDS_LIMITS.extraDetail + 1) },

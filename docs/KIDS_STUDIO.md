@@ -12,7 +12,9 @@ The `/kids` studio adapts the root implementation prompt and HTML reference into
 | `tooth` | £5 | Tooth Fairy receipt and note |
 | `party` | £7 | Birthday invitation and copyable RSVP replies |
 
-The £12 Complete Kids Magical Bundle includes Santa’s letter and certificate, Advent Village and the Paper Squishy Kit. When bought with `tooth` or `party` selected, that creation is included too. A purchased bundle lets the recipient switch between its included scenes. The first name is shared; each included scene has its own detail and message, stored under `bundle` in the saved JSON and sent to Stripe as flat `<scene>Extra` / `<scene>Message` metadata keys (Stripe values are limited to 500 characters).
+**The paper squishy (`squishy`) is off sale while it is redesigned.** It is listed in `KIDS_HIDDEN_SCENES` in `lib/kids.ts`: the studio hides it, checkout refuses it and bundles no longer include it, but its code and any purchased links still work. Remove it from that list to sell it again.
+
+The £12 Complete Kids Magical Bundle includes Santa’s letter and certificate and the Advent Village (£15 bought separately). When bought with `tooth` or `party` selected, that creation is included too. A purchased bundle lets the recipient switch between its included scenes. The first name is shared; each included scene has its own detail and message, stored under `bundle` in the saved JSON and sent to Stripe as flat `<scene>Extra` / `<scene>Message` metadata keys (Stripe values are limited to 500 characters).
 
 Every order uses the existing one-tree planting flow, including bundles. This deliberately corrects tree-count claims in the reference to match fulfillment. Printed artwork contains no fabricated tree certificate or planting identifier; verified evidence uses the existing card certificate when available.
 

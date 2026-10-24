@@ -106,7 +106,7 @@ export default function SuccessClient() {
               <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em]">CardRoots For Kids</p>
               <h2 className="mt-3 font-display text-3xl">{kids.packageType === "bundle" ? "Complete Kids Magical Bundle" : KIDS_SCENES[kids.scene].title}</h2>
               <p className="mt-4 text-sm text-night/70">Personalised for {order.recipient}, ready to open and share.</p>
-              {kids.packageType === "bundle" && <p className="mt-4 text-sm text-night/70">Santa Scroll, Advent Village and Paper Squishy Kit included.</p>}
+              {kids.packageType === "bundle" && <p className="mt-4 text-sm text-night/70">Santa Scroll, Nice List Certificate and Advent Village included.</p>}
             </div>
           )}
         </div>

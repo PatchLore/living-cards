@@ -27,6 +27,13 @@ type KidsSceneConfig = {
 };
 
 export const KIDS_BUNDLE_PRICE = 12;
+/**
+ * Experiences not on sale. Their purchased links keep working; checkout refuses
+ * them. The paper squishy is off sale while it's redesigned.
+ */
+export const KIDS_HIDDEN_SCENES: readonly KidsScene[] = ["squishy"];
+/** What every bundle includes, alongside the experience chosen. */
+const BUNDLE_CORE: readonly KidsScene[] = ["santa", "advent"];
 export const KIDS_LIMITS = { recipientName: 28, extraDetail: 75, customMessage: 300 } as const;
 export const KIDS_SCENES: Record<KidsScene, KidsSceneConfig> = {
   santa: {
@@ -36,9 +43,9 @@ export const KIDS_SCENES: Record<KidsScene, KidsSceneConfig> = {
     price: 5,
     description: "A magical letter from Santa, with their very own Nice List certificate.",
     extraLabel: "Something great they did this year (Elves’ Report)",
-    defaultExtra: "making amazing paper squishies & being so kind",
+    defaultExtra: "being so kind and helpful",
     defaultMessage: "The reindeer are resting up and polishing their bells for Christmas Eve! Keep shining brightly, and don't forget to leave out a crunchy carrot for Rudolph.",
-    chips: ["The Elves loved your homemade paper squishies!", "Rudolph can't wait to visit your house on Christmas Eve!", "You've made the Top 1% of the Official Nice List this year!"],
+    chips: ["The Elves loved your amazing drawings!", "Rudolph can't wait to visit your house on Christmas Eve!", "You've made the Top 1% of the Official Nice List this year!"],
   },
   advent: {
     title: "24-Day Interactive Digital Advent Village",
@@ -81,13 +88,17 @@ export const KIDS_SCENES: Record<KidsScene, KidsSceneConfig> = {
     description: "A woodland celebration with a playful animated invitation.",
     extraLabel: "Party day, time & venue name (no home address)",
     defaultExtra: "Saturday 14th Nov · 2:00pm at Woodland Explorers HQ",
-    defaultMessage: "Join us for cake, games, paper squishy crafting and adventure! Tap RSVP below so we know how many party bags to pack.",
-    chips: ["Join us for cake, paper squishy making and party games!", "Turning 7! Come celebrate with woodland fun & pizza!", "Tap RSVP below so we save you a giant slice of cake!"],
+    defaultMessage: "Join us for cake, games, crafts and adventure! Tap RSVP below so we know how many party bags to pack.",
+    chips: ["Join us for cake, crafts and party games!", "Turning 7! Come celebrate with woodland fun & pizza!", "Tap RSVP below so we save you a giant slice of cake!"],
   },
 };
 
 export function isKidsScene(value: unknown): value is KidsScene {
   return typeof value === "string" && Object.prototype.hasOwnProperty.call(KIDS_SCENES, value);
+}
+
+export function isKidsSceneForSale(value: unknown): value is KidsScene {
+  return isKidsScene(value) && !KIDS_HIDDEN_SCENES.includes(value);
 }
 
 export function kidsPrice(data: Pick<KidsPersonalisation, "scene" | "packageType">): number {
@@ -100,7 +111,12 @@ export function kidsCardKey(data: Pick<KidsPersonalisation, "scene" | "packageTy
 
 /** The experiences an order unlocks: a bundle adds the core three to the chosen one. */
 export function kidsIncludedScenes(data: Pick<KidsPersonalisation, "scene" | "packageType">): KidsScene[] {
-  return data.packageType === "bundle" ? Array.from(new Set<KidsScene>([data.scene, "santa", "advent", "squishy"])) : [data.scene];
+  return data.packageType === "bundle" ? Array.from(new Set<KidsScene>([data.scene, ...BUNDLE_CORE])) : [data.scene];
+}
+
+/** What a bundle's experiences would cost bought one by one. */
+export function kidsBundleValue(scene: KidsScene): number {
+  return kidsIncludedScenes({ scene, packageType: "bundle" }).reduce((total, item) => total + KIDS_SCENES[item].price, 0);
 }
 
 /** Wording for one experience: what the buyer wrote for it, else that experience's defaults. */

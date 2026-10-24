@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import KidsStudio from "../../components/kids/KidsStudio";
-import { isKidsScene, KIDS_LIMITS, KIDS_SCENES, type KidsPersonalisation } from "../../lib/kids";
+import { isKidsSceneForSale, KIDS_LIMITS, KIDS_SCENES, type KidsPersonalisation } from "../../lib/kids";
 
 type Params = Record<string, string | string[] | undefined>;
 type Props = { searchParams: Promise<Params> };
@@ -10,20 +10,20 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const params = await searchParams;
   const personalised = Object.keys(params).length > 0;
   return {
-    title: "For Kids — Personalised Animated Cards & Crafts",
-    description: "Make magical moments with personalised Santa letters, an interactive advent village, paper squishy kits, Tooth Fairy receipts and birthday invitations. Every order plants a tree.",
+    title: "For Kids — Personalised Santa Letters, Advent Stories & More",
+    description: "Make magical moments with personalised Santa letters, a 24-chapter advent story, Tooth Fairy receipts and birthday invitations. Every order plants a tree.",
     alternates: { canonical: "/kids" },
     robots: personalised ? { index: false, follow: false, noarchive: true, googleBot: { index: false, follow: false } } : { index: true, follow: true },
     referrer: "no-referrer",
-    openGraph: { title: "A little wonder, made just for them | CardRoots For Kids", description: "Personalised animated experiences and printable crafts. Every order plants a real tree.", url: "/kids" },
-    twitter: { title: "CardRoots For Kids", description: "Personalised animated experiences and printable crafts." },
+    openGraph: { title: "A little wonder, made just for them | CardRoots For Kids", description: "Personalised Santa letters, advent stories and keepsakes. Every order plants a real tree.", url: "/kids" },
+    twitter: { title: "CardRoots For Kids", description: "Personalised Santa letters, advent stories and keepsakes." },
   };
 }
 
 export default async function KidsPage({ searchParams }: Props) {
   const params = await searchParams;
   const requestedScene = first(params.scene);
-  const scene = isKidsScene(requestedScene) ? requestedScene : "santa";
+  const scene = isKidsSceneForSale(requestedScene) ? requestedScene : "santa";
   const config = KIDS_SCENES[scene];
   const initialData: KidsPersonalisation = {
     scene,

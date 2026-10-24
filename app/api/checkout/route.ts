@@ -3,7 +3,7 @@ import { z } from "zod";
 import { LIMITS, isPurchasable } from "../../../lib/catalog";
 import { getStripe } from "../../../lib/fulfillment";
 import { siteUrl } from "../../../lib/siteUrl";
-import { KIDS_LIMITS, KIDS_SCENES, isKidsScene, kidsCardKey, kidsCheckoutMetadata, kidsPrice, parseKidsPersonalisation } from "../../../lib/kids";
+import { KIDS_LIMITS, KIDS_SCENES, isKidsSceneForSale, kidsCardKey, kidsCheckoutMetadata, kidsPrice, parseKidsPersonalisation } from "../../../lib/kids";
 
 export const runtime = "nodejs";
 
@@ -27,7 +27,7 @@ const KidsDetails = z.object({
 });
 
 const KidsBody = z.object({
-  scene: z.string().refine(isKidsScene, "Please choose a kids creation"),
+  scene: z.string().refine(isKidsSceneForSale, "Please choose a kids creation"),
   recipientName: z.string().trim().min(1, "Please add the child's first name").max(KIDS_LIMITS.recipientName, `Keep the first name under ${KIDS_LIMITS.recipientName} characters`),
   extraDetail: z.string().trim().max(KIDS_LIMITS.extraDetail, `Keep the detail under ${KIDS_LIMITS.extraDetail} characters`),
   customMessage: z.string().trim().max(KIDS_LIMITS.customMessage, `Keep the message under ${KIDS_LIMITS.customMessage} characters`),
