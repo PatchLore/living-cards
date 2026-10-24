@@ -209,6 +209,8 @@ function CutLine({ children }: { children: ReactNode }) {
     if (!isValidElement(child)) return child;
     const element = child as ReactElement<{ children?: ReactNode }>;
     if (element.type === Fragment) return ink(element.props.children);
+    // Keep a group's transform, but ink what's inside it.
+    if (element.type === "g") return cloneElement(element, {}, ink(element.props.children));
     return cloneElement(element as ReactElement<Record<string, unknown>>, { fill: INK, stroke: INK, strokeWidth: 7, strokeLinejoin: "round" });
   });
   return <g>{ink(children)}</g>;

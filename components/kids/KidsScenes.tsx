@@ -3,12 +3,11 @@
 import { useState } from "react";
 import type { KidsPersonalisation } from "../../lib/kids";
 import AdventVillage from "./AdventVillage";
-import { SQUISHY_CHARACTERS, SquishyPortrait } from "./squishyCharacters";
+import SquishyWorkshop from "./SquishyWorkshop";
+import type { WorkshopDesign } from "./workshopDesign";
 
-export default function KidsScenes({ scene, recipientName, extraDetail, customMessage, recipientOnly = false, onRsvp }: KidsPersonalisation & { recipientOnly?: boolean; onRsvp: (attending: boolean) => void }) {
+export default function KidsScenes({ scene, recipientName, extraDetail, customMessage, recipientOnly = false, onRsvp, workshop, onWorkshop }: KidsPersonalisation & { recipientOnly?: boolean; onRsvp: (attending: boolean) => void; workshop?: WorkshopDesign | null; onWorkshop?: (design: WorkshopDesign) => void }) {
   const [santaView, setSantaView] = useState<"letter" | "cert">("letter");
-  const [squish, setSquish] = useState(0);
-  const squishy = SQUISHY_CHARACTERS[squish % SQUISHY_CHARACTERS.length];
   return <>
     {scene === "santa" && (<div id="scene-santa" className="scene-panel relative z-10 flex flex-col h-full justify-between">
               
@@ -98,51 +97,9 @@ export default function KidsScenes({ scene, recipientName, extraDetail, customMe
             </div>)}
 
     {scene === "advent" && <AdventVillage recipientName={recipientName} extraDetail={extraDetail} customMessage={customMessage} recipientOnly={recipientOnly} />}
-    {scene === "squishy" && (<div id="scene-squishy" className="scene-panel relative z-10 flex flex-col h-full justify-between">
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <span className="inline-flex items-center gap-1.5 bg-berry-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                  <span>✂️ Squishy Maker Kit · {SQUISHY_CHARACTERS.length} characters</span>
-                </span>
-                <a href="#squishy-crafts" className="inline-flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 text-forest-950 text-xs font-bold px-3.5 py-1.5 rounded-xl shadow transition">
-                  <span>🖨️ See the printable kit ↓</span>
-                </a>
-              </div>
-
-              <div className="bg-parchment-50 text-forest-950 rounded-2xl p-4 sm:p-6 shadow-xl border-2 border-amber-400 flex-1 flex flex-col justify-between">
-                <div className="flex flex-col sm:flex-row items-center gap-5">
-
-                  <div role="button" tabIndex={0} aria-label={`Squish ${squishy.name} and meet the next squishy`} onClick={() => setSquish(squish + 1)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSquish(squish + 1); } }} className="cursor-pointer group relative bg-gradient-to-b from-emerald-100 to-amber-100 p-4 rounded-2xl border-2 border-dashed border-forest-700/40 text-center shrink-0 w-44">
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-forest-900 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                      👆 Tap to Squish Me!
-                    </span>
-                    <span key={squish} className="block animate-squish squish-active"><SquishyPortrait character={squishy} className="w-28 h-28 mx-auto" /></span>
-                    <p className="text-[11px] font-bold text-forest-800 mt-1">“{squishy.name}” Squishy</p>
-                    <p className="text-[10px] text-forest-700">{squish % SQUISHY_CHARACTERS.length + 1} of {SQUISHY_CHARACTERS.length} in the kit</p>
-                  </div>
-
-                  
-                  <div className="flex-1 text-center sm:text-left">
-                    <div className="text-xs font-bold uppercase tracking-wider text-berry-600">
-                      Official Squishy Maker Edition
-                    </div>
-                    <h3 className="font-serif text-2xl font-bold text-forest-900 mt-0.5">
-                      Made specially for <span className="text-berry-600" data-bind="name">{recipientName}</span>!
-                    </h3>
-                    <p className="text-xs text-forest-700 mt-1">
-                      Special Edition Theme: <span className="font-semibold text-forest-950" data-bind="extra">{extraDetail}</span>
-                    </p>
-                    <p className="font-hand text-xl text-forest-900 mt-3 bg-amber-100/70 p-3 rounded-xl border border-amber-300/60" data-bind="message">{customMessage}</p>
-                  </div>
-                </div>
-
-                
-                <div className="mt-4 pt-3 border-t border-parchment-300 grid grid-cols-4 gap-2 text-center text-[11px] font-medium text-forest-800">
-                  <div className="bg-parchment-200/70 py-1.5 px-2 rounded-lg">1. 🖨️ Print Sheet</div>
-                  <div className="bg-parchment-200/70 py-1.5 px-2 rounded-lg">2. ✂️ Cut & Fold</div>
-                  <div className="bg-parchment-200/70 py-1.5 px-2 rounded-lg">3. Tape Sides</div>
-                  <div className="bg-parchment-200/70 py-1.5 px-2 rounded-lg">4. ☁️ Stuff & Squish!</div>
-                </div>
-              </div>
+    {scene === "squishy" && (<div id="scene-squishy" className="scene-panel relative z-10 flex flex-col h-full justify-between gap-3">
+              <SquishyWorkshop recipientName={recipientName} extraDetail={extraDetail} customMessage={customMessage} design={workshop ?? null} onDesign={design => onWorkshop?.(design)} />
+              <a href="#squishy-crafts" className="self-center rounded-xl bg-amber-400 px-4 py-2 text-xs font-bold text-forest-950 shadow transition hover:bg-amber-300">🖨️ See the whole printable kit ↓</a>
             </div>)}
     {scene === "tooth" && (<div id="scene-tooth" className="scene-panel relative z-10 flex flex-col h-full justify-between">
               <div className="flex items-center justify-between text-xs text-amber-200 mb-3">

@@ -56,7 +56,7 @@ export const KIDS_SCENES: Record<KidsScene, KidsSceneConfig> = {
     shortTitle: "Paper Squishy Kit",
     icon: "🐦",
     price: 6,
-    description: "Six festive squishy friends to print, colour and make, plus a maker certificate.",
+    description: "Design their own squishy in the Squishy Workshop, then print it with six festive friends.",
     extraLabel: "Squishy Studio Theme / Title",
     defaultExtra: "Master Paper Squishy Creator Edition",
     defaultMessage: "Print your squishy kit below, colour in your favourites, tape the edges and stuff with soft tissue. Can you make all six?",

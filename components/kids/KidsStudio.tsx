@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { Caveat, Inter } from "next/font/google";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { KIDS_BUNDLE_PRICE, KIDS_LIMITS, KIDS_SCENES, kidsIncludedScenes, kidsPrice, kidsSceneDetails, type KidsPersonalisation, type KidsScene, type KidsSceneDetails } from "../../lib/kids";
 import KidsScenes from "./KidsScenes";
 import PrintableSquishy from "./PrintableSquishy";
+import { isWorkshopDesign, type WorkshopDesign } from "./workshopDesign";
 import "./kids.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-kids-inter", display: "swap" });
@@ -28,6 +29,9 @@ async function copyText(text: string) {
   field.remove();
   if (!copied) throw new Error("Clipboard unavailable");
 }
+
+/** The Squishy Workshop creature is remembered per purchased link, on this device only. */
+const workshopKey = () => `cardroots-squishy:${window.location.pathname}`;
 
 /** Diagonal "PREVIEW" marks over the studio preview; purchased links don't show it. */
 function PreviewWatermark() {
@@ -54,6 +58,23 @@ export default function KidsStudio({ initialData, recipientOnly = false }: { ini
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [workshop, setWorkshop] = useState<WorkshopDesign | null>(null);
+  const [workshopLoaded, setWorkshopLoaded] = useState(!recipientOnly);
+
+  useEffect(() => {
+    if (!recipientOnly) return;
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(workshopKey()) || "null");
+      if (isWorkshopDesign(saved)) setWorkshop(saved);
+    } catch {}
+    setWorkshopLoaded(true);
+  }, [recipientOnly]);
+
+  const saveWorkshop = (design: WorkshopDesign) => {
+    setWorkshop(design);
+    if (!recipientOnly) return;
+    try { window.localStorage.setItem(workshopKey(), JSON.stringify(design)); } catch {}
+  };
   const config = KIDS_SCENES[data.scene];
   const price = kidsPrice({ scene: primary, packageType: data.packageType });
   const displayData = { ...data, recipientName: data.recipientName.trim() || "Leo", extraDetail: data.extraDetail.trim() || config.defaultExtra, customMessage: data.customMessage.trim() || config.defaultMessage };
@@ -149,7 +170,7 @@ export default function KidsStudio({ initialData, recipientOnly = false }: { ini
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-parchment-200"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />{preview ? "Your personalised creation" : "Live interactive preview · Updates as you type"}</span><button type="button" onClick={() => setReplay(value => value + 1)} className="rounded-full bg-forest-800 px-3 py-1.5 font-semibold text-amber-300 hover:bg-forest-700">↻ Replay animation</button></div>
               <div id="sceneViewport" className="relative flex min-h-[480px] flex-col justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-[#0b1f17] via-[#133326] to-[#0a1912] p-4 sm:min-h-[540px] sm:p-7">
                 <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-75" aria-hidden>{Array.from({ length: 18 }, (_, i) => <span key={i} className="animate-twinkle absolute select-none text-amber-200/60" style={{ left: `${i * 19 % 96}%`, top: `${i * 29 % 92}%`, animationDelay: `${i * .35}s`, fontSize: `${10 + i % 8}px` }}>{["✨", "❄️", "⭐", "•"][i % 4]}</span>)}</div>
-                <KidsScenes key={`${data.scene}-${preview}-${replay}`} {...displayData} recipientOnly={recipientOnly} onRsvp={rsvp} />
+                {(workshopLoaded || data.scene !== "squishy") && <KidsScenes key={`${data.scene}-${preview}-${replay}`} {...displayData} recipientOnly={recipientOnly} onRsvp={rsvp} workshop={workshop} onWorkshop={saveWorkshop} />}
                 {!recipientOnly && <PreviewWatermark />}
               </div>
             </div>
@@ -181,10 +202,10 @@ export default function KidsStudio({ initialData, recipientOnly = false }: { ini
         <p aria-live="polite" role="status" className={`mt-5 text-sm font-medium text-forest-800 ${feedback ? "rounded-xl border border-forest-600/20 bg-forest-100 p-3" : ""}`}>{feedback}</p>
       </main>
 
-      {showPrint && <PrintableSquishy recipientName={displayData.recipientName} preview={!recipientOnly} />}
+      {showPrint && <PrintableSquishy recipientName={displayData.recipientName} preview={!recipientOnly} customDesign={workshop} />}
 
       {!preview && <>
-        <section id="bundles" className="no-print mx-auto max-w-7xl px-5 py-12 sm:px-8"><div className="mx-auto mb-8 max-w-2xl text-center"><p className="text-xs font-bold uppercase tracking-widest text-forest-700">Simple pricing · A real tree with every order</p><h2 className="mt-2 font-serif text-3xl font-bold text-forest-900">Little moments. A whole lot of magic.</h2></div><div className="grid gap-5 md:grid-cols-3">{[{ title: "A single magical moment", price: "From £5", text: "Choose a Santa letter, Tooth Fairy receipt, squishy kit, advent village or birthday invite. Personalised with their name and your message.", action: "Choose a creation", bundle: false }, { title: "Complete Kids Magical Bundle", price: "£12", text: "Santa’s scroll and Nice List certificate, 24 days of advent surprises, and a printable squishy kit. Buy separately for £21.", action: "Personalise the bundle", bundle: true }, { title: "Made by little hands", price: "£6", text: "An animated greeting and a personalised printable kit: six squishy characters and an Official Squishy Maker certificate. Print in full colour or as outlines to colour in.", action: "Make a paper squishy", bundle: false, squishy: true }].map(item => <div key={item.title} className={`flex flex-col rounded-3xl border p-6 ${item.bundle ? "border-forest-800 bg-forest-900 text-parchment-50 shadow-xl" : "border-parchment-300 bg-white text-forest-900"}`}><h3 className="font-serif text-xl font-bold">{item.title}</h3><p className="mt-4 font-serif text-4xl font-bold">{item.price}</p><p className="mt-4 flex-1 text-sm leading-relaxed opacity-85">{item.text}</p><a href="#studio" onClick={() => { if (item.squishy) selectScene("squishy"); setPackage(item.bundle ? "bundle" : "single"); }} className={`mt-6 rounded-xl px-4 py-3 text-center text-sm font-semibold ${item.bundle ? "bg-amber-400 text-forest-950" : "bg-forest-100 text-forest-900"}`}>{item.action} →</a></div>)}</div></section>
+        <section id="bundles" className="no-print mx-auto max-w-7xl px-5 py-12 sm:px-8"><div className="mx-auto mb-8 max-w-2xl text-center"><p className="text-xs font-bold uppercase tracking-widest text-forest-700">Simple pricing · A real tree with every order</p><h2 className="mt-2 font-serif text-3xl font-bold text-forest-900">Little moments. A whole lot of magic.</h2></div><div className="grid gap-5 md:grid-cols-3">{[{ title: "A single magical moment", price: "From £5", text: "Choose a Santa letter, Tooth Fairy receipt, squishy kit, advent village or birthday invite. Personalised with their name and your message.", action: "Choose a creation", bundle: false }, { title: "Complete Kids Magical Bundle", price: "£12", text: "Santa’s scroll and Nice List certificate, 24 days of advent surprises, and a printable squishy kit. Buy separately for £21.", action: "Personalise the bundle", bundle: true }, { title: "Made by little hands", price: "£6", text: "They design their own squishy in the Squishy Workshop, then print it with six festive friends and an Official Squishy Maker certificate. Full colour or outlines to colour in.", action: "Make a paper squishy", bundle: false, squishy: true }].map(item => <div key={item.title} className={`flex flex-col rounded-3xl border p-6 ${item.bundle ? "border-forest-800 bg-forest-900 text-parchment-50 shadow-xl" : "border-parchment-300 bg-white text-forest-900"}`}><h3 className="font-serif text-xl font-bold">{item.title}</h3><p className="mt-4 font-serif text-4xl font-bold">{item.price}</p><p className="mt-4 flex-1 text-sm leading-relaxed opacity-85">{item.text}</p><a href="#studio" onClick={() => { if (item.squishy) selectScene("squishy"); setPackage(item.bundle ? "bundle" : "single"); }} className={`mt-6 rounded-xl px-4 py-3 text-center text-sm font-semibold ${item.bundle ? "bg-amber-400 text-forest-950" : "bg-forest-100 text-forest-900"}`}>{item.action} →</a></div>)}</div></section>
         <section id="privacy-trust" className="no-print border-t border-parchment-300 bg-parchment-50 px-5 py-12 text-forest-900"><div className="mx-auto max-w-4xl text-center"><p className="text-xs font-bold uppercase tracking-widest text-forest-700">Made for children. Purchased by grown-ups.</p><h2 className="mt-2 font-serif text-3xl font-bold">A little wonder, with peace of mind.</h2><div className="mt-8 grid gap-6 text-sm leading-relaxed sm:grid-cols-3"><div><h3 className="font-bold">🔒 First names only</h3><p className="mt-2 text-forest-700">No child accounts, photographs or contact details. Keep personal messages free of sensitive information.</p></div><div><h3 className="font-bold">🔗 Unlisted purchased links</h3><p className="mt-2 text-forest-700">Purchased creations use unique share tokens, stay out of search engines, and are never listed publicly.</p></div><div><h3 className="font-bold">🌱 A gift that grows</h3><p className="mt-2 text-forest-700">Every order supports a real tree through CardRoots’ existing tree planting programme.</p></div></div><p className="mt-7 text-xs text-forest-700">Read our <Link href="/privacy" className="underline">privacy policy</Link> and <Link href="/terms" className="underline">terms</Link>. Grown-ups should supervise cutting and crafting.</p></div></section>
       </>}
     </div>

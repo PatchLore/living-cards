@@ -3,16 +3,19 @@
 import { useEffect, useState } from "react";
 import { createPortal, flushSync } from "react-dom";
 import { SQUISHY_CHARACTERS, SquishyPortrait, SquishyTemplate, type SquishyCharacter } from "./squishyCharacters";
+import { makeWorkshopCharacter, type WorkshopDesign } from "./workshopDesign";
 
 export interface PrintableSquishyProps {
   recipientName: string;
   preview?: boolean;
+  /** The child's own Squishy Workshop creature, printed first in the kit. */
+  customDesign?: WorkshopDesign | null;
 }
 
 type PrintMode = "one" | "kit";
 const STEPS = "1. Cut along the outer dashed line · 2. Fold down the middle line · 3. Tape the sides, leaving the top open · 4. Stuff with tissue and seal!";
 /** Two templates fit on each A4 page, then the certificate gets its own. */
-const KIT_PAGES = Math.ceil(SQUISHY_CHARACTERS.length / 2) + 1;
+const kitPages = (count: number) => Math.ceil(count / 2) + 1;
 
 function PreviewMarks({ count, spread }: { count: number; spread: number }) {
   return (
@@ -24,7 +27,7 @@ function PreviewMarks({ count, spread }: { count: number; spread: number }) {
   );
 }
 
-function Certificate({ makerName, outline }: { makerName: string; outline: boolean }) {
+function Certificate({ makerName, outline, characters }: { makerName: string; outline: boolean; characters: SquishyCharacter[] }) {
   return (
     <div className="squishy-certificate rounded-2xl border-4 border-double border-forest-800 bg-white p-6 text-center text-forest-900 sm:p-8">
       <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-berry-600">CardRoots Squishy Studio</p>
@@ -32,8 +35,8 @@ function Certificate({ makerName, outline }: { makerName: string; outline: boole
       <p className="mt-3 text-sm">This certificate is proudly awarded to</p>
       <p className="kids-serif mt-1 break-words text-4xl font-bold text-berry-600">{makerName}</p>
       <p className="mx-auto mt-3 max-w-md text-sm">for cutting, folding, colouring and squishing with great care. Tick off each squishy friend once it’s made!</p>
-      <ul className="mx-auto mt-6 grid max-w-xl grid-cols-3 gap-4">
-        {SQUISHY_CHARACTERS.map(character => (
+      <ul className={`mx-auto mt-6 grid max-w-xl gap-4 ${characters.length > 6 ? "grid-cols-4" : "grid-cols-3"}`}>
+        {characters.map(character => (
           <li key={character.id} className="flex flex-col items-center gap-1 text-[11px] font-semibold">
             <SquishyPortrait character={character} outline={outline} className="h-16 w-16" />
             <span>{character.name}</span>
@@ -59,7 +62,7 @@ function PrintTemplate({ character, makerName, outline }: { character: SquishyCh
 }
 
 /** Lives under <body> so printing shows only these pages, however long the kit is. */
-function PrintPages({ mode, character, makerName, outline, preview }: { mode: PrintMode; character: SquishyCharacter; makerName: string; outline: boolean; preview: boolean }) {
+function PrintPages({ mode, character, characters, makerName, outline, preview }: { mode: PrintMode; character: SquishyCharacter; characters: SquishyCharacter[]; makerName: string; outline: boolean; preview: boolean }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
@@ -71,7 +74,7 @@ function PrintPages({ mode, character, makerName, outline, preview }: { mode: Pr
     </header>
   );
   const pairs: SquishyCharacter[][] = [];
-  for (let i = 0; i < SQUISHY_CHARACTERS.length; i += 2) pairs.push(SQUISHY_CHARACTERS.slice(i, i + 2));
+  for (let i = 0; i < characters.length; i += 2) pairs.push(characters.slice(i, i + 2));
 
   return createPortal(
     <div className="kids-print-root">
@@ -87,7 +90,7 @@ function PrintPages({ mode, character, makerName, outline, preview }: { mode: Pr
           {pairs.map(pair => (
             <div key={pair[0].id} className="print-page">{header}{pair.map(item => <PrintTemplate key={item.id} character={item} makerName={makerName} outline={outline} />)}</div>
           ))}
-          <div className="print-page"><Certificate makerName={makerName} outline={outline} /></div>
+          <div className="print-page"><Certificate makerName={makerName} outline={outline} characters={characters} /></div>
         </>
       )}
     </div>,
@@ -95,13 +98,19 @@ function PrintPages({ mode, character, makerName, outline, preview }: { mode: Pr
   );
 }
 
-export default function PrintableSquishy({ recipientName, preview = false }: PrintableSquishyProps) {
+export default function PrintableSquishy({ recipientName, preview = false, customDesign = null }: PrintableSquishyProps) {
   const [outlineOnly, setOutlineOnly] = useState(false);
   const [selected, setSelected] = useState<string>(SQUISHY_CHARACTERS[0].id);
   const [printMode, setPrintMode] = useState<PrintMode>("kit");
   const makerName = recipientName.trim() || "Your little maker";
+  const characters = customDesign ? [makeWorkshopCharacter(customDesign, makerName), ...SQUISHY_CHARACTERS] : SQUISHY_CHARACTERS;
   const showCertificate = selected === "certificate";
-  const character = SQUISHY_CHARACTERS.find(item => item.id === selected) ?? SQUISHY_CHARACTERS[0];
+  const character = characters.find(item => item.id === selected) ?? characters[0];
+
+  // A freshly made Workshop creature is the one they'll want to see first.
+  useEffect(() => {
+    if (customDesign) setSelected("workshop");
+  }, [customDesign]);
 
   const print = (mode: PrintMode) => {
     flushSync(() => setPrintMode(mode));
@@ -116,11 +125,11 @@ export default function PrintableSquishy({ recipientName, preview = false }: Pri
         <div className="mb-6 flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
             <span className="mb-2 inline-flex rounded-full bg-berry-600/10 px-3 py-1 text-xs font-bold text-berry-700">
-              ✂️ The printable squishy kit · {SQUISHY_CHARACTERS.length} characters + certificate
+              ✂️ The printable squishy kit · {characters.length} characters + certificate
             </span>
             <h2 id="squishy-heading" className="kids-serif text-2xl font-bold text-forest-900 sm:text-3xl">Make your own paper squishies</h2>
             <p className="mt-2 text-sm leading-relaxed text-forest-700">
-              {SQUISHY_CHARACTERS.length} festive squishy friends, each with a back badge saying they were made by <strong>{makerName}</strong>, plus an Official Squishy Maker certificate. Cut, fold, fill with tissue and squish. Choose full colour or outlines to colour in together.
+              {customDesign ? <>Your own <strong>{characters[0].name}</strong> from the Squishy Workshop and {SQUISHY_CHARACTERS.length} festive friends</> : <>{SQUISHY_CHARACTERS.length} festive squishy friends</>}, each with a back badge saying they were made by <strong>{makerName}</strong>, plus an Official Squishy Maker certificate. Cut, fold, fill with tissue and squish. Choose full colour or outlines to colour in together.
             </p>
             {preview && <p className="mt-2 text-xs font-semibold text-forest-700">Preview · The full printable kit, without the watermark, comes with your purchase.</p>}
           </div>
@@ -136,7 +145,7 @@ export default function PrintableSquishy({ recipientName, preview = false }: Pri
             ) : (
               <div className="flex flex-wrap gap-2">
                 <button type="button" onClick={() => print("kit")} className="rounded-xl bg-forest-900 px-5 py-3 text-sm font-semibold text-white shadow transition hover:bg-forest-800">
-                  <span aria-hidden="true">🖨️ </span>Print the whole kit ({KIT_PAGES} A4 pages)
+                  <span aria-hidden="true">🖨️ </span>Print the whole kit ({kitPages(characters.length)} A4 pages)
                 </button>
                 {!showCertificate && (
                   <button type="button" onClick={() => print("one")} className="rounded-xl border border-forest-900 px-4 py-3 text-sm font-semibold text-forest-900 transition hover:bg-forest-100">
@@ -149,10 +158,10 @@ export default function PrintableSquishy({ recipientName, preview = false }: Pri
         </div>
 
         <div role="group" aria-label="Choose a squishy to view" className="mb-6 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-7">
-          {SQUISHY_CHARACTERS.map(item => (
+          {characters.map(item => (
             <button key={item.id} type="button" aria-pressed={selected === item.id} onClick={() => setSelected(item.id)} className={`${pickerButton} ${selected === item.id ? "border-forest-900 bg-forest-100" : "border-parchment-300 hover:bg-parchment-50"}`}>
               <SquishyPortrait character={item} outline={outlineOnly} className="h-14 w-14" />
-              <span className="text-forest-900">{item.name}</span>
+              <span className="text-forest-900">{item.id === "workshop" ? `⭐ ${item.name}` : item.name}</span>
             </button>
           ))}
           <button type="button" aria-pressed={showCertificate} onClick={() => setSelected("certificate")} className={`${pickerButton} ${showCertificate ? "border-forest-900 bg-forest-100" : "border-parchment-300 hover:bg-parchment-50"}`}>
@@ -164,7 +173,7 @@ export default function PrintableSquishy({ recipientName, preview = false }: Pri
         <div id="printable-squishy-sheet" className="relative mx-auto max-w-4xl rounded-2xl border-2 border-dashed border-forest-700/50 bg-parchment-50 p-4 sm:p-8">
           {preview && <PreviewMarks count={10} spread={22} />}
           {showCertificate ? (
-            <Certificate makerName={makerName} outline={outlineOnly} />
+            <Certificate makerName={makerName} outline={outlineOnly} characters={characters} />
           ) : (
             <>
               <div className="mb-6 flex flex-col justify-between gap-3 border-b border-forest-900/20 pb-3 sm:flex-row sm:items-start">
@@ -186,7 +195,7 @@ export default function PrintableSquishy({ recipientName, preview = false }: Pri
           <p className="mt-3 text-center text-xs text-forest-700">Use scissors with adult supervision. Fill with clean, dry tissue.</p>
         </div>
       </div>
-      <PrintPages mode={printMode} character={character} makerName={makerName} outline={outlineOnly} preview={preview} />
+      <PrintPages mode={printMode} character={character} characters={characters} makerName={makerName} outline={outlineOnly} preview={preview} />
     </section>
   );
 }
