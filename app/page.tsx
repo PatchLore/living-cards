@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import HomeClient from "./HomeClient";
+import Home from "./Home";
+import { HomeProvider } from "./HomeClient";
 import JsonLd from "../components/site/JsonLd";
 import { CHRISTMAS_CLASSIC, CHRISTMAS_LIVE } from "../lib/catalog";
 import { faqLd, itemListLd } from "../lib/seo";
@@ -15,7 +16,9 @@ export default function Page() {
   return (
     <>
       <JsonLd data={[faqLd, itemListLd("Animated Christmas cards", [...CHRISTMAS_LIVE, ...CHRISTMAS_CLASSIC])]} />
-      <HomeClient />
+      <HomeProvider>
+        <Home />
+      </HomeProvider>
     </>
   );
 }
