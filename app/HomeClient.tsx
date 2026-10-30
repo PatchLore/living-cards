@@ -1,5 +1,7 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import {
@@ -13,8 +15,10 @@ import {
   getCard,
 } from "../lib/catalog";
 import CardArt from "../components/site/CardArt";
-import { PersonalizeDialog } from "../components/site/Personalize";
 import { FAQ } from "../lib/seo";
+
+// Only needed once someone picks a card, so it stays out of the first load.
+const PersonalizeDialog = dynamic(() => import("../components/site/Personalize").then((m) => m.PersonalizeDialog));
 
 const HERO_CARD = getCard("live-santa-sleigh")!;
 
@@ -165,6 +169,8 @@ export default function Home() {
             <CardArt
               card={HERO_CARD}
               withPoster
+              // On phones the hero card starts below the fold; don't let its poster compete with the fonts.
+              posterPriority="low"
               recipient={heroName.trim()}
               message="Wishing you a magical Christmas and a very happy new year. Love from all of us."
               className="shadow-2xl ring-1 ring-white/10"
@@ -259,12 +265,24 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-5 gap-3">
             <div className="relative col-span-5 overflow-hidden rounded-2xl shadow-lg sm:col-span-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/cards/live/mangrove-forest.jpg" alt="Illustration of a healthy mangrove forest in calm tidal water" className="aspect-[4/3] w-full object-cover" loading="lazy" />
+              <Image
+                src="/cards/live/mangrove-forest.jpg"
+                alt="Illustration of a healthy mangrove forest in calm tidal water"
+                width={2000}
+                height={1116}
+                sizes="(min-width: 768px) 360px, (min-width: 640px) 60vw, 100vw"
+                className="aspect-[4/3] w-full object-cover"
+              />
             </div>
             <div className="relative col-span-5 overflow-hidden rounded-2xl shadow-lg sm:col-span-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/cards/live/mangrove-seedling.jpg" alt="Illustration of a young mangrove seedling sprouting from tidal mud" className="aspect-[4/3] h-full w-full object-cover sm:aspect-auto" loading="lazy" />
+              <Image
+                src="/cards/live/mangrove-seedling.jpg"
+                alt="Illustration of a young mangrove seedling sprouting from tidal mud"
+                width={2000}
+                height={1091}
+                sizes="(min-width: 768px) 240px, (min-width: 640px) 40vw, 100vw"
+                className="aspect-[4/3] h-full w-full object-cover sm:aspect-auto"
+              />
             </div>
           </div>
         </div>

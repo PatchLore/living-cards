@@ -1,8 +1,9 @@
 "use client";
 
-import { Fragment, useEffect, useLayoutEffect, useRef } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
+import Image from "next/image";
 import gsap from "gsap";
-import LiveCanvas from "./LiveCanvas";
+import LiveCanvas, { PLAY_RATIO, visibleFraction } from "./LiveCanvas";
 import type { LiveScene } from "./engine";
 import { scriptFont, serifFont } from "./fonts";
 
@@ -35,28 +36,39 @@ type Props = {
   /** Cap the animation frame rate (thumbnails). */
   maxFps?: number;
   /** Still image under a code-drawn scene: shows before it starts and gives search engines an image. */
-  poster?: { src: string; alt: string };
+  poster?: { src: string; alt: string; fetchPriority?: "high" | "low" | "auto" };
   className?: string;
 };
 
 function CardVideo({ src, poster, playKey }: { src: string; poster: string; playKey: number }) {
   const ref = useRef<HTMLVideoElement>(null);
+  // Attach the file and poster only as the card nears the screen, so a page of
+  // video cards doesn't fetch every poster and video header on load.
+  const [near, setNear] = useState(false);
 
   useEffect(() => {
     const v = ref.current;
-    if (!v) return;
+    if (!v || near) return;
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setNear(true), { rootMargin: "400px" });
+    io.observe(v);
+    return () => io.disconnect();
+  }, [near]);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v || !near) return;
     v.currentTime = 0;
     // Only play while on screen; saves battery and data on long pages.
     const io = new IntersectionObserver(([e]) => (e.isIntersecting ? v.play().catch(() => {}) : v.pause()));
     io.observe(v);
     return () => io.disconnect();
-  }, [playKey]);
+  }, [playKey, near]);
 
   return (
     <video
       ref={ref}
-      src={src}
-      poster={poster}
+      src={near ? src : undefined}
+      poster={near ? poster : undefined}
       muted
       loop
       playsInline
@@ -80,6 +92,7 @@ export default function LiveCard({
   poster,
   className = "",
 }: Props) {
+  const boxRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const text = scene?.text ?? VIDEO_TEXT;
   const title = hideTitle ? "" : text.title;
@@ -90,6 +103,10 @@ export default function LiveCard({
     const root = textRef.current;
     if (!root) return;
     const reduce = freezeAt !== undefined || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Only cards on screen play the intro. The rest show their text straight away,
+    // as they would by the time anyone scrolls to them, which spares a page of
+    // cards dozens of offscreen per-letter tweens while it loads.
+    if (visibleFraction(boxRef.current!) < PLAY_RATIO) return;
     const ctx = gsap.context(() => {
       if (reduce) return;
       const tl = gsap.timeline({ delay: text.delay });
@@ -114,14 +131,25 @@ export default function LiveCard({
 
   return (
     <div
+      ref={boxRef}
       className={`relative w-full overflow-hidden rounded-2xl bg-[#05070b] ${className}`}
-      style={{ aspectRatio: "2 / 3", containerType: "inline-size" }}
+      // Text is sized in cqw, so cards with text are size containers, which makes
+      // layout of a long grid slow; content-visibility lets offscreen cards skip it.
+      style={{ aspectRatio: "2 / 3", containerType: hasText ? "inline-size" : undefined, contentVisibility: "auto" }}
     >
       {scene && poster && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={poster.src} alt={poster.alt} width={900} height={1350} className="absolute inset-0 h-full w-full object-cover" />
+        <Image
+          src={poster.src}
+          alt={poster.alt}
+          width={900}
+          height={1350}
+          sizes="(min-width: 480px) 420px, 100vw"
+          loading="eager"
+          fetchPriority={poster.fetchPriority}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
       )}
-      {scene && <LiveCanvas scene={scene} playKey={playKey} freezeAt={freezeAt} maxFps={maxFps} />}
+      {scene && <LiveCanvas scene={scene} playKey={playKey} freezeAt={freezeAt} maxFps={maxFps} overPoster={!!poster} />}
       {video && <CardVideo src={video.src} poster={video.poster} playKey={playKey} />}
       {hasText && (
         <div
