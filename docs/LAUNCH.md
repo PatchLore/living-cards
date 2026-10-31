@@ -9,6 +9,7 @@
 - **Immediate supply (digital content):** every order form has an unticked box with `IMMEDIATE_SUPPLY_CONSENT` (lib/sales.ts). Checkout refuses orders without it (400). The consent version goes into Stripe metadata (`supplyConsent`), and the confirmation email and success page repeat `IMMEDIATE_SUPPLY_CONFIRMATION`.
 - **First names only:** every name field says so (card forms, Kids studio, RSVP, business enquiries).
 - **Link expiry:** card links stay open for `CARD_LINK_MONTHS` (12) months. The email, success page and card page show the date; expired links show "This card has expired". The daily cleanup cron (`/api/cron/cleanup`) then clears the recipient name, message and buyer email (rows are kept for accounts and tree records) and deletes party replies. Party replies are also deleted 90 days after they're sent, and their IP hashes after 24 hours.
+- **Business enquiry limits:** `/api/enquiry` accepts 3 enquiries per IP per hour and 50 in total per 24 hours (429 with `Retry-After` past that), and sends at most 20 confirmations a day to visitor-typed addresses; past that the enquiry still reaches us without a confirmation (lib/enquiry.ts). Only a keyed IP hash is kept, in `EnquiryAttempt`, deleted after 24 hours by the cleanup cron. **Before deploying this, create the table** (`npx prisma db push` against the production database); without it enquiries answer 503 and send nothing. IP hashes are keyed with `RSVP_IP_SALT` (or `CRON_SECRET`); if neither is set they fall back to a key derived from `DATABASE_URL` and log an error, so set `RSVP_IP_SALT`.
 - **Advent timing:** doors open at midnight UK time (Europe/London) from 1 to 24 December, using the server's clock (lib/adventCalendar.ts).
 
 ## Preview deployments (testing)
@@ -25,4 +26,4 @@ Payments complete through the success page (`/api/order`), so a Stripe webhook i
 - **Dashboard:** Vercel → Project → Deployments → pick the previous Production deployment → ⋯ → **Instant Rollback** (or **Promote to Production**). New production deploys stop auto-promoting until you promote one again.
 - **CLI:** `vercel rollback` (to the previous production deployment) or `vercel rollback <deployment-url>`.
 - **Keep sales closed when rolling back:** only roll back to a deployment that includes the sales switch. If you must go further back, first remove `STRIPE_SECRET_KEY` from Production (older code then refuses checkout) and redeploy that deployment.
-- The `PartyRsvp` table can stay in the database; older code ignores it.
+- The `PartyRsvp` and `EnquiryAttempt` tables can stay in the database; older code ignores them.
