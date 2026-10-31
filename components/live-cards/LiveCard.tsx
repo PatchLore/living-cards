@@ -40,10 +40,14 @@ type Props = {
   className?: string;
 };
 
+/** `sizes` for poster images, which render at most ~420px wide. */
+export const POSTER_SIZES = "(min-width: 480px) 420px, 100vw";
+
 function CardVideo({ src, poster, playKey }: { src: string; poster: string; playKey: number }) {
   const ref = useRef<HTMLVideoElement>(null);
-  // Attach the file and poster only as the card nears the screen, so a page of
-  // video cards doesn't fetch every poster and video header on load.
+  // Attach the video file only as the card nears the screen, so a page of video
+  // cards doesn't fetch every video header on load. The poster stays in the HTML
+  // as a lazy image, so the card is never blank and crawlers still see it.
   const [near, setNear] = useState(false);
 
   useEffect(() => {
@@ -65,17 +69,21 @@ function CardVideo({ src, poster, playKey }: { src: string; poster: string; play
   }, [playKey, near]);
 
   return (
-    <video
-      ref={ref}
-      src={near ? src : undefined}
-      poster={near ? poster : undefined}
-      muted
-      loop
-      playsInline
-      preload="metadata"
-      aria-hidden
-      className="absolute inset-0 h-full w-full object-cover"
-    />
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={poster} alt="" aria-hidden loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+      <video
+        ref={ref}
+        src={near ? src : undefined}
+        poster={near ? poster : undefined}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+    </>
   );
 }
 
@@ -133,9 +141,9 @@ export default function LiveCard({
     <div
       ref={boxRef}
       className={`relative w-full overflow-hidden rounded-2xl bg-[#05070b] ${className}`}
-      // Text is sized in cqw, so cards with text are size containers, which makes
-      // layout of a long grid slow; content-visibility lets offscreen cards skip it.
-      style={{ aspectRatio: "2 / 3", containerType: hasText ? "inline-size" : undefined, contentVisibility: "auto" }}
+      // Text is sized in cqw; only cards with text need to be size containers,
+      // which makes layout of a long grid slower.
+      style={{ aspectRatio: "2 / 3", containerType: hasText ? "inline-size" : undefined }}
     >
       {scene && poster && (
         <Image
@@ -143,7 +151,7 @@ export default function LiveCard({
           alt={poster.alt}
           width={900}
           height={1350}
-          sizes="(min-width: 480px) 420px, 100vw"
+          sizes={POSTER_SIZES}
           loading="eager"
           fetchPriority={poster.fetchPriority}
           className="absolute inset-0 h-full w-full object-cover"

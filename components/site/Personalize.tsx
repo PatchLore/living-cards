@@ -198,6 +198,8 @@ export function PersonalizeDialog({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Return focus to whatever opened the dialog, so keyboard users keep their place.
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -209,6 +211,7 @@ export function PersonalizeDialog({
     return () => {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener("keydown", onKey);
+      opener?.focus({ preventScroll: true });
     };
   }, [card.key, onClose]);
 

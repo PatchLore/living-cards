@@ -17,19 +17,29 @@ type Props = {
 let pageReady: Promise<void> | undefined;
 
 /** Resolves once the page has loaded and gone idle, so animations don't compete with loading. */
-function whenPageReady() {
+export function whenPageReady() {
   return (pageReady ??= new Promise((resolve) => {
-    const idle = () =>
-      "requestIdleCallback" in window ? requestIdleCallback(() => resolve(), { timeout: 1000 }) : setTimeout(resolve, 200);
+    // Don't let one slow asset hold the cards still for long.
+    const cap = setTimeout(resolve, 5000);
+    const done = () => {
+      clearTimeout(cap);
+      resolve();
+    };
+    const idle = () => ("requestIdleCallback" in window ? requestIdleCallback(done, { timeout: 1000 }) : setTimeout(done, 200));
     if (document.readyState === "complete") idle();
     else window.addEventListener("load", idle, { once: true });
-    // Don't let one slow asset hold the cards still for long.
-    setTimeout(resolve, 5000);
   }));
 }
 
 /** Share of the card that must be on screen before it animates; a sliver at the edge just gets a still. */
 export const PLAY_RATIO = 0.15;
+
+/** Within half a screen of the viewport, the same margin the near-observer uses. */
+function isNear(el: Element) {
+  const r = el.getBoundingClientRect();
+  const m = window.innerHeight / 2;
+  return r.bottom > -m && r.top < window.innerHeight + m && r.right > 0 && r.left < window.innerWidth;
+}
 
 /** Fraction of an element inside the viewport, 0 when it is entirely off screen. */
 export function visibleFraction(el: Element) {
@@ -134,6 +144,16 @@ export default function LiveCanvas({ scene, playKey = 0, freezeAt, maxFps, overP
       { rootMargin: "50% 0px" },
     );
     nearIo.observe(canvas);
+    // Observers report after the frame is painted, so a jump (e.g. to #christmas)
+    // would show a blank card for a frame. Scroll events run before the paint.
+    const onScroll = () => {
+      if (!stale || near) return;
+      if (isNear(canvas)) {
+        near = true;
+        update();
+      }
+    };
+    if (!overPoster) window.addEventListener("scroll", onScroll, { passive: true });
     whenPageReady().then(() => {
       if (cancelled) return;
       ready = true;
@@ -146,6 +166,7 @@ export default function LiveCanvas({ scene, playKey = 0, freezeAt, maxFps, overP
       ro.disconnect();
       io.disconnect();
       nearIo.disconnect();
+      window.removeEventListener("scroll", onScroll);
     };
   }, [scene, playKey, freezeAt, maxFps, overPoster]);
 

@@ -5,10 +5,14 @@
 // the card tiles and the personalise dialog.
 
 import dynamic from "next/dynamic";
+import { getImageProps } from "next/image";
 import Link from "next/link";
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { preload } from "react-dom";
 import { type CatalogCard, PRICE_LABEL, getCard } from "../lib/catalog";
 import CardArt from "../components/site/CardArt";
+import { POSTER_SIZES } from "../components/live-cards/LiveCard";
+import { whenPageReady } from "../components/live-cards/LiveCanvas";
 
 // Only needed once someone picks a card, so it stays out of the first load.
 const PersonalizeDialog = dynamic(() => import("../components/site/Personalize").then((m) => m.PersonalizeDialog));
@@ -16,19 +20,25 @@ const PersonalizeDialog = dynamic(() => import("../components/site/Personalize")
 const HERO_CARD = getCard("live-santa-sleigh")!;
 
 // Split so typing a name only re-renders the hero, not every tile.
-const PickContext = createContext<(c: CatalogCard) => void>(() => {});
+const PickContext = createContext<(c: CatalogCard, recipient?: string) => void>(() => {});
 const HeroNameContext = createContext<[string, (name: string) => void]>(["", () => {}]);
 
 export function HomeProvider({ children }: { children: React.ReactNode }) {
-  const [active, setActive] = useState<CatalogCard | null>(null);
+  const [active, setActive] = useState<{ card: CatalogCard; recipient: string } | null>(null);
   const [heroName, setHeroName] = useState("Grandma");
+  const pick = useCallback((card: CatalogCard, recipient = "") => setActive({ card, recipient }), []);
   const close = useCallback(() => setActive(null), []);
 
+  // Fetch the dialog's code once the page has settled, so the first click opens it straight away.
+  useEffect(() => {
+    whenPageReady().then(() => import("../components/site/Personalize"));
+  }, []);
+
   return (
-    <PickContext.Provider value={setActive}>
+    <PickContext.Provider value={pick}>
       <HeroNameContext.Provider value={[heroName, setHeroName]}>
         {children}
-        {active && <PersonalizeDialog card={active} initialRecipient={active === HERO_CARD ? heroName.trim() : ""} onClose={close} />}
+        {active && <PersonalizeDialog card={active.card} initialRecipient={active.recipient} onClose={close} />}
       </HeroNameContext.Provider>
     </PickContext.Provider>
   );
@@ -49,7 +59,7 @@ export function HeroNameInput() {
       />
       <button
         type="button"
-        onClick={() => pick(HERO_CARD)}
+        onClick={() => pick(HERO_CARD, heroName.trim())}
         className="shrink-0 rounded-xl bg-berry px-5 py-3 font-semibold text-white transition hover:bg-berry-deep"
       >
         Add message →
@@ -60,11 +70,15 @@ export function HeroNameInput() {
 
 export function HeroCard() {
   const [heroName] = useContext(HeroNameContext);
+  // On desktop the hero card is above the fold and likely the largest paint, so
+  // fetch its poster early there. On phones it starts below the fold, so the
+  // poster itself is low priority and doesn't compete with the fonts.
+  const { props: img } = getImageProps({ src: HERO_CARD.poster, alt: "", width: 900, height: 1350, sizes: POSTER_SIZES });
+  preload(img.src, { as: "image", imageSrcSet: img.srcSet, imageSizes: POSTER_SIZES, fetchPriority: "high", media: "(min-width: 1024px)" });
   return (
     <CardArt
       card={HERO_CARD}
       withPoster
-      // On phones the hero card starts below the fold; don't let its poster compete with the fonts.
       posterPriority="low"
       recipient={heroName.trim()}
       message="Wishing you a magical Christmas and a very happy new year. Love from all of us."
