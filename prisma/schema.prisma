@@ -61,3 +61,17 @@ model PartyRsvp {
   @@index([ipHash, createdAt])
   @@index([createdAt])
 }
+
+/// One business enquiry that got past validation. Holds no form contents, only
+/// a keyed IP hash (never the raw IP) and whether a confirmation email went to
+/// the address the visitor typed. Exists only for rate limiting; rows are
+/// deleted by the daily cleanup cron after a day.
+model EnquiryAttempt {
+  id               String   @id @default(uuid())
+  ipHash           String
+  confirmationSent Boolean  @default(false)
+  createdAt        DateTime @default(now())
+
+  @@index([ipHash, createdAt])
+  @@index([createdAt])
+}
