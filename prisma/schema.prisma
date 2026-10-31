@@ -26,7 +26,7 @@ model Card {
   recipientName String
   message       String
 
-  stripeSessionId     String?
+  stripeSessionId     String? @unique
   stripeCustomerEmail String?
 
   treeCertificateUrl String?
@@ -43,7 +43,6 @@ model Card {
   updatedAt DateTime @updatedAt
 
   @@index([shareId])
-  @@index([stripeSessionId])
 }
 
 /// A guest's reply to a Kids birthday invite. Holds only a first name and
