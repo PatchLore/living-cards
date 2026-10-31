@@ -26,7 +26,7 @@ model Card {
   recipientName String
   message       String
 
-  stripeSessionId     String?
+  stripeSessionId     String? @unique
   stripeCustomerEmail String?
 
   treeCertificateUrl String?
@@ -43,7 +43,6 @@ model Card {
   updatedAt DateTime @updatedAt
 
   @@index([shareId])
-  @@index([stripeSessionId])
 }
 
 /// A guest's reply to a Kids birthday invite. Holds only a first name and
@@ -59,6 +58,20 @@ model PartyRsvp {
   createdAt DateTime @default(now())
 
   @@index([cardId, createdAt])
+  @@index([ipHash, createdAt])
+  @@index([createdAt])
+}
+
+/// One business enquiry that got past validation. Holds no form contents, only
+/// a keyed IP hash (never the raw IP) and whether a confirmation email went to
+/// the address the visitor typed. Exists only for rate limiting; rows are
+/// deleted by the daily cleanup cron after a day.
+model EnquiryAttempt {
+  id               String   @id @default(uuid())
+  ipHash           String
+  confirmationSent Boolean  @default(false)
+  createdAt        DateTime @default(now())
+
   @@index([ipHash, createdAt])
   @@index([createdAt])
 }
