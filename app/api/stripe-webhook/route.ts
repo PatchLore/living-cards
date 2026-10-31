@@ -22,8 +22,9 @@ export async function POST(req: Request) {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
+    // The reason stays in the logs; callers only learn that the request was rejected.
     console.error("[WEBHOOK] Signature verification failed:", message);
-    return new NextResponse(`Webhook Error: ${message}`, { status: 400 });
+    return new NextResponse("Invalid webhook signature", { status: 400 });
   }
 
   console.log(`[WEBHOOK] ${event.type} ${event.id} (livemode: ${event.livemode})`);
