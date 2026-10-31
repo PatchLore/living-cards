@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { Resend } from "resend";
+import { claimConfirmation, claimEnquirySlot } from "../../../lib/enquiry";
+import { clientIp } from "../../../lib/ipHash";
 
 export const runtime = "nodejs";
 
@@ -19,6 +21,8 @@ const Enquiry = z.object({
   website: z.string().optional().default(""),
 });
 
+const SEND_FAILED = "We couldn't send your enquiry. Please email info@cardroots.com.";
+
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 export async function POST(req: Request) {
@@ -32,6 +36,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Please check the form" }, { status: 400 });
   }
   const d = parsed.data;
+
+  // Limits come before any email: per IP, and across everyone per day. If the check itself
+  // fails, nothing is sent (the visitor is pointed at our address instead).
+  let slot;
+  try {
+    slot = await claimEnquirySlot(clientIp(req));
+  } catch (err) {
+    console.error("[ENQUIRY] Rate limit check failed:", err instanceof Error ? err.message : err);
+    return NextResponse.json({ error: SEND_FAILED }, { status: 503 });
+  }
+  if (!slot.ok) {
+    return NextResponse.json({ error: slot.error }, { status: 429, headers: { "Retry-After": String(slot.retryAfterSeconds) } });
+  }
 
   const to = process.env.ENQUIRY_EMAIL_TO || "info@cardroots.com";
   const from = process.env.EMAIL_FROM || "info@cardroots.com";
@@ -47,12 +64,13 @@ export async function POST(req: Request) {
   ];
 
   if (process.env.EMAIL_DRY_RUN === "1") {
-    console.log("[ENQUIRY] Dry run:", rows.map(([k, v]) => `${k}: ${v}`).join(" | "));
+    const confirm = await claimConfirmation(slot.id).catch(() => false);
+    console.log(`[ENQUIRY] Dry run (confirmation ${confirm ? "would be sent" : "skipped: daily cap"}):`, rows.map(([k, v]) => `${k}: ${v}`).join(" | "));
     return NextResponse.json({ ok: true });
   }
 
   const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) return NextResponse.json({ error: "We couldn't send your enquiry. Please email info@cardroots.com." }, { status: 500 });
+  if (!apiKey) return NextResponse.json({ error: SEND_FAILED }, { status: 500 });
 
   const resend = new Resend(apiKey);
   try {
@@ -67,20 +85,29 @@ export async function POST(req: Request) {
       text: rows.map(([k, v]) => `${k}: ${v}`).join("\n"),
     });
     if (error) throw new Error(error.message);
+  } catch (err) {
+    console.error("[ENQUIRY] Send failed:", err instanceof Error ? err.message : err);
+    return NextResponse.json({ error: SEND_FAILED }, { status: 500 });
+  }
 
-    // Confirmation to the enquirer, so they know it arrived.
-    await resend.emails.send({
+  // Confirmation to the enquirer, so they know it arrived. Only once we have the enquiry, and
+  // within a daily cap, since it goes to an address anyone can type in. Failures are logged only.
+  try {
+    if (!(await claimConfirmation(slot.id))) {
+      console.warn("[ENQUIRY] Daily confirmation cap reached; enquiry delivered without a confirmation.");
+      return NextResponse.json({ ok: true });
+    }
+    const { error } = await resend.emails.send({
       from: from.includes("<") ? from : `CardRoots <${from}>`,
       to: d.email,
       replyTo: "info@cardroots.com",
       subject: "We've received your CardRoots enquiry",
       html: `<p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6">Hi ${esc(d.name)},</p><p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6">Thanks for getting in touch about ${esc(d.quantity)} cards. We'll reply within one working day with a quote and next steps.</p><p style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6">CardRoots</p>`,
       text: `Hi ${d.name},\n\nThanks for getting in touch about ${d.quantity} cards. We'll reply within one working day with a quote and next steps.\n\nCardRoots`,
-    }).catch((e) => console.error("[ENQUIRY] Confirmation email failed:", e));
-
-    return NextResponse.json({ ok: true });
+    });
+    if (error) throw new Error(error.message);
   } catch (err) {
-    console.error("[ENQUIRY] Send failed:", err instanceof Error ? err.message : err);
-    return NextResponse.json({ error: "We couldn't send your enquiry. Please email info@cardroots.com." }, { status: 500 });
+    console.error("[ENQUIRY] Confirmation email failed:", err instanceof Error ? err.message : err);
   }
+  return NextResponse.json({ ok: true });
 }

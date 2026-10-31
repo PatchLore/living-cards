@@ -1,5 +1,5 @@
-import { createHmac } from "crypto";
 import prisma from "./prisma";
+import { hashIp } from "./ipHash";
 import { getCardByShareId } from "./db/cards";
 import { parseKidsCardKey } from "./kids";
 import { sendRsvpEmail } from "./email/sendRsvpEmail";
@@ -30,13 +30,6 @@ export function cleanGuestName(value: unknown): string | null {
   // A first name never needs a link or an email address; refusing them keeps spam out of buyers' inboxes.
   if (/:\/\/|www\.|@/i.test(name)) return null;
   return name;
-}
-
-/** A keyed hash, so the raw IP is never stored and can't be recovered by brute force. */
-export function hashIp(ip: string | null): string | null {
-  const secret = process.env.RSVP_IP_SALT || process.env.CRON_SECRET;
-  if (!ip || !secret) return null;
-  return createHmac("sha256", secret).update(ip).digest("hex").slice(0, 32);
 }
 
 const minutesAgo = (minutes: number) => new Date(Date.now() - minutes * 60_000);
