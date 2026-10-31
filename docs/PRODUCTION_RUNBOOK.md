@@ -208,7 +208,7 @@ The commit to deploy is tagged `deploy-perf-homepage` on your computer. Do this 
    ```powershell
    git log -1 --format="%h  %s" deploy-perf-homepage
    ```
-   Expected: a short commit ID and `Point the runbook at vercel --prod from a clean worktree`.
+   Expected: a short commit ID and `Fix the runbook's worktree clean-up step`.
    Write the ID down.
    ```powershell
    git log --oneline prod-before-perf-homepage..deploy-perf-homepage
@@ -219,7 +219,8 @@ The commit to deploy is tagged `deploy-perf-homepage` on your computer. Do this 
    ```powershell
    git worktree add --detach C:\Dev\Projects\CardRoots\living-cards-deploy deploy-perf-homepage
    ```
-   Expected: `Preparing worktree (detached HEAD …)` and `HEAD is now at …` with the same ID as step 2.
+   Expected: `Preparing worktree (detached HEAD …)`, a run of `Updating files: …%` lines,
+   then `HEAD is now at …` with the same ID as step 2.
 4. Copy the Vercel project link into it. The hidden `.vercel` folder says which Vercel
    project to deploy to; it isn't in git, so the copy doesn't have it yet.
    ```powershell
@@ -270,10 +271,16 @@ The commit to deploy is tagged `deploy-perf-homepage` on your computer. Do this 
    cd C:\Dev\Projects\CardRoots\living-cards
    ```
    ```powershell
-   git worktree remove --force C:\Dev\Projects\CardRoots\living-cards-deploy
+   git worktree remove C:\Dev\Projects\CardRoots\living-cards-deploy
    ```
-   Expected: no output. (`--force` is needed only because of the copied `.vercel` folder;
-   your main folder is not touched.)
+   Expected: no output. Your main folder is not touched.
+
+   If it says `error: failed to delete '…/living-cards-deploy': Permission denied`, git has
+   already removed the files and forgotten the copy, but Windows was still holding the
+   (now empty) folder open. Wait a few seconds and remove it:
+   ```powershell
+   Remove-Item -LiteralPath C:\Dev\Projects\CardRoots\living-cards-deploy -Recurse
+   ```
    ```powershell
    git worktree list
    ```
