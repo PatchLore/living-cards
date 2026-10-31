@@ -190,36 +190,95 @@ new rule.
    Expected: an error ending in `Environment variable not found: DATABASE_URL.` That is good.
 3. Close the window.
 
-## Part H. Deploy the code
+## Part H. Deploy the code (from a clean copy)
 
-Production deploys from the `christmas-redesign` branch. `perf/homepage` sits directly on
-top of it, so this is a fast-forward with no merge.
+Production is deployed **from your computer with the Vercel CLI** (`vercel --prod`).
+Pushing to GitHub does **not** deploy production; it only builds a Preview. The CLI uploads
+whatever folder you run it in, so deploy from a fresh, clean copy of the reviewed commit.
+That copy never contains `exports/`, `.env.local` or any half-finished work.
 
-1. Vercel → **Settings → Git**: check that **Production Branch** is `christmas-redesign`.
-2. In a normal PowerShell window (not the production one):
+The commit to deploy is tagged `deploy-perf-homepage` on your computer. Do this in a
+**normal** PowerShell window, not the production-database one from Part C.
+
+1. Go to the repository:
+   ```powershell
+   cd C:\Dev\Projects\CardRoots\living-cards
+   ```
+2. Show exactly what will be deployed:
+   ```powershell
+   git log -1 --format="%h  %s" deploy-perf-homepage
+   ```
+   Expected: a short commit ID and `Point the runbook at vercel --prod from a clean worktree`.
+   Write the ID down.
+   ```powershell
+   git log --oneline prod-before-perf-homepage..deploy-perf-homepage
+   ```
+   Expected: the list of changes going live, ending with the homepage work (`Speed up the
+   homepage on mobile …`). Everything in this list is what visitors get next.
+3. Create the clean copy, a git worktree next to the repository:
+   ```powershell
+   git worktree add --detach C:\Dev\Projects\CardRoots\living-cards-deploy deploy-perf-homepage
+   ```
+   Expected: `Preparing worktree (detached HEAD …)` and `HEAD is now at …` with the same ID as step 2.
+4. Copy the Vercel project link into it. The hidden `.vercel` folder says which Vercel
+   project to deploy to; it isn't in git, so the copy doesn't have it yet.
+   ```powershell
+   Copy-Item -Recurse C:\Dev\Projects\CardRoots\living-cards\.vercel C:\Dev\Projects\CardRoots\living-cards-deploy\.vercel
+   ```
+   Expected: no output.
+5. Move into the copy and check it's clean:
+   ```powershell
+   cd C:\Dev\Projects\CardRoots\living-cards-deploy
+   ```
+   ```powershell
+   git status --short
+   ```
+   Expected: no output at all.
+   ```powershell
+   Test-Path exports, .env.local, .env
+   ```
+   Expected: `False`, `False`, `False`.
+   ```powershell
+   vercel project inspect
+   ```
+   Expected: `Found Project dnbmashup1-4396s-projects/living-cards`. If it asks to set up or
+   link a project, press **Ctrl+C**: step 4 didn't work.
+6. Deploy. What to expect: the CLI uploads the folder, Vercel builds it with the Production
+   settings (3–5 minutes), then points `www.cardroots.com` and `cardroots.com` at it. The live
+   site keeps serving the old version until the new one is ready, and the switch is instant.
+   If the build fails, nothing changes for visitors.
+   ```powershell
+   vercel --prod
+   ```
+   Expected: an `Inspect:` link, then a line starting `Production:` with a URL like
+   `https://living-cards-XXXXXXXXX-dnbmashup1-4396s-projects.vercel.app`. Write down the
+   `XXXXXXXXX` part.
+7. Confirm production moved to it:
+   ```powershell
+   vercel inspect www.cardroots.com
+   ```
+   Expected: `target production`, `status ● Ready`, and a `url` line containing the same
+   `XXXXXXXXX` as step 6, no longer `2f6ouqev8`. If it still shows `2f6ouqev8`, the domain
+   didn't move. That happens after an earlier rollback, which turns off automatic
+   promotion. Make it live with:
+   ```powershell
+   vercel promote https://living-cards-XXXXXXXXX-dnbmashup1-4396s-projects.vercel.app
+   ```
+   then repeat this step.
+8. Go back and remove the clean copy:
    ```powershell
    cd C:\Dev\Projects\CardRoots\living-cards
    ```
    ```powershell
-   git fetch origin
+   git worktree remove --force C:\Dev\Projects\CardRoots\living-cards-deploy
    ```
+   Expected: no output. (`--force` is needed only because of the copied `.vercel` folder;
+   your main folder is not touched.)
    ```powershell
-   git log -1 --format=%h origin/christmas-redesign
+   git worktree list
    ```
-   Expected: `0fe9d6eb`. If it's different, someone pushed in the meantime; stop and ask.
-3. Move `christmas-redesign` forward to the new work and push it. The push is what deploys.
-   ```powershell
-   git switch christmas-redesign
-   ```
-   ```powershell
-   git merge --ff-only perf/homepage
-   ```
-   Expected: `Fast-forward` and a list of changed files.
-   ```powershell
-   git push origin christmas-redesign
-   ```
-4. Watch Vercel → **Deployments** until the new production deployment shows **Ready**
-   (a few minutes).
+   Expected: `living-cards-deploy` is no longer listed.
+9. Now run the smoke tests in **Part I**.
 
 ## Part I. Smoke test (about 5 minutes)
 
@@ -237,13 +296,37 @@ top of it, so this is a fast-forward with no merge.
    CardRoots enquiry" confirmation.
 5. Vercel → **Logs** (last hour): no lines containing `Rate limit check failed` or `[IP]`.
 6. Tomorrow: the 03:30 cleanup cron's log line ends with `enquiry rows deleted: …`.
+7. Once steps 1–5 pass, back the code up to GitHub (nothing goes live from this):
+   ```powershell
+   git push origin perf/homepage prod-before-perf-homepage deploy-perf-homepage
+   ```
+   Expected: `* [new branch] perf/homepage -> perf/homepage` and two `* [new tag]` lines.
+   This does **not** deploy production. Vercel builds a **Preview** of the branch, which
+   after Part A can't reach the database, Stripe or email, and Deployment Protection keeps
+   it private.
 
 ## Part J. If something goes wrong
 
-- **The site misbehaves after the deploy:** Vercel → **Deployments** → the previous
-  production deployment (commit `0fe9d6eb`, also tagged `prod-before-perf-homepage` on your
-  computer) → ⋯ → **Instant Rollback**. This is safe: the old code ignores the new
-  table and rule, so the database can stay as it is.
+- **The site misbehaves after the deploy:** put the previous production deployment back.
+  That is `2f6ouqev8`, commit `0fe9d6eb`, tagged `prod-before-perf-homepage` on your computer.
+  It's safe with the migrated database: the old code ignores the new table and rule. In a
+  normal PowerShell window:
+  ```powershell
+  cd C:\Dev\Projects\CardRoots\living-cards
+  ```
+  ```powershell
+  vercel rollback https://living-cards-2f6ouqev8-dnbmashup1-4396s-projects.vercel.app
+  ```
+  ```powershell
+  vercel inspect www.cardroots.com
+  ```
+  Expected: the `url` line shows `2f6ouqev8` again. If `rollback` refuses, run
+  `vercel promote https://living-cards-2f6ouqev8-dnbmashup1-4396s-projects.vercel.app`
+  instead; it does the same job. The dashboard alternative is Vercel → **Deployments** →
+  `2f6ouqev8` → ⋯ → **Instant Rollback**.
+
+  After a rollback, new `vercel --prod` deployments **don't** take over the domain on their own.
+  When you're ready to go forward again, use `vercel promote <url>` (Part H step 7).
 - **Enquiries fail with "We couldn't send your enquiry":** the `EnquiryAttempt` table is
   missing or the database is unreachable. Re-check Part F step 4.
 - **You need to undo the one-card-per-payment rule** (unlikely: only if saving orders
