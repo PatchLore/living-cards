@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCardBySessionId } from "../../../lib/db/cards";
 import { NotPaidError, fulfillCheckoutSession, getStripe } from "../../../lib/fulfillment";
 import { parseKidsCard } from "../../../lib/kids";
+import { clientIp } from "../../../lib/ipHash";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -52,9 +53,7 @@ const maskEmail = (email: string | null) => {
  * itself if the webhook hasn't arrived yet, so the buyer never waits on it.
  */
 export async function GET(req: Request) {
-  // Vercel sets x-forwarded-for to the client's address.
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip");
-  if (isRateLimited(ip || null)) {
+  if (isRateLimited(clientIp(req))) {
     return json({ status: "error", error: "Too many requests. Please try again in a few minutes." }, { status: 429, headers: { "Retry-After": "600" } });
   }
 

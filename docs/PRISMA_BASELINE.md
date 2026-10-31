@@ -6,6 +6,8 @@
 - The build never runs migrations, so merging this changes nothing on production by itself.
 
 ## Baseline production (owner, once)
+> To go live, follow **docs/PRODUCTION_RUNBOOK.md** instead: it covers these steps plus the backup, the two later migrations and the deploy, in order. This section is kept as background.
+
 This only tells Prisma that production already has `0_init`. It creates the `_prisma_migrations` table and writes one row. It does not touch `Card`, `CardOrder` or `PartyRsvp`, and it runs no SQL from the migration.
 
 Run these in PowerShell, from a checkout of branch `chore/prisma-postgres-baseline` (or `main` once it's merged), with `npm install` done.
