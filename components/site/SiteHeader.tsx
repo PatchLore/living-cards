@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { OTHER_OCCASIONS } from "../../lib/catalog";
 
 const NAV: { href: string; label: string; isNew?: boolean }[] = [
   { href: "/#christmas", label: "Christmas cards" },
   { href: "/kids", label: "✨ For Kids", isNew: true },
   { href: "/#how", label: "How it works" },
-  { href: "/#occasions", label: "Other occasions" },
+  // Only while there are cards for other occasions to show.
+  ...(OTHER_OCCASIONS.length ? [{ href: "/#occasions", label: "Other occasions" }] : []),
   { href: "/#faq", label: "FAQ" },
   { href: "/corporate", label: "Business" },
 ];

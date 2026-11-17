@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  CHRISTMAS_CLASSIC,
   CHRISTMAS_LIVE,
   HALLOWEEN,
   NEW_YEAR,
@@ -115,18 +114,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- Classic Christmas ---------- */}
-      <section className="bg-cream px-4 py-20 sm:px-6 lg:px-8">
-        <SectionHeading eyebrow="Also for Christmas" title="Classic animated cards">
-          Our original hand-picked Christmas animations, with your message added to the card.
-        </SectionHeading>
-        <div className="mx-auto mt-12 grid max-w-6xl grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
-          {CHRISTMAS_CLASSIC.map((card) => (
-            <CardTile key={card.key} cardKey={card.key} compact />
-          ))}
-        </div>
-      </section>
-
       {/* ---------- How it works ---------- */}
       <section id="how" className="scroll-mt-16 px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeading eyebrow="Simple as that" title="How it works" />
@@ -217,15 +204,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- Other occasions ---------- */}
-      <section id="occasions" className="scroll-mt-16 px-4 py-20 sm:px-6 lg:px-8">
-        <SectionHeading eyebrow="All year round" title="Birthdays, thank yous & love" />
-        <div className="mx-auto mt-12 grid max-w-6xl grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
-          {OTHER_OCCASIONS.map((card) => (
-            <CardTile key={card.key} cardKey={card.key} compact />
-          ))}
-        </div>
-      </section>
+      {/* ---------- Other occasions (shows again once there are cards for them) ---------- */}
+      {OTHER_OCCASIONS.length > 0 && (
+        <section id="occasions" className="scroll-mt-16 px-4 py-20 sm:px-6 lg:px-8">
+          <SectionHeading eyebrow="All year round" title="Birthdays, thank yous & love" />
+          <div className="mx-auto mt-12 grid max-w-6xl grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
+            {OTHER_OCCASIONS.map((card) => (
+              <CardTile key={card.key} cardKey={card.key} compact />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ---------- FAQ ---------- */}
       <section id="faq" className="scroll-mt-16 bg-cream px-4 py-20 sm:px-6 lg:px-8">

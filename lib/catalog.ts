@@ -258,7 +258,8 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/christmas_tree.mp4",
     poster: "/cards/posters/christmas_tree.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
   {
     key: "christmas-night-moonlight",
@@ -268,7 +269,8 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/moonlight.mp4",
     poster: "/cards/posters/moonlight.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
   {
     key: "snowy-cottage-evening",
@@ -278,7 +280,8 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/Christmas2.mp4",
     poster: "/cards/posters/Christmas2.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
   {
     key: "santas-moonlit-ride",
@@ -288,7 +291,8 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/Santa.mp4",
     poster: "/cards/posters/Santa.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
   {
     key: "golden-christmas-tree-rise",
@@ -298,7 +302,8 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/Christmas1.mp4",
     poster: "/cards/posters/Christmas1.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
   {
     key: "winter-forest-tree",
@@ -308,7 +313,8 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/XmasTree.mp4",
     poster: "/cards/posters/XmasTree.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
 
   // ---- Year-round occasions ----
@@ -320,7 +326,8 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/Birthday2.mp4",
     poster: "/cards/posters/Birthday2.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
   {
     key: "birthday-rose-bloom",
@@ -330,7 +337,8 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/rose.mp4",
     poster: "/cards/posters/rose.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
   {
     key: "thank-you-florals",
@@ -340,7 +348,8 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/Thankyou2.mp4",
     poster: "/cards/posters/Thankyou2.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
   {
     key: "warm-wishes",
@@ -350,7 +359,8 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/warm_wishes.mp4",
     poster: "/cards/posters/warm_wishes.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
   {
     key: "heart-of-light",
@@ -360,7 +370,8 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/heart1.mp4",
     poster: "/cards/posters/heart1.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
   {
     key: "golden-heart-glow",
@@ -370,10 +381,11 @@ export const CARDS: CatalogCard[] = [
     kind: "video",
     video: "/cards/heart2.mp4",
     poster: "/cards/posters/heart2.jpg",
-    shop: true,
+    shop: false,
+    retired: true,
   },
 
-  // ---- Valentine's (out of season: not in the shop, SEO pages still live) ----
+  // ---- Valentine's (retired with the other video cards; new living cards will replace them) ----
   ...(
     [
       ["valentine-rose", "Valentine Rose", "valentine1.mp4", "valentine1.jpg"],
@@ -397,6 +409,7 @@ export const CARDS: CatalogCard[] = [
       video: `/cards/posters/${video}`,
       poster: `/cards/posters/${poster}`,
       shop: false,
+      retired: true,
     }),
   ),
 

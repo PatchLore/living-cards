@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { OTHER_OCCASIONS } from "../../lib/catalog";
 
 export default function SiteFooter() {
   return (
@@ -15,7 +16,8 @@ export default function SiteFooter() {
           <p className="text-sm font-semibold text-cream">Cards</p>
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link className="hover:text-gold" href="/#christmas">Christmas</Link></li>
-            <li><Link className="hover:text-gold" href="/#occasions">Birthday, thank you &amp; love</Link></li>
+            <li><Link className="hover:text-gold" href="/kids">For Kids</Link></li>
+            {OTHER_OCCASIONS.length > 0 && <li><Link className="hover:text-gold" href="/#occasions">Birthday, thank you &amp; love</Link></li>}
             <li><Link className="hover:text-gold" href="/corporate">Business &amp; bulk orders</Link></li>
           </ul>
         </div>

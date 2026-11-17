@@ -1,8 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { CARDS } from "./lib/catalog";
 
-// Retired seasonal cards (e.g. /card/easter-sunrise) are sent to the homepage,
-// which shows the current collection, instead of returning an empty page.
-const RETIRED_CARD = /^\/card\/easter-[a-z0-9-]+\/?$/;
+// Retired cards (Easter, the old video cards and Valentine's) are sent to the
+// homepage, which shows the current collection, instead of returning an empty page.
+const RETIRED_KEYS = new Set(CARDS.filter((c) => c.retired).map((c) => c.key));
+const RETIRED_CARD = /^\/cards?\/(?:valentines\/)?([a-z0-9-]+)\/?$/;
 
 export function middleware(req: NextRequest) {
   const url = req.nextUrl;
@@ -15,7 +17,8 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
 
-  if (RETIRED_CARD.test(url.pathname)) {
+  const retired = url.pathname.match(RETIRED_CARD);
+  if (retired && RETIRED_KEYS.has(retired[1])) {
     return NextResponse.redirect(new URL("/", req.url), 301);
   }
 
