@@ -19,7 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: card.category === "Valentine" ? `${base}/cards/valentines/${card.key}` : `${base}/card/${card.key}`,
       lastModified: now,
       changeFrequency: "monthly",
-      priority: card.category === "Christmas" ? 0.95 : 0.7,
+      priority: card.category === "Christmas" ? 0.95 : card.category === "New Year" ? 0.9 : 0.7,
       images: [`${base}${card.poster}`],
     });
   }

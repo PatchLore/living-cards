@@ -39,7 +39,9 @@ export function buildCardEmail({
     ? `Your CardRoots Kids creation for ${who} is ready ✨`
     : christmas
     ? `Your Christmas card for ${who} is ready 🎄`
-    : card?.category === "Halloween"
+    : card?.category === "New Year"
+      ? `Your New Year card for ${who} is ready 🎆`
+      : card?.category === "Halloween"
       ? `Your Halloween card for ${who} is ready 🎃`
       : `Your card for ${who} is ready 🌱`;
 

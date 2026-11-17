@@ -6,6 +6,7 @@ import {
   CHRISTMAS_CLASSIC,
   CHRISTMAS_LIVE,
   HALLOWEEN,
+  NEW_YEAR,
   HALLOWEEN_ENDS,
   OTHER_OCCASIONS,
   PRICE_LABEL,
@@ -108,7 +109,7 @@ export default function Home() {
           Each scene is animated live, so your greeting, their name and your message appear inside the card itself.
         </SectionHeading>
         <div className="mx-auto mt-12 grid max-w-7xl grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-8 lg:grid-cols-5 lg:gap-x-6">
-          {CHRISTMAS_LIVE.map((card) => (
+          {[...CHRISTMAS_LIVE, ...NEW_YEAR].map((card) => (
             <CardTile key={card.key} cardKey={card.key} />
           ))}
         </div>

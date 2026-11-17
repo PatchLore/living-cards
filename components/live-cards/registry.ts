@@ -22,6 +22,9 @@ import { bubblingCauldron } from "./scenes/bubblingCauldron";
 import { catBookshelf } from "./scenes/catBookshelf";
 import { firesideSkeleton } from "./scenes/firesideSkeleton";
 import { velvetVampire } from "./scenes/velvetVampire";
+import { gingerbreadHouse } from "./scenes/gingerbreadHouse";
+import { reindeerDawn } from "./scenes/reindeerDawn";
+import { newYearFireworks } from "./scenes/newYearFireworks";
 
 export {
   starlitTree,
@@ -42,10 +45,15 @@ export {
   catBookshelf,
   firesideSkeleton,
   velvetVampire,
+  gingerbreadHouse,
+  reindeerDawn,
+  newYearFireworks,
 };
 
 export const CHRISTMAS_SCENES: LiveScene[] = [
   santaSleigh,
+  gingerbreadHouse,
+  reindeerDawn,
   snowyCottage,
   giftBox,
   starlitTree,
@@ -68,7 +76,9 @@ export const HALLOWEEN_SCENES: LiveScene[] = [
   friendlyGhost,
 ];
 
-const ALL_SCENES: LiveScene[] = [...CHRISTMAS_SCENES, ...HALLOWEEN_SCENES];
+export const NEW_YEAR_SCENES: LiveScene[] = [newYearFireworks];
+
+const ALL_SCENES: LiveScene[] = [...CHRISTMAS_SCENES, ...NEW_YEAR_SCENES, ...HALLOWEEN_SCENES];
 
 export const SCENES_BY_ID: Record<string, LiveScene> = Object.fromEntries(
   ALL_SCENES.map((s) => [s.id, s]),

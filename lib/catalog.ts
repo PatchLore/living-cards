@@ -2,7 +2,7 @@
 // Pages, checkout validation, the share page, emails and the sitemap all read
 // from here, so a card can't be purchasable but missing from the viewer.
 
-export type Category = "Christmas" | "Halloween" | "Birthday" | "Thank You" | "Love" | "Valentine" | "Easter";
+export type Category = "Christmas" | "New Year" | "Halloween" | "Birthday" | "Thank You" | "Love" | "Valentine" | "Easter";
 
 export type CatalogCard = {
   key: string;
@@ -39,6 +39,28 @@ export const CARDS: CatalogCard[] = [
     shop: true,
   },
   {
+    key: "live-gingerbread-house",
+    title: "Gingerbread House",
+    description: "Icing pipes itself across a gingerbread roof, sweets pop on, and a little gingerbread friend waves from the glowing door.",
+    category: "Christmas",
+    kind: "live",
+    sceneId: "gingerbread-house",
+    poster: "/cards/live/gingerbread-house.jpg",
+    badge: "New",
+    shop: true,
+  },
+  {
+    key: "live-reindeer-dawn",
+    title: "Reindeer at Dawn",
+    description: "A reindeer waits in a snowy clearing as the winter sun rises, its breath curling in the cold morning air.",
+    category: "Christmas",
+    kind: "live",
+    sceneId: "reindeer-dawn",
+    poster: "/cards/live/reindeer-dawn.jpg",
+    badge: "New",
+    shop: true,
+  },
+  {
     key: "live-snowy-cottage",
     title: "Snowy Cottage",
     description: "A log cabin's windows glow one by one as chimney smoke curls into the falling snow.",
@@ -56,7 +78,6 @@ export const CARDS: CatalogCard[] = [
     kind: "live",
     sceneId: "gift-box",
     poster: "/cards/live/gift-box.jpg",
-    badge: "New",
     shop: true,
   },
   {
@@ -97,7 +118,6 @@ export const CARDS: CatalogCard[] = [
     kind: "live",
     sceneId: "fireside-stockings",
     poster: "/cards/live/fireside-stockings.jpg",
-    badge: "New",
     shop: true,
   },
   {
@@ -128,6 +148,19 @@ export const CARDS: CatalogCard[] = [
     kind: "live",
     sceneId: "moonlit-snow",
     poster: "/cards/live/moonlit-snow.jpg",
+    shop: true,
+  },
+
+  // ---- New Year: sold alongside Christmas, so the shop keeps selling into January ----
+  {
+    key: "live-new-year-fireworks",
+    title: "New Year Fireworks",
+    description: "The clock strikes midnight and fireworks burst over the city, sparkling in the river below.",
+    category: "New Year",
+    kind: "live",
+    sceneId: "new-year-fireworks",
+    poster: "/cards/live/new-year-fireworks.jpg",
+    badge: "New",
     shop: true,
   },
 
@@ -408,8 +441,9 @@ export function isPurchasable(key: string | null | undefined): boolean {
 
 export const CHRISTMAS_LIVE = CARDS.filter((c) => c.shop && c.category === "Christmas" && c.kind === "live");
 export const CHRISTMAS_CLASSIC = CARDS.filter((c) => c.shop && c.category === "Christmas" && c.kind === "video");
+export const NEW_YEAR = CARDS.filter((c) => c.shop && c.category === "New Year");
 export const HALLOWEEN = CARDS.filter((c) => c.shop && c.category === "Halloween");
-export const OTHER_OCCASIONS = CARDS.filter((c) => c.shop && c.category !== "Christmas" && c.category !== "Halloween");
+export const OTHER_OCCASIONS = CARDS.filter((c) => c.shop && c.category !== "Christmas" && c.category !== "New Year" && c.category !== "Halloween");
 
 /** The Halloween section shows on the homepage until this moment (midnight UK time, 1 Nov). */
 export const HALLOWEEN_ENDS = new Date("2026-11-01T00:00:00Z");
@@ -419,6 +453,8 @@ export function occasionLine(card: CatalogCard | undefined): string {
   switch (card?.category) {
     case "Christmas":
       return "Sent with warm Christmas wishes";
+    case "New Year":
+      return "Wishing you a happy new year";
     case "Halloween":
       return "A spooky little something for you";
     case "Birthday":

@@ -20,7 +20,7 @@ export default function CardViewerClient({
 
   const backHref = backToHash
     ? `/#${backToHash}`
-    : card.category === "Christmas"
+    : card.category === "Christmas" || card.category === "New Year"
       ? "/#christmas"
       : card.category === "Halloween"
         ? "/#halloween"
