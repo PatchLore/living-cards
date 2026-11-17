@@ -14,7 +14,9 @@ export default function EnquiryForm() {
 
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
+    // React clears e.currentTarget once the handler awaits, so keep the form now.
+    const form = e.currentTarget;
+    const data = Object.fromEntries(new FormData(form).entries());
     setStatus("sending");
     setError(null);
     try {
@@ -25,8 +27,8 @@ export default function EnquiryForm() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || "Something went wrong. Please try again.");
+      form.reset();
       setStatus("sent");
-      e.currentTarget.reset();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setStatus("error");
