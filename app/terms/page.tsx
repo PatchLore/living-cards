@@ -4,12 +4,15 @@ export const metadata = {
   description: "How ordering, instant email delivery, refunds and tree planting work for CardRoots £5 animated digital greeting cards.",
 };
 
+// Update this date whenever the terms change.
+const LAST_UPDATED = "22 November 2026";
+
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-slate-50 py-16 px-6">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl p-8 sm:p-12 shadow-lg">
         <h1 className="text-3xl font-semibold mb-6 text-slate-900">Terms & Conditions</h1>
-        <p className="text-sm text-slate-600 mb-8">Last updated: {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</p>
+        <p className="text-sm text-slate-600 mb-8">Last updated: {LAST_UPDATED}</p>
 
         <div className="prose prose-slate max-w-none space-y-6 text-slate-700">
           <section>
@@ -36,7 +39,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold mb-3 text-slate-900">4. Payments</h2>
             <p>
-              Payments are processed securely through Stripe. All prices are displayed in British Pounds (£) and include applicable taxes. By completing a purchase, you agree to the payment terms set by Stripe.
+              Payments for animated cards are processed securely through Stripe. All prices are displayed in British Pounds (£) and include applicable taxes. By completing a card purchase, you agree to the payment terms set by Stripe.
             </p>
           </section>
 
@@ -72,6 +75,26 @@ export default function TermsPage() {
                 info@cardroots.com
               </a>
               .
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-3 text-slate-900">9. Printable downloads (CardRoots Letters)</h2>
+            <p>
+              Some CardRoots products are printable digital downloads, such as the Pen Pal Starter Kit and the Letterbox Morning stickers. These are sold through Payhip, so the tree planting in section 3 and the Stripe payments in section 4 do not apply to them. Payhip shows its own terms at checkout, including how cancellation works for digital content, and those apply to your purchase.
+            </p>
+            <p className="mt-3">
+              Personal use: you may print copies of the files for your own personal use, for yourself, your family and your friends. You may not resell, share, give away or bundle the files, upload them anywhere (including into AI training datasets), or print and sell physical products made from them.
+            </p>
+            <p className="mt-3">
+              Artwork: some artwork was created with the help of AI image tools and then arranged by hand.
+            </p>
+            <p className="mt-3">
+              Faulty files: if a download will not open or prints wrongly, email{" "}
+              <a href="mailto:info@cardroots.com" className="text-blue-600 hover:underline">
+                info@cardroots.com
+              </a>{" "}
+              and we will help. This does not affect your statutory rights.
             </p>
           </section>
         </div>
