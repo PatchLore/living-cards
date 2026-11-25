@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -187,11 +188,36 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
             <h1 className="max-w-3xl font-serif text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">Magical moments with their name written right into the scene.</h1>
             <p className="mt-5 max-w-3xl text-base leading-relaxed text-parchment-200 sm:text-lg">From official North Pole scrolls and a 24-chapter advent story to Tooth Fairy receipts and party invites. Personalise an animated experience, share a little magic, and plant a real tree.</p>
             <div className="mt-6 flex flex-wrap gap-2 text-sm sm:text-sm">{["⚡ Instant shareable link", "🌱 Every order plants a tree", "🔒 First names only, no photos", "🏘️ 24-chapter advent story"].map(text => <span key={text} className="rounded-xl border border-forest-700 bg-forest-950/50 px-3 py-2">{text}</span>)}</div>
-            <nav aria-label="Kids studio sections" className="mt-7 flex flex-wrap gap-5 text-sm font-semibold text-amber-200"><a href="#studio" className="hover:underline">Personalise a creation ↓</a><a href="#bundles" className="hover:underline">Christmas bundle</a><a href="#privacy-trust" className="hover:underline">Our parent promise</a></nav>
+            <nav aria-label="Kids studio sections" className="mt-7 flex flex-wrap gap-5 text-sm font-semibold text-amber-200"><a href="#studio" className="hover:underline">Personalise a creation ↓</a><a href="#after-school-hour" className="hover:underline">Printable activity cards</a><a href="#bundles" className="hover:underline">Christmas bundle</a><a href="#privacy-trust" className="hover:underline">Our parent promise</a></nav>
           </div>
         </section>
       </>}
 
+      {!preview && <section id="after-school-hour" className="no-print border-b border-parchment-300 bg-parchment-50 px-5 py-10 text-forest-900 sm:px-8 sm:py-14">
+        <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="grid grid-cols-2 gap-3">
+            <Image src="/kids/after-school/cover.png" alt="The After-School Hour activity-card pack cover" width={1241} height={1754} className="col-span-2 h-auto w-full rounded-2xl border border-forest-900/10 shadow-lg" />
+            <Image src="/kids/after-school/activity-sheet-colour.png" alt="Colour printable activity sheet preview" width={1241} height={1754} className="h-auto w-full rounded-xl border border-forest-900/10" />
+            <Image src="/kids/after-school/activity-sheet-lowink.png" alt="Low-ink printable activity sheet preview" width={1241} height={1754} className="h-auto w-full rounded-xl border border-forest-900/10" />
+            <Image src="/kids/after-school/card-closeup.png" alt="Close-up of one screen-free activity card" width={1054} height={758} className="col-span-2 h-auto w-full rounded-xl border border-forest-900/10" />
+          </div>
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-forest-700">Printable fun for ages 6–8</p>
+            <h2 className="mt-2 font-serif text-3xl font-bold leading-tight sm:text-4xl">The After-School Hour</h2>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-forest-800">Thirty screen-free activity cards to make the after-school stretch easier to fill, plus four short guides for grown-ups. Most ideas use everyday household things, a few found objects, or nothing at all.</p>
+            <ul className="mt-5 grid gap-2 text-sm text-forest-800 sm:grid-cols-2">
+              <li className="rounded-xl bg-white/80 px-4 py-3">30 activities + 4 grown-up guides</li>
+              <li className="rounded-xl bg-white/80 px-4 py-3">A4 and US Letter PDF formats</li>
+              <li className="rounded-xl bg-white/80 px-4 py-3">Colour and low-ink print options</li>
+              <li className="rounded-xl bg-white/80 px-4 py-3">Instant digital download</li>
+            </ul>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <a href="https://payhip.com/b/hWwNf" className="inline-flex min-h-12 items-center justify-center rounded-full bg-forest-900 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-forest-800">Get the cards · £5.99</a>
+              <span className="text-sm text-forest-700">Sold securely through Payhip</span>
+            </div>
+          </div>
+        </div>
+      </section>}
       <main id="studio" className="no-print mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div><p className="text-sm font-bold uppercase tracking-wider text-forest-700">{preview ? "A little magic, just for you" : "The CardRoots Kids Studio"}</p>{preview ? <h1 className="mt-1 font-serif text-2xl font-bold text-forest-900">Made specially for {displayData.recipientName}</h1> : <h2 className="mt-1 font-serif text-2xl font-bold text-forest-900">1. Choose their magical experience</h2>}</div>
