@@ -79,9 +79,9 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-3 text-slate-900">9. Printable downloads (CardRoots Letters)</h2>
+            <h2 className="text-xl font-semibold mb-3 text-slate-900">9. Printable downloads (CardRoots Letters and Kids activity packs)</h2>
             <p>
-              Some CardRoots products are printable digital downloads, such as the Pen Pal Starter Kit and the Letterbox Morning stickers. These are sold through Payhip, so the tree planting in section 3 and the Stripe payments in section 4 do not apply to them. Payhip shows its own terms at checkout, including how cancellation works for digital content, and those apply to your purchase.
+              Some CardRoots products are printable digital downloads, such as the Pen Pal Starter Kit and the Letterbox Morning stickers, and the screen-free activity packs on our Kids page (The After-School Hour, the 7-Day Screen-Free Reset, the 30-Day Screen-Free Challenge and their bundles). The activity packs are sold from our Payhip store called AfterSchoolHour. All of these are sold through Payhip, so the tree planting in section 3 and the Stripe payments in section 4 do not apply to them. Payhip shows its own terms at checkout, including how cancellation works for digital content, and those apply to your purchase.
             </p>
             <p className="mt-3">
               Personal use: you may print copies of the files for your own personal use, for yourself, your family and your friends. You may not resell, share, give away or bundle the files, upload them anywhere (including into AI training datasets), or print and sell physical products made from them.

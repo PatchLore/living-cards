@@ -181,13 +181,13 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
   return (
     <div className={`kids-studio ${kidsFontVariables}`}>
       {!preview && <>
-        <div className="no-print border-b border-forest-800 bg-forest-950 px-4 py-2 text-center text-sm text-parchment-100">🌲 Every order plants a real tree <span className="mx-2">·</span> Instant personalised links <span className="mx-2">·</span> <a href="#bundles" className="font-semibold text-amber-300">Christmas Kids Bundle £{KIDS_BUNDLE_PRICE} — save £{santaBundleSaving}</a></div>
+        <div className="no-print border-b border-forest-800 bg-forest-950 px-4 py-2 text-center text-sm text-parchment-100">🌲 Every personalised order plants a real tree <span className="mx-2">·</span> Instant personalised links <span className="mx-2">·</span> <a href="#bundles" className="font-semibold text-amber-300">Christmas Kids Bundle £{KIDS_BUNDLE_PRICE} — save £{santaBundleSaving}</a></div>
         <section id="top" className="no-print relative overflow-hidden border-b border-forest-800 bg-gradient-to-b from-forest-900 via-forest-800 to-forest-900 px-5 py-12 text-parchment-50 sm:px-8 sm:py-16">
           <div className="mx-auto max-w-7xl">
             <p className="mb-4 inline-flex rounded-full border border-forest-600/50 bg-forest-950/60 px-4 py-1.5 text-sm font-semibold text-amber-300">🎅 CardRoots For Kids · A little wonder, made just for them</p>
             <h1 className="max-w-3xl font-serif text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">Magical moments with their name written right into the scene.</h1>
             <p className="mt-5 max-w-3xl text-base leading-relaxed text-parchment-200 sm:text-lg">From official North Pole scrolls and a 24-chapter advent story to Tooth Fairy receipts and party invites. Personalise an animated experience, share a little magic, and plant a real tree.</p>
-            <div className="mt-6 flex flex-wrap gap-2 text-sm sm:text-sm">{["⚡ Instant shareable link", "🌱 Every order plants a tree", "🔒 First names only, no photos", "🏘️ 24-chapter advent story"].map(text => <span key={text} className="rounded-xl border border-forest-700 bg-forest-950/50 px-3 py-2">{text}</span>)}</div>
+            <div className="mt-6 flex flex-wrap gap-2 text-sm sm:text-sm">{["⚡ Instant shareable link", "🌱 Every personalised order plants a tree", "🔒 First names only, no photos", "🏘️ 24-chapter advent story"].map(text => <span key={text} className="rounded-xl border border-forest-700 bg-forest-950/50 px-3 py-2">{text}</span>)}</div>
             <nav aria-label="Kids studio sections" className="mt-7 flex flex-wrap gap-5 text-sm font-semibold text-amber-200"><a href="#studio" className="hover:underline">Personalise a creation ↓</a><a href="#after-school-hour" className="hover:underline">Printable activity cards</a><a href="#screen-free-packs" className="hover:underline">Screen-free packs</a><a href="#bundles" className="hover:underline">Christmas bundle</a><a href="#privacy-trust" className="hover:underline">Our parent promise</a></nav>
           </div>
         </section>
@@ -213,7 +213,7 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
             </ul>
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <a href="https://payhip.com/b/hWwNf" className="inline-flex min-h-12 items-center justify-center rounded-full bg-forest-900 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-forest-800">Get the cards · £5.99</a>
-              <span className="text-sm text-forest-700">Sold securely through Payhip</span>
+              <span className="text-sm text-forest-700">Sold securely through Payhip. Printable packs don&apos;t include tree planting.</span>
             </div>
           </div>
         </div>
@@ -261,7 +261,7 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
           </div>
           <div className="mt-8 rounded-3xl border border-forest-900/10 bg-white p-6 shadow-sm sm:p-8">
             <h3 className="font-serif text-2xl font-bold">Choose a bundle and save</h3>
-            <p className="mt-2 text-sm leading-relaxed text-forest-800">Want both packs, or the full set with the activity card deck?</p>
+            <p className="mt-2 text-sm leading-relaxed text-forest-800">Want both packs, or the full set with the activity card deck? All packs are sold through Payhip and don&apos;t include tree planting.</p>
             <div className="mt-5 flex flex-wrap gap-3">
               <a href="https://payhip.com/b/FaK2g" className="inline-flex min-h-11 items-center justify-center rounded-full border border-forest-900/20 px-5 py-2.5 text-sm font-semibold text-forest-900 hover:bg-forest-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-700">7-Day + 30-Day Bundle · £6</a>
               <a href="https://payhip.com/b/ZAy8f" className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-forest-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-700">Family Bundle with 30 Activity Cards · £9</a>
