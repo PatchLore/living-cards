@@ -1,9 +1,18 @@
 "use client";
 
-import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { fitScale, textBoxFits } from "../../lib/fitText";
 import { kidsFontVariables } from "./kidsFonts";
+
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
+const subscribeToNothing = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
+export function useHydrated() {
+  return useSyncExternalStore(subscribeToNothing, getClientSnapshot, getServerSnapshot);
+}
 
 /**
  * Hand-made details for the Kids keepsakes (seals, stamps, signatures), all
@@ -187,8 +196,7 @@ export function InkStamp({ lines, className }: { lines: [string, string]; classN
  */
 export function FitText({ children, fitKey, maxLines = 1, className = "", style }: { children: ReactNode; fitKey: string; maxLines?: number; className?: string; style?: CSSProperties }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
-  useIsoLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     const run = () => {
@@ -223,9 +231,8 @@ export function FitText({ children, fitKey, maxLines = 1, className = "", style 
 const PAGE_HEIGHT_PX = Math.floor(((297 - 24) / 25.4) * 96) - 12;
 
 export function PrintSheet({ children, label }: { children: ReactNode; label: string }) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useHydrated();
   const sheet = useRef<HTMLDivElement>(null);
-  useEffect(() => setMounted(true), []);
 
   // Keep every keepsake on one page: if it's taller than A4, scale the sheet down to fit.
   useEffect(() => {

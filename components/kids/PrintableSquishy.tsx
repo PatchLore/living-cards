@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createPortal, flushSync } from "react-dom";
 import { SQUISHY_CHARACTERS, SquishyPortrait, SquishyTemplate, type SquishyCharacter } from "./squishyCharacters";
 import { makeWorkshopCharacter, type WorkshopDesign } from "./workshopDesign";
+import { useHydrated } from "./craft";
 
 export interface PrintableSquishyProps {
   recipientName: string;
@@ -63,8 +64,7 @@ function PrintTemplate({ character, makerName, outline }: { character: SquishyCh
 
 /** Lives under <body> so printing shows only these pages, however long the kit is. */
 function PrintPages({ mode, character, characters, makerName, outline, preview }: { mode: PrintMode; character: SquishyCharacter; characters: SquishyCharacter[]; makerName: string; outline: boolean; preview: boolean }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useHydrated();
   if (!mounted) return null;
 
   const header = (
@@ -100,17 +100,19 @@ function PrintPages({ mode, character, characters, makerName, outline, preview }
 
 export default function PrintableSquishy({ recipientName, preview = false, customDesign = null }: PrintableSquishyProps) {
   const [outlineOnly, setOutlineOnly] = useState(false);
-  const [selected, setSelected] = useState<string>(SQUISHY_CHARACTERS[0].id);
+  const [selection, setSelection] = useState<{ design: WorkshopDesign | null; selected: string }>(() => ({
+    design: customDesign,
+    selected: customDesign ? "workshop" : SQUISHY_CHARACTERS[0].id,
+  }));
   const [printMode, setPrintMode] = useState<PrintMode>("kit");
   const makerName = recipientName.trim() || "Your little maker";
   const characters = customDesign ? [makeWorkshopCharacter(customDesign, makerName), ...SQUISHY_CHARACTERS] : SQUISHY_CHARACTERS;
+  const selected = selection.design === customDesign
+    ? selection.selected
+    : customDesign ? "workshop" : SQUISHY_CHARACTERS[0].id;
+  const selectCharacter = (id: string) => setSelection({ design: customDesign, selected: id });
   const showCertificate = selected === "certificate";
   const character = characters.find(item => item.id === selected) ?? characters[0];
-
-  // A freshly made Workshop creature is the one they'll want to see first.
-  useEffect(() => {
-    if (customDesign) setSelected("workshop");
-  }, [customDesign]);
 
   const print = (mode: PrintMode) => {
     flushSync(() => setPrintMode(mode));
@@ -159,12 +161,12 @@ export default function PrintableSquishy({ recipientName, preview = false, custo
 
         <div role="group" aria-label="Choose a squishy to view" className="mb-6 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-7">
           {characters.map(item => (
-            <button key={item.id} type="button" aria-pressed={selected === item.id} onClick={() => setSelected(item.id)} className={`${pickerButton} ${selected === item.id ? "border-forest-900 bg-forest-100" : "border-parchment-300 hover:bg-parchment-50"}`}>
+            <button key={item.id} type="button" aria-pressed={selected === item.id} onClick={() => selectCharacter(item.id)} className={`${pickerButton} ${selected === item.id ? "border-forest-900 bg-forest-100" : "border-parchment-300 hover:bg-parchment-50"}`}>
               <SquishyPortrait character={item} outline={outlineOnly} className="h-14 w-14" />
               <span className="text-forest-900">{item.id === "workshop" ? `⭐ ${item.name}` : item.name}</span>
             </button>
           ))}
-          <button type="button" aria-pressed={showCertificate} onClick={() => setSelected("certificate")} className={`${pickerButton} ${showCertificate ? "border-forest-900 bg-forest-100" : "border-parchment-300 hover:bg-parchment-50"}`}>
+          <button type="button" aria-pressed={showCertificate} onClick={() => selectCharacter("certificate")} className={`${pickerButton} ${showCertificate ? "border-forest-900 bg-forest-100" : "border-parchment-300 hover:bg-parchment-50"}`}>
             <span className="grid h-14 w-14 place-items-center text-3xl" aria-hidden="true">🏅</span>
             <span className="text-forest-900">Maker certificate</span>
           </button>

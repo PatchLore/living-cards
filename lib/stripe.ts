@@ -1,4 +1,5 @@
 // Server-side Stripe helper — lazy-import to avoid build-time execution
+import type Stripe from "stripe";
 
 export default async function getServerStripe() {
   const { default: Stripe } = await import("stripe");
@@ -10,7 +11,7 @@ export default async function getServerStripe() {
   }
 
   const stripe = new Stripe(secret, {
-    apiVersion: "2023-10-16" as any,
+    apiVersion: "2023-10-16" as Stripe.StripeConfig["apiVersion"],
   });
 
   return stripe;

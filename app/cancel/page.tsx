@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
 
@@ -32,9 +33,9 @@ export default function CancelPage() {
       <div className="max-w-md">
         <h1 className="font-display text-3xl text-ink">No problem, nothing was charged</h1>
         <p className="mt-3 text-ink/70">Your card is still waiting whenever you&apos;re ready.</p>
-        <a href="/#christmas" className="mt-8 inline-flex rounded-full bg-berry px-6 py-3 font-semibold text-white hover:bg-berry-deep">
+        <Link href="/#christmas" className="mt-8 inline-flex rounded-full bg-berry px-6 py-3 font-semibold text-white hover:bg-berry-deep">
           Back to the cards
-        </a>
+        </Link>
       </div>
     </main>
   );

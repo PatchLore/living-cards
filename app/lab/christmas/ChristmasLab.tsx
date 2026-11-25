@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CHRISTMAS_SCENES, LiveCard } from "../../../components/live-cards";
 
 export default function ChristmasLab() {
@@ -9,11 +9,11 @@ export default function ChristmasLab() {
   const [sender, setSender] = useState("Tom");
   const [playKey, setPlayKey] = useState(0);
   // ?t=4.5 freezes every card at that second (handy for checking a moment or grabbing a poster)
-  const [freezeAt, setFreezeAt] = useState<number | undefined>();
-  useEffect(() => {
+  const [freezeAt] = useState<number | undefined>(() => {
+    if (typeof window === "undefined") return undefined;
     const t = new URLSearchParams(window.location.search).get("t");
-    if (t !== null && !Number.isNaN(Number(t))) setFreezeAt(Number(t));
-  }, []);
+    return t !== null && !Number.isNaN(Number(t)) ? Number(t) : undefined;
+  });
 
   const input =
     "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-amber-300/60 focus:outline-none";

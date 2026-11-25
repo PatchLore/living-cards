@@ -13,6 +13,10 @@ import {
 import { FAQ } from "../lib/seo";
 import { CardTile, HeroCard, HeroNameInput } from "./HomeClient";
 
+function halloweenWindowIsOpen() {
+  return HALLOWEEN.length > 0 && Date.now() < HALLOWEEN_ENDS.getTime();
+}
+
 function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: string; children?: React.ReactNode }) {
   return (
     <div className="mx-auto max-w-2xl text-center">
@@ -25,7 +29,7 @@ function SectionHeading({ eyebrow, title, children }: { eyebrow: string; title: 
 
 export default function Home() {
   // Hides itself after 31 October without a redeploy (the homepage renders per request).
-  const showHalloween = HALLOWEEN.length > 0 && Date.now() < HALLOWEEN_ENDS.getTime();
+  const showHalloween = halloweenWindowIsOpen();
 
   return (
     <main>
@@ -147,7 +151,7 @@ export default function Home() {
             </p>
             <ol className="mt-6 space-y-3 text-sm text-ink/75">
               <li><strong className="text-ink">1. You send a card.</strong> One tree is registered for it.</li>
-              <li><strong className="text-ink">2. It's planted and checked.</strong> The planting is verified on the ground, with photos and GPS.</li>
+              <li><strong className="text-ink">2. It&apos;s planted and checked.</strong> The planting is verified on the ground, with photos and GPS.</li>
               <li><strong className="text-ink">3. You get the certificate.</strong> It appears on the card, for you and the person it&apos;s sent to.</li>
             </ol>
           </div>

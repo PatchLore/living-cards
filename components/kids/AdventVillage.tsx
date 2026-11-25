@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { adventDoorsOpen, sleepsUntilAdvent } from "../../lib/adventCalendar";
 import { ADVENT_DAYS, personaliseAdvent } from "./advent";
 import AdventIcon from "./adventIcons";
@@ -10,14 +10,32 @@ const PREVIEW_DOORS = 3;
 /** Opened doors are remembered per card link, on this device only. */
 const storageKey = () => `cardroots-advent:${window.location.pathname}`;
 
-function loadOpenedDays(): number[] {
+function parseOpenedDays(raw: string): number[] {
   try {
-    const saved = JSON.parse(window.localStorage.getItem(storageKey()) || "[]");
+    const saved = JSON.parse(raw || "[]");
     return Array.isArray(saved) ? saved.filter((day): day is number => Number.isInteger(day) && day >= 1 && day <= 24) : [];
   } catch {
     return [];
   }
 }
+
+function subscribeToOpenedDays(callback: () => void) {
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === storageKey() || event.key === null) callback();
+  };
+  window.addEventListener("storage", onStorage);
+  return () => window.removeEventListener("storage", onStorage);
+}
+
+function getOpenedDaysSnapshot() {
+  try {
+    return window.localStorage.getItem(storageKey()) || "[]";
+  } catch {
+    return "[]";
+  }
+}
+
+const getServerOpenedDaysSnapshot = () => "[]";
 
 function saveOpenedDays(days: number[]) {
   try {
@@ -69,7 +87,9 @@ type Props = {
 
 export default function AdventVillage({ recipientName, extraDetail, customMessage, recipientOnly, serverNow }: Props) {
   const [demoUnlocked, setDemoUnlocked] = useState(!recipientOnly);
-  const [openedDays, setOpenedDays] = useState<number[]>([]);
+  const storedOpenedDays = useSyncExternalStore(subscribeToOpenedDays, getOpenedDaysSnapshot, getServerOpenedDaysSnapshot);
+  const [previewOpenedDays, setPreviewOpenedDays] = useState<number[]>([]);
+  const openedDays = recipientOnly ? parseOpenedDays(storedOpenedDays) : previewOpenedDays;
   const [activeDay, setActiveDay] = useState<number | null>(null);
   const [currentDay, setCurrentDay] = useState(0);
   const [sleeps, setSleeps] = useState<number | null>(null);
@@ -98,10 +118,6 @@ export default function AdventVillage({ recipientName, extraDetail, customMessag
   }, []);
 
   useEffect(() => {
-    if (recipientOnly) setOpenedDays(loadOpenedDays());
-  }, [recipientOnly]);
-
-  useEffect(() => {
     if (activeDay === null) return;
     const timer = window.setTimeout(() => {
       if (!dialog.current?.open) dialog.current?.showModal();
@@ -111,12 +127,11 @@ export default function AdventVillage({ recipientName, extraDetail, customMessag
 
   const openDoor = (day: number) => {
     if (day > unlockedThrough) return;
-    setOpenedDays(days => {
-      if (days.includes(day)) return days;
-      const next = [...days, day];
+    if (!openedDays.includes(day)) {
+      const next = [...openedDays, day];
       if (recipientOnly) saveOpenedDays(next);
-      return next;
-    });
+      else setPreviewOpenedDays(next);
+    }
     setActiveDay(day);
   };
 
@@ -131,7 +146,7 @@ export default function AdventVillage({ recipientName, extraDetail, customMessag
           <label className="flex cursor-pointer items-center gap-2 rounded-full border border-amber-400/30 bg-forest-800 px-3 py-2 text-xs text-amber-200">
             <input id="adventDemoUnlock" type="checkbox" checked={demoUnlocked} onChange={event => {
               setDemoUnlocked(event.target.checked);
-              setOpenedDays([]);
+              setPreviewOpenedDays([]);
               dialog.current?.close();
               setActiveDay(null);
             }} />

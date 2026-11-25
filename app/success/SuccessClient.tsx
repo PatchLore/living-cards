@@ -28,7 +28,6 @@ export default function SuccessClient() {
 
   useEffect(() => {
     if (!sessionId) {
-      setState({ kind: "error", message: "We couldn't find your order reference." });
       return;
     }
     let cancelled = false;
@@ -59,10 +58,14 @@ export default function SuccessClient() {
     };
   }, [sessionId]);
 
-  if (state.kind !== "ready") {
+  const visibleState: State = sessionId
+    ? state
+    : { kind: "error", message: "We couldn't find your order reference." };
+
+  if (visibleState.kind !== "ready") {
     return (
       <main className="flex min-h-[70vh] items-center justify-center bg-night px-4 text-center text-cream">
-        {state.kind === "loading" ? (
+        {visibleState.kind === "loading" ? (
           <div>
             <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-gold/30 border-t-gold" />
             <p className="mt-5 font-display text-2xl">Wrapping up your card…</p>
@@ -70,14 +73,14 @@ export default function SuccessClient() {
         ) : (
           <div className="max-w-md">
             <p className="font-display text-2xl">Thank you for your order</p>
-            <p className="mt-3 text-cream/70">{state.message}</p>
+            <p className="mt-3 text-cream/70">{visibleState.message}</p>
           </div>
         )}
       </main>
     );
   }
 
-  const { order } = state;
+  const { order } = visibleState;
   const card = getCard(order.cardKey);
   const kids = order.kids;
   const shareUrl = `${window.location.origin}/c/${order.shareId}`;

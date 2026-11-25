@@ -1,11 +1,25 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useCallback, useId, useState, useSyncExternalStore } from "react";
 
 const NAME_LIMIT = 30;
 type Saved = { guestName: string; attending: boolean };
 /** Remembers this device's reply to one invite so a guest sees what they sent. */
 const replyKey = (shareId: string) => `cardroots-rsvp:${shareId}`;
+const getEmptyReplySnapshot = () => null;
+
+function parseSavedReply(raw: string | null): Saved | null {
+  try {
+    const saved: unknown = JSON.parse(raw || "null");
+    if (!saved || typeof saved !== "object") return null;
+    const value = saved as Partial<Saved>;
+    return typeof value.guestName === "string" && typeof value.attending === "boolean"
+      ? { guestName: value.guestName, attending: value.attending }
+      : null;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Guests reply with a first name and yes/no. The reply is emailed to whoever
@@ -16,16 +30,28 @@ export default function PartyRsvp({ shareId, childName }: { shareId?: string; ch
   const [guestName, setGuestName] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
   const [error, setError] = useState("");
-  const [sent, setSent] = useState<Saved | null>(null);
+  const [sentOverride, setSentOverride] = useState<Saved | null | undefined>(undefined);
   const preview = !shareId;
 
-  useEffect(() => {
-    if (!shareId) return;
-    try {
-      const saved = JSON.parse(window.localStorage.getItem(replyKey(shareId)) || "null");
-      if (saved && typeof saved.guestName === "string" && typeof saved.attending === "boolean") setSent(saved);
-    } catch {}
+  const subscribe = useCallback((callback: () => void) => {
+    if (!shareId) return () => {};
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === replyKey(shareId) || event.key === null) callback();
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, [shareId]);
+  const getSnapshot = useCallback(() => {
+    if (!shareId) return null;
+    try {
+      return window.localStorage.getItem(replyKey(shareId));
+    } catch {
+      return null;
+    }
+  }, [shareId]);
+  const savedReply = useSyncExternalStore(subscribe, getSnapshot, getEmptyReplySnapshot);
+  const sent = sentOverride !== undefined ? sentOverride : parseSavedReply(savedReply);
+  const setSent = (value: Saved | null) => setSentOverride(value);
 
   const reply = async (attending: boolean) => {
     if (!shareId || status === "sending") return;
