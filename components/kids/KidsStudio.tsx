@@ -188,7 +188,7 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
             <h1 className="max-w-3xl font-serif text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">Magical moments with their name written right into the scene.</h1>
             <p className="mt-5 max-w-3xl text-base leading-relaxed text-parchment-200 sm:text-lg">From official North Pole scrolls and a 24-chapter advent story to Tooth Fairy receipts and party invites. Personalise an animated experience, share a little magic, and plant a real tree.</p>
             <div className="mt-6 flex flex-wrap gap-2 text-sm sm:text-sm">{["⚡ Instant shareable link", "🌱 Every order plants a tree", "🔒 First names only, no photos", "🏘️ 24-chapter advent story"].map(text => <span key={text} className="rounded-xl border border-forest-700 bg-forest-950/50 px-3 py-2">{text}</span>)}</div>
-            <nav aria-label="Kids studio sections" className="mt-7 flex flex-wrap gap-5 text-sm font-semibold text-amber-200"><a href="#studio" className="hover:underline">Personalise a creation ↓</a><a href="#after-school-hour" className="hover:underline">Printable activity cards</a><a href="#bundles" className="hover:underline">Christmas bundle</a><a href="#privacy-trust" className="hover:underline">Our parent promise</a></nav>
+            <nav aria-label="Kids studio sections" className="mt-7 flex flex-wrap gap-5 text-sm font-semibold text-amber-200"><a href="#studio" className="hover:underline">Personalise a creation ↓</a><a href="#after-school-hour" className="hover:underline">Printable activity cards</a><a href="#screen-free-packs" className="hover:underline">Screen-free packs</a><a href="#bundles" className="hover:underline">Christmas bundle</a><a href="#privacy-trust" className="hover:underline">Our parent promise</a></nav>
           </div>
         </section>
       </>}
@@ -215,6 +215,49 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
               <a href="https://payhip.com/b/hWwNf" className="inline-flex min-h-12 items-center justify-center rounded-full bg-forest-900 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-forest-800">Get the cards · £5.99</a>
               <span className="text-sm text-forest-700">Sold securely through Payhip</span>
             </div>
+          </div>
+        </div>
+      </section>}
+      {!preview && <section id="screen-free-packs" className="no-print border-b border-parchment-300 bg-parchment-100 px-5 py-12 text-forest-900 sm:px-8 sm:py-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mx-auto mb-8 max-w-2xl text-center">
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-forest-700">More screen-free ideas</p>
+            <h2 className="mt-2 font-serif text-3xl font-bold sm:text-4xl">The 7-Day Reset and 30-Day Challenge</h2>
+            <p className="mt-3 text-base leading-relaxed text-forest-800">Printable mission packs for children aged 6–8, with simple ideas, fridge trackers and certificates. Choose a free week or keep going for a month.</p>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <article className="grid overflow-hidden rounded-3xl border border-forest-900/10 bg-white shadow-sm sm:grid-cols-[0.8fr_1.2fr]">
+              <Image src="/kids/after-school/7day-reset-cover.png" alt="The 7-Day Screen-Free Reset printable cover" width={1241} height={1754} className="h-full w-full object-cover object-top" />
+              <div className="flex flex-col p-5 sm:p-6">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-forest-100 px-3 py-1 text-xs font-bold text-forest-900">FREE</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-forest-700">Ages 6–8 · One week</span>
+                </div>
+                <h3 className="mt-3 font-serif text-2xl font-bold">The 7-Day Screen-Free Reset</h3>
+                <p className="mt-3 text-sm leading-relaxed text-forest-800">Seven short missions for after school, the kitchen, bath time, garden, car, bedtime and a weekend morning. Each takes under 20 minutes and uses things you already have at home.</p>
+                <ul className="mt-4 space-y-2 text-sm text-forest-800">
+                  <li>Four print files: A4 and US Letter, colour and low-ink</li>
+                  <li>Fridge tracker and screen-free week certificate</li>
+                </ul>
+                <span className="mt-5 inline-flex min-h-11 items-center justify-center self-start rounded-full border border-forest-900/20 px-5 py-2.5 text-sm font-semibold text-forest-700">Free download coming soon on Payhip</span>
+              </div>
+            </article>
+            <article className="grid overflow-hidden rounded-3xl border border-forest-900/10 bg-white shadow-sm sm:grid-cols-[0.8fr_1.2fr]">
+              <Image src="/kids/after-school/30day-challenge-cover.png" alt="The 30-Day Screen-Free Challenge printable cover" width={1241} height={1754} className="h-full w-full object-cover object-top" />
+              <div className="flex flex-col p-5 sm:p-6">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-forest-900">30 MISSIONS</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-forest-700">Ages 6–8 · One month</span>
+                </div>
+                <h3 className="mt-3 font-serif text-2xl font-bold">The 30-Day Screen-Free Challenge</h3>
+                <p className="mt-3 text-sm leading-relaxed text-forest-800">A month of short missions grouped around making things, going outside, words and stories, and turning the house into a playground. Skip, swap or repeat days to suit your family.</p>
+                <ul className="mt-4 space-y-2 text-sm text-forest-800">
+                  <li>Four print files: A4 and US Letter, colour and low-ink</li>
+                  <li>Month tracker and screen-free month certificate</li>
+                </ul>
+                <span className="mt-5 inline-flex min-h-11 items-center justify-center self-start rounded-full border border-forest-900/20 px-5 py-2.5 text-sm font-semibold text-forest-700">Coming soon on Payhip</span>
+              </div>
+            </article>
           </div>
         </div>
       </section>}

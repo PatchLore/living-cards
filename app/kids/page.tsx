@@ -10,13 +10,13 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const params = await searchParams;
   const personalised = Object.keys(params).length > 0;
   return {
-    title: "For Kids — Personalised Santa Letters, Advent Stories & More",
-    description: "Make magical moments with personalised Santa letters, a 24-chapter advent story, Tooth Fairy receipts and birthday invitations. Every order plants a tree.",
+    title: "For Kids — Personalised Stories & Screen-Free Activity Packs",
+    description: "Personalised Santa letters, advent stories and keepsakes, plus printable screen-free activity packs for ages 6–8.",
     alternates: { canonical: "/kids" },
     robots: personalised ? { index: false, follow: false, noarchive: true, googleBot: { index: false, follow: false } } : { index: true, follow: true },
     referrer: "no-referrer",
-    openGraph: { title: "A little wonder, made just for them | CardRoots For Kids", description: "Personalised Santa letters, advent stories and keepsakes. Every order plants a real tree.", url: "/kids" },
-    twitter: { title: "CardRoots For Kids", description: "Personalised Santa letters, advent stories and keepsakes." },
+    openGraph: { title: "Stories & Screen-Free Activities | CardRoots For Kids", description: "Personalised keepsakes and printable screen-free activity packs for children ages 6–8.", url: "/kids" },
+    twitter: { title: "CardRoots For Kids", description: "Personalised keepsakes and printable screen-free activity packs for children ages 6–8." },
   };
 }
 
