@@ -239,7 +239,7 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
                   <li>Four print files: A4 and US Letter, colour and low-ink</li>
                   <li>Fridge tracker and screen-free week certificate</li>
                 </ul>
-                <span className="mt-5 inline-flex min-h-11 items-center justify-center self-start rounded-full border border-forest-900/20 px-5 py-2.5 text-sm font-semibold text-forest-700">Free download coming soon on Payhip</span>
+                <a href="https://payhip.com/b/MT6hg" className="mt-5 inline-flex min-h-11 items-center justify-center self-start rounded-full bg-forest-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-forest-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-700">Download free on Payhip</a>
               </div>
             </article>
             <article className="grid overflow-hidden rounded-3xl border border-forest-900/10 bg-white shadow-sm sm:grid-cols-[0.8fr_1.2fr]">
