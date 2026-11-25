@@ -255,9 +255,17 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
                   <li>Four print files: A4 and US Letter, colour and low-ink</li>
                   <li>Month tracker and screen-free month certificate</li>
                 </ul>
-                <span className="mt-5 inline-flex min-h-11 items-center justify-center self-start rounded-full border border-forest-900/20 px-5 py-2.5 text-sm font-semibold text-forest-700">Coming soon on Payhip</span>
+                <a href="https://payhip.com/b/MjsHy" className="mt-5 inline-flex min-h-11 items-center justify-center self-start rounded-full bg-forest-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-forest-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-700">Get the 30-Day Challenge · £4</a>
               </div>
             </article>
+          </div>
+          <div className="mt-8 rounded-3xl border border-forest-900/10 bg-white p-6 shadow-sm sm:p-8">
+            <h3 className="font-serif text-2xl font-bold">Choose a bundle and save</h3>
+            <p className="mt-2 text-sm leading-relaxed text-forest-800">Want both packs, or the full set with the activity card deck?</p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <a href="https://payhip.com/b/FaK2g" className="inline-flex min-h-11 items-center justify-center rounded-full border border-forest-900/20 px-5 py-2.5 text-sm font-semibold text-forest-900 hover:bg-forest-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-700">7-Day + 30-Day Bundle · £6</a>
+              <a href="https://payhip.com/b/ZAy8f" className="inline-flex min-h-11 items-center justify-center rounded-full bg-forest-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-forest-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-700">Family Bundle with 30 Activity Cards · £9</a>
+            </div>
           </div>
         </div>
       </section>}
