@@ -5,7 +5,7 @@ import { Metadata } from "next";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cardroots.com";
 
 export const metadata: Metadata = {
-  title: "Payment Successful | CardRoots",
+  title: "Payment Successful",
   description: "Your digital card is ready. Share your eco-friendly card and view your tree planting confirmation.",
   robots: {
     index: false,
@@ -17,13 +17,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: `${siteUrl}/success`,
-    title: "Payment Successful | CardRoots",
+    title: "Payment Successful",
     description: "Your digital card is ready. Share your eco-friendly card and view your tree planting confirmation.",
     siteName: "CardRoots",
   },
   twitter: {
     card: "summary",
-    title: "Payment Successful | CardRoots",
+    title: "Payment Successful",
     description: "Your digital card is ready. Share your eco-friendly card and view your tree planting confirmation.",
   },
 };

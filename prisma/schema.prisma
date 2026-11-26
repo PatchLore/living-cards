@@ -20,26 +20,58 @@ model CardOrder {
 }
 
 model Card {
-  id                  String   @id @default(uuid())
-  shareId             String   @unique
-  cardKey             String
-  recipientName       String
-  message             String
+  id            String @id @default(uuid())
+  shareId       String @unique
+  cardKey       String
+  recipientName String
+  message       String
 
-  stripeSessionId     String?
+  stripeSessionId     String? @unique
   stripeCustomerEmail String?
 
-  treeCertificateUrl  String?
-  treeId              String?
-  treeSpecies         String?
-  treeLocation        String?
-  treeDatePlanted     DateTime?
+  treeCertificateUrl String?
+  treeId             String?
+  treeSpecies        String?
+  treeLocation       String?
+  treeDatePlanted    DateTime?
 
-  emailSent           Boolean  @default(false)
+  emailSent Boolean @default(false)
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  rsvps PartyRsvp[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([shareId])
-  @@index([stripeSessionId])
+}
+
+/// A guest's reply to a Kids birthday invite. Holds only a first name and
+/// yes/no; ipHash (a keyed hash, never the raw IP) exists for rate limiting and
+/// is cleared after a day. Rows are deleted by the daily cleanup cron.
+model PartyRsvp {
+  id        String   @id @default(uuid())
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  guestName String
+  attending Boolean
+  ipHash    String?
+  createdAt DateTime @default(now())
+
+  @@index([cardId, createdAt])
+  @@index([ipHash, createdAt])
+  @@index([createdAt])
+}
+
+/// One business enquiry that got past validation. Holds no form contents, only
+/// a keyed IP hash (never the raw IP) and whether a confirmation email went to
+/// the address the visitor typed. Exists only for rate limiting; rows are
+/// deleted by the daily cleanup cron after a day.
+model EnquiryAttempt {
+  id               String   @id @default(uuid())
+  ipHash           String
+  confirmationSent Boolean  @default(false)
+  createdAt        DateTime @default(now())
+
+  @@index([ipHash, createdAt])
+  @@index([createdAt])
 }

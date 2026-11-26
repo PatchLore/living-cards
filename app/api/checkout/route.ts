@@ -1,111 +1,102 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
+import { LIMITS, isPurchasable } from "../../../lib/catalog";
+import { getStripe } from "../../../lib/fulfillment";
+import { siteUrl } from "../../../lib/siteUrl";
+import { CHECKOUT_CLOSED_MESSAGE, IMMEDIATE_SUPPLY_CONSENT_VERSION, checkoutOpen } from "../../../lib/sales";
+import { KIDS_LIMITS, KIDS_SCENES, isKidsSceneForSale, kidsCardKey, kidsCheckoutMetadata, kidsPrice, parseKidsPersonalisation } from "../../../lib/kids";
+
+export const runtime = "nodejs";
+
+const Body = z.object({
+  cardKey: z.string().refine(isPurchasable, "That card isn't available"),
+  recipient: z
+    .string()
+    .trim()
+    .min(1, "Please add who the card is for")
+    .max(LIMITS.recipient, `Keep the name under ${LIMITS.recipient} characters`),
+  message: z
+    .string()
+    .trim()
+    .min(1, "Please write a message")
+    .max(LIMITS.message, `Keep the message under ${LIMITS.message} characters`),
+});
+
+const KidsDetails = z.object({
+  extraDetail: z.string().trim().max(KIDS_LIMITS.extraDetail, `Keep each detail under ${KIDS_LIMITS.extraDetail} characters`),
+  customMessage: z.string().trim().max(KIDS_LIMITS.customMessage, `Keep each message under ${KIDS_LIMITS.customMessage} characters`),
+});
+
+const KidsBody = z.object({
+  scene: z.string().refine(isKidsSceneForSale, "Please choose a kids creation"),
+  recipientName: z.string().trim().min(1, "Please add the child's first name").max(KIDS_LIMITS.recipientName, `Keep the first name under ${KIDS_LIMITS.recipientName} characters`),
+  extraDetail: z.string().trim().max(KIDS_LIMITS.extraDetail, `Keep the detail under ${KIDS_LIMITS.extraDetail} characters`),
+  customMessage: z.string().trim().max(KIDS_LIMITS.customMessage, `Keep the message under ${KIDS_LIMITS.customMessage} characters`),
+  packageType: z.enum(["single", "bundle"]),
+  bundle: z.record(z.string(), KidsDetails).optional(),
+});
 
 export async function POST(req: Request) {
-  // 🚫 Prevent build failures on Vercel
-  if (!process.env.STRIPE_SECRET_KEY) {
-    console.warn("⚠️ STRIPE_SECRET_KEY missing during build. Returning dummy session ID.");
-    return NextResponse.json({ id: "dummy-session-id-build" });
+  // Sales are closed until launch: refuse before anything reaches Stripe.
+  if (!checkoutOpen()) {
+    console.warn("[CHECKOUT] Refused: checkout is closed (CHECKOUT_ENABLED is not true)");
+    return NextResponse.json({ error: CHECKOUT_CLOSED_MESSAGE, closed: true }, { status: 503 });
+  }
+  const body = await req.json().catch(() => null);
+  // Digital content: the buyer must expressly ask for immediate supply (unticked box on the form).
+  if (!body || typeof body !== "object" || body.immediateSupplyConsent !== true) {
+    return NextResponse.json({ error: "Please tick the box to confirm you want your order delivered straight away." }, { status: 400 });
+  }
+  const kidsRequest = body && typeof body === "object" && ("scene" in body || "packageType" in body);
+  const parsed = kidsRequest ? KidsBody.safeParse(body) : Body.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid request" }, { status: 400 });
+  }
+  if (!process.env.STRIPE_SECRET_KEY || (!kidsRequest && !process.env.STRIPE_PRICE_ID)) {
+    console.error("[CHECKOUT] Stripe payment configuration is missing");
+    return NextResponse.json({ error: "Payments are not configured" }, { status: 500 });
   }
 
-  // Validate required environment variables
-  if (!process.env.STRIPE_PRICE_ID) {
-    console.error("❌ [CHECKOUT] STRIPE_PRICE_ID is missing!");
-    return NextResponse.json(
-      { error: "STRIPE_PRICE_ID is not configured" },
-      { status: 500 }
-    );
-  }
-
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+  const base = siteUrl();
+  const successBase = process.env.STRIPE_SUCCESS_URL?.replace(/\/$/, "") || `${base}/success`;
+  const successUrl = `${successBase}${successBase.includes("?") ? "&" : "?"}session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = process.env.STRIPE_CANCEL_URL?.replace(/\/$/, "") || `${base}/cancel`;
 
   try {
-    // Parse POST body
-    const { cardKey, recipient, message } = await req.json();
-
-    // Basic validation - cardKey is required
-    if (!cardKey) {
-      return NextResponse.json(
-        { error: "Missing required field: cardKey" },
-        { status: 400 }
-      );
-    }
-
-    // ⭐ Import Stripe *inside* the function — avoids build-time execution
-    const { default: Stripe } = await import("stripe");
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-      apiVersion: "2023-10-16" as any,
-    });
-
-    // Success/cancel: optional STRIPE_SUCCESS_URL / STRIPE_CANCEL_URL (full URL), else build from baseUrl
-    const successBase = process.env.STRIPE_SUCCESS_URL?.replace(/\/$/, "") || `${baseUrl}/success`;
-    const successUrl = successBase.includes("?")
-      ? `${successBase}&session_id={CHECKOUT_SESSION_ID}`
-      : `${successBase}?session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = process.env.STRIPE_CANCEL_URL?.replace(/\/$/, "") || `${baseUrl}/cancel`;
-
-    console.log("🔍 [CHECKOUT] Creating session with:", {
-      priceId: process.env.STRIPE_PRICE_ID,
-      cardKey,
-      successUrl,
-      cancelUrl,
-    });
-
-    // Create Stripe checkout session
-    // Price amount (£5.00) and currency (GBP) are set on the Price in Stripe Dashboard (STRIPE_PRICE_ID)
+    const stripe = await getStripe();
+    const kids = kidsRequest ? KidsBody.parse(parsed.data) : null;
+    const legacy = kidsRequest ? null : Body.parse(parsed.data);
+    // A kids price is always chosen here, never from a client-supplied amount.
+    const product = kids ? parseKidsPersonalisation(kids) : null;
+    if (kids && !product) return NextResponse.json({ error: "Please check the bundle personalisation" }, { status: 400 });
+    const cardKey = product ? kidsCardKey(product) : legacy!.cardKey;
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: process.env.STRIPE_PRICE_ID!,
-          quantity: 1,
-        },
-      ],
+      line_items: product
+        ? [{
+            price_data: {
+              currency: "gbp",
+              unit_amount: kidsPrice(product) * 100,
+              product_data: { name: product.packageType === "bundle" ? "CardRoots Complete Kids Magical Bundle" : KIDS_SCENES[product.scene].title },
+            },
+            quantity: 1,
+          }]
+        : [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
       success_url: successUrl,
       cancel_url: cancelUrl,
-
-      // Attach metadata for webhook + fulfillment
+      // Stripe metadata values max out at 500 characters; LIMITS keeps us under.
       metadata: {
-        cardKey,
-        recipient: recipient || "",
-        message: message || "",
+        ...(product ? kidsCheckoutMetadata(product) : { cardKey, recipient: legacy!.recipient, message: legacy!.message }),
+        // The record of the immediate-supply consent the buyer ticked.
+        supplyConsent: IMMEDIATE_SUPPLY_CONSENT_VERSION,
       },
+      payment_intent_data: { description: `CardRoots card: ${cardKey}` },
     });
 
-    console.log("✅ [CHECKOUT] Session created:", {
-      id: session.id,
-      url: session.url ? "present" : "MISSING",
-    });
-
-    if (!session.url) {
-      console.error("❌ [CHECKOUT] Session created but url is missing!");
-      return NextResponse.json(
-        { error: "Session created but URL is missing" },
-        { status: 500 }
-      );
-    }
-
-    // Return checkout URL
+    if (!session.url) throw new Error("Stripe returned a session without a URL");
     return NextResponse.json({ url: session.url });
-  } catch (err: any) {
-    console.error("❌ [CHECKOUT] Stripe API error:", {
-      type: err?.type,
-      code: err?.code,
-      message: err?.message,
-      raw: err?.raw?.message || err?.raw,
-    });
-
-    return NextResponse.json(
-      {
-        error: "Stripe checkout session failed",
-        details: err?.message || "Unknown error",
-        code: err?.code,
-      },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error("[CHECKOUT] Stripe error:", err instanceof Error ? err.message : err);
+    return NextResponse.json({ error: "We couldn't start checkout. Please try again." }, { status: 502 });
   }
 }
-
-

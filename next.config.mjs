@@ -14,6 +14,19 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: "/:path*",
+        headers: [
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+        ],
+      },
+      // The success page URL carries the Stripe session ID; never send it to another site.
+      // Listed after the global rule so it overrides it.
+      {
+        source: "/success",
+        headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
+      },
+      {
         source: "/cards/posters/:path*",
         headers: [
           {

@@ -1,0 +1,6 @@
+out/
+remotion/
+_backup/
+# Never upload local data or secrets with `vercel --prod` (this file replaces .gitignore for the CLI).
+exports/
+.env*

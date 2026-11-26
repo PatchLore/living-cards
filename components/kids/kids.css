@@ -1,0 +1,278 @@
+.kids-studio { background: #faf6f0; color: #0f291e; font-family: var(--font-kids-inter), system-ui, sans-serif; }
+.kids-studio .font-serif, .kids-studio .kids-serif { font-family: var(--font-fraunces), Georgia, serif; }
+.kids-studio .font-hand { font-family: var(--font-kids-caveat), cursive; }
+.kids-studio [id] { scroll-margin-top: 100px; }
+.kids-studio .scene-panel { overflow-wrap: anywhere; }
+.kids-studio #scene-santa > div:first-child, .kids-studio #scene-tooth > div:first-child { flex-wrap: wrap; gap: .5rem; }
+.kids-studio #santaBtnLetter, .kids-studio #santaBtnCert { white-space: nowrap; }
+.kids-studio button, .kids-studio a, .kids-studio input, .kids-studio textarea { -webkit-tap-highlight-color: transparent; }
+.kids-studio button:focus-visible, .kids-studio a:focus-visible, .kids-studio [role=button]:focus-visible { outline: 3px solid #d4a373; outline-offset: 4px; }
+.kids-studio input[type=radio], .kids-studio input[type=checkbox] { accent-color: #1b4332; }
+.kids-input { width: 100%; border: 1px solid #e5d5bc; border-radius: .75rem; padding: .65rem .875rem; color: #081710; font-size: .875rem; }
+.kids-input:focus { outline: 2px solid #40916c55; border-color: #2d6a4f; outline-offset: 1px; }
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1.5deg); }
+}
+@keyframes unrollScroll {
+  0% { transform: scaleY(0.08); opacity: 0; }
+  60% { transform: scaleY(1.03); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+@keyframes stampPop {
+  0% { transform: scale(2.8) rotate(-25deg); opacity: 0; }
+  70% { transform: scale(.9) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-6deg); opacity: 1; }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: .25; transform: scale(.8); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+@keyframes squishBounce {
+  0%, 100% { transform: scale(1, 1); }
+  30% { transform: scale(1.14, .86); }
+  60% { transform: scale(.94, 1.06); }
+}
+.kids-studio .animate-float { animation: floatSlow 4s ease-in-out infinite; }
+.kids-studio .animate-unroll { transform-origin: top center; animation: unrollScroll .85s cubic-bezier(.22, 1, .36, 1) forwards; }
+.kids-studio .animate-stamp { animation: stampPop .65s cubic-bezier(.34, 1.56, .64, 1) .45s both; }
+.kids-studio .animate-twinkle { animation: twinkle 2.4s ease-in-out infinite; }
+.kids-studio .animate-squish:hover, .kids-studio .squish-active { animation: squishBounce .65s ease-in-out; }
+@keyframes floatGentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.kids-studio .animate-float-gentle { animation: floatGentle 3.6s ease-in-out infinite; }
+@keyframes pocketRise { from { opacity: 0; transform: translateY(24px) scale(.92); } to { opacity: 1; transform: none; } }
+.kids-studio .animate-pocket { animation: pocketRise .6s cubic-bezier(.34, 1.56, .64, 1) .2s both; }
+#santaBtnLetter[aria-pressed=false], #santaBtnCert[aria-pressed=false] { background: transparent; color: #f3eadb; }
+#santaBtnLetter[aria-pressed=true], #santaBtnCert[aria-pressed=true] { background: #facc15; color: #081710; font-weight: 700; }
+
+.kids-studio .advent-door { position: relative; isolation: isolate; aspect-ratio: .82; min-width: 0; border: 1px solid #d4a37380; border-radius: .75rem .75rem .4rem .4rem; background: radial-gradient(circle, #facc1544, #081710 75%); perspective: 500px; cursor: pointer; }
+.kids-studio .advent-door-surprise { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(1.25rem, 4vw, 2rem); }
+.kids-studio .advent-door-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .25rem; border: 1px solid #d4a373aa; border-radius: inherit; background: linear-gradient(145deg, #2d6a4f, #0f291e); box-shadow: inset 0 0 0 4px #08171066, inset 0 0 0 5px #d4a37340; transform-origin: left center; backface-visibility: hidden; transition: transform .65s cubic-bezier(.22, 1, .36, 1), filter .2s; }
+.kids-studio .advent-door:not(:disabled):hover .advent-door-face { filter: brightness(1.2); }
+.kids-studio .advent-door-number { font-family: var(--font-fraunces), Georgia, serif; font-size: 1.15rem; font-weight: 700; color: #facc15; }
+.kids-studio .advent-door-decoration { color: #d4a373; font-size: .8rem; }
+.kids-studio .advent-door-handle { position: absolute; right: 12%; top: 55%; width: 4px; height: 4px; border-radius: 50%; background: #facc15; box-shadow: 0 0 4px #facc1555; }
+.kids-studio .advent-door[data-open=true] .advent-door-face { transform: rotateY(-108deg); }
+.kids-studio .advent-door-opened { position: absolute; right: 3px; bottom: 2px; font-size: .7rem; color: #a7f3d0; }
+.kids-studio .advent-door:disabled { cursor: not-allowed; border-color: #2d6a4f; }
+.kids-studio .advent-door:disabled .advent-door-face { background: #0f291e; border-color: #2d6a4f; box-shadow: inset 0 0 0 4px #08171066; }
+.kids-studio .advent-door:disabled .advent-door-number { color: #e5d5bc88; }
+.kids-studio .advent-surprise-dialog { position: fixed; inset: 0; width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow-x: hidden; overflow-y: auto; border: 2px solid #d4a373; border-radius: 1.5rem; color: #0f291e; background: #fdfbf7; box-shadow: 0 24px 80px #0008; }
+.kids-studio .advent-surprise-dialog::backdrop { background: #081710c9; backdrop-filter: blur(5px); }
+.kids-studio .advent-surprise-content { position: relative; padding: 2.5rem 1.5rem 1.75rem; text-align: center; overflow-wrap: anywhere; }
+.kids-studio .advent-surprise-close { position: absolute; top: .5rem; right: .65rem; display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; color: #1b4332; font-size: 1.75rem; cursor: pointer; }
+.kids-studio .advent-surprise-close:hover { background: #e8f5ee; }
+.kids-studio .advent-surprise-icon { margin: .75rem auto; animation: stampPop .5s cubic-bezier(.34, 1.56, .64, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kids-studio *, .kids-studio *::before, .kids-studio *::after { animation: none !important; transition: none !important; }
+}
+
+/* Print pages are portalled under <body>, so printing shows only them, however many pages. */
+.kids-print-root { display: none; }
+
+@media print {
+  /* No forced paper size, so A4 and A5 both work; the sheets scale to the page. */
+  @page { margin: 12mm; }
+  body:has(.kids-print-root) { background: white !important; margin: 0 !important; padding: 0 !important; min-height: 0 !important; }
+  body:has(.kids-print-root) > :not(.kids-print-root) { display: none !important; }
+  .kids-print-root { display: block; color: #0f291e; font-family: var(--font-kids-inter), system-ui, sans-serif; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .kids-print-root .kids-serif { font-family: var(--font-fraunces), Georgia, serif; }
+  .kids-print-root .print-page { break-after: page; }
+  .kids-print-root .print-page:last-child { break-after: auto; }
+  .kids-print-root .print-header { display: flex; flex-direction: column; gap: 2mm; margin-bottom: 4mm; padding-bottom: 3mm; border-bottom: 1px solid #1b433233; font-size: 9pt; }
+  .kids-print-root .print-header strong { font-family: var(--font-fraunces), Georgia, serif; font-size: 12pt; }
+  .kids-print-root .print-template { break-inside: avoid; margin-bottom: 6mm; }
+  .kids-print-root .print-template-title { margin: 0 0 2mm; font-size: 10pt; font-weight: 700; color: #bc4749; }
+  .kids-print-root .print-template svg { display: block; width: 100%; }
+  .kids-print-root .squishy-certificate { margin-top: 20mm; }
+  .kids-print-root .print-locked { padding-top: 60mm; text-align: center; font-size: 16pt; }
+}
+
+/* Studio preview watermark */
+.kids-watermark span {
+  position: absolute;
+  white-space: nowrap;
+  transform: rotate(-24deg);
+  font: 700 22px/1 var(--font-kids-inter, system-ui), sans-serif;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.16);
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.25);
+}
+.kids-watermark--print span {
+  color: rgba(27, 67, 50, 0.16);
+}
+
+/* ===== Keepsakes: Nice List certificate, Santa's letter, Tooth Fairy receipt =====
+   Sized in container units (cqw) with a 14px floor, so one markup serves a phone
+   screen and an A4/A5 print sheet. */
+.kc-sheet { container-type: inline-size; width: 100%; overflow-wrap: break-word; --kc-ink: #0f291e; --kc-gold: #b8862f; --kc-berry: #bc4749; }
+.kc-sheet--receipt { max-width: 440px; margin: 0 auto; filter: drop-shadow(0 18px 24px rgba(0, 0, 0, .45)); transform: rotate(-1deg); }
+.kc-fit { display: block; font-size: calc(var(--fit-size) * var(--fit, 1)); line-height: 1.12; overflow-wrap: normal; word-break: normal; }
+.kc-fit[data-wrap=anywhere] { overflow-wrap: anywhere; }
+.kc-eyebrow { font: 700 clamp(14px, 2.6cqw, 17px)/1.35 var(--font-kids-inter), system-ui, sans-serif; letter-spacing: .18em; text-transform: uppercase; color: var(--kc-berry); text-align: center; }
+.kc-signature { display: flex; min-width: 0; flex-direction: column; align-items: center; text-align: center; color: #7a1f24; }
+.kc-signature-name { font: 700 clamp(26px, 6.6cqw, 42px)/1 var(--font-kids-caveat), cursive; overflow-wrap: normal; }
+.kc-signature-lead { margin-bottom: .25em; font: 500 clamp(15px, 3cqw, 18px)/1.3 var(--font-kids-inter), system-ui, sans-serif; color: #2d6a4f; }
+.kc-signature-role { margin-top: .2em; font: 600 clamp(14px, 2.4cqw, 15px)/1.3 var(--font-kids-inter), system-ui, sans-serif; color: #2d6a4f; }
+.kc-flourish { display: block; width: min(100%, 11em); height: clamp(9px, 2.4cqw, 15px); }
+.kc-signature--left { align-items: flex-start; text-align: left; }
+
+.kc-cert { position: relative; padding: clamp(30px, 9cqw, 64px) clamp(20px, 7cqw, 56px) clamp(24px, 6cqw, 44px); border: max(5px, 1.2cqw) double var(--kc-gold); border-radius: 6px; color: var(--kc-ink); text-align: center;
+  background: radial-gradient(120% 90% at 50% 38%, #fffaf0 0%, #fbf3e1 62%, #f0dfbd 100%);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .35), inset 0 0 0 max(6px, 1.8cqw) #fffaf0, inset 0 0 0 calc(max(6px, 1.8cqw) + 1px) rgba(184, 134, 47, .55);
+  print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.kc-cert-corner { position: absolute; width: max(28px, 10cqw); height: max(28px, 10cqw); }
+.kc-cert-title { margin-top: .35em; font: 700 clamp(27px, 7.4cqw, 52px)/1.06 var(--font-fraunces), Georgia, serif; }
+.kc-cert-title span { display: block; color: var(--kc-berry); font-style: italic; }
+.kc-holly { display: block; width: min(62%, 280px); margin: clamp(8px, 2.4cqw, 16px) auto; }
+.kc-cert-lead { font: italic 500 clamp(16px, 3.3cqw, 21px)/1.4 var(--font-fraunces), Georgia, serif; color: #2d6a4f; }
+.kc-cert-name { --fit-size: clamp(36px, 11.5cqw, 84px); max-width: 94%; margin: .08em auto .1em; padding-bottom: .1em; border-bottom: 2px solid rgba(184, 134, 47, .65); font-family: var(--font-fraunces), Georgia, serif; font-weight: 700; color: var(--kc-berry); }
+.kc-cert-body { max-width: 32em; margin: clamp(10px, 2.6cqw, 18px) auto 0; font: 500 clamp(15px, 3.2cqw, 20px)/1.5 var(--font-kids-inter), system-ui, sans-serif; }
+.kc-cert-footer { display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: clamp(6px, 2cqw, 18px); margin-top: clamp(16px, 5cqw, 36px); }
+.kc-cert-seal { width: clamp(72px, 22cqw, 150px); }
+.kc-cert-number { margin-top: clamp(12px, 3cqw, 22px); font: 600 clamp(14px, 2.4cqw, 15px)/1.3 ui-monospace, "Cascadia Mono", "Courier New", monospace; letter-spacing: .04em; color: #6b4a3a; }
+
+.kc-letter { position: relative; padding: clamp(22px, 7cqw, 52px) clamp(18px, 6.4cqw, 48px); border: 1px solid #e5d5bc; border-radius: 4px 4px 12px 12px; color: var(--kc-ink);
+  background: linear-gradient(180deg, #fffaf0, #f7ecd6); box-shadow: 0 18px 40px rgba(0, 0, 0, .35); print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+.kc-letter .kc-eyebrow { text-align: left; }
+.kc-letter-stamp { float: right; width: clamp(92px, 26cqw, 160px); margin: -.4em -.4em .4em .8em; transform: rotate(4deg); }
+.kc-letter-greeting { margin-top: .35em; font-family: var(--font-fraunces), Georgia, serif; font-weight: 700; }
+.kc-letter-name { --fit-size: clamp(30px, 8.6cqw, 54px); }
+.kc-letter-name span { color: var(--kc-berry); text-decoration: underline wavy rgba(212, 163, 115, .85); text-decoration-thickness: .055em; text-underline-offset: .2em; }
+.kc-letter-report { clear: both; margin-top: clamp(12px, 3cqw, 20px); padding: .8em 1em; border: 1px dashed rgba(184, 134, 47, .75); border-radius: 12px; background: rgba(250, 204, 21, .12); font: 500 clamp(15px, 3.1cqw, 18px)/1.5 var(--font-kids-inter), system-ui, sans-serif; }
+.kc-letter-report em { font-style: normal; font-weight: 700; color: #9e3537; }
+.kc-letter-message { margin-top: clamp(14px, 3.4cqw, 24px); font: 600 clamp(23px, 6.2cqw, 36px)/1.32 var(--font-kids-caveat), cursive; color: #1e2a4a; }
+.kc-letter-signoff { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: clamp(14px, 4cqw, 28px); }
+.kc-letter-seal { flex-shrink: 0; width: clamp(68px, 19cqw, 124px); transform: rotate(-8deg); }
+
+.kc-receipt { --perf: max(5px, 1.5cqw); position: relative; padding: clamp(28px, 8cqw, 48px) clamp(18px, 7cqw, 40px) clamp(30px, 8cqw, 48px); background: #fffdf7; color: #1f2937; text-align: center;
+  font-family: ui-monospace, "Cascadia Mono", "Courier New", monospace; print-color-adjust: exact; -webkit-print-color-adjust: exact;
+  -webkit-mask: radial-gradient(var(--perf) at 50% 0, #0000 97%, #000) 50% 0 / calc(var(--perf) * 3) 51% repeat-x, radial-gradient(var(--perf) at 50% 100%, #0000 97%, #000) 50% 100% / calc(var(--perf) * 3) 51% repeat-x;
+  mask: radial-gradient(var(--perf) at 50% 0, #0000 97%, #000) 50% 0 / calc(var(--perf) * 3) 51% repeat-x, radial-gradient(var(--perf) at 50% 100%, #0000 97%, #000) 50% 100% / calc(var(--perf) * 3) 51% repeat-x; }
+.kc-receipt-crest { display: block; width: clamp(84px, 28cqw, 140px); margin: 0 auto; }
+.kc-receipt-title { margin-top: .3em; font: 700 clamp(21px, 6cqw, 32px)/1.15 var(--font-fraunces), Georgia, serif; color: #1e1b4b; }
+.kc-receipt-sub { margin-top: .5em; font-size: clamp(14px, 2.9cqw, 15px); line-height: 1.4; color: #4338ca; }
+.kc-rule { margin: clamp(10px, 3cqw, 18px) 0; border-top: 2px dashed #9ca3af; }
+.kc-rule--double { border-top: 4px double #374151; }
+.kc-receipt-from { font-size: clamp(14px, 2.9cqw, 15px); letter-spacing: .16em; text-transform: uppercase; color: #4b5563; }
+.kc-receipt-name { --fit-size: clamp(30px, 9.6cqw, 56px); margin-top: .12em; font-family: var(--font-fraunces), Georgia, serif; font-weight: 700; color: #312e81; }
+.kc-lines { display: grid; gap: .5em; font-size: clamp(14px, 3.3cqw, 17px); line-height: 1.35; text-align: left; }
+.kc-line { display: flex; align-items: baseline; gap: .4em; }
+.kc-line dt { display: flex; flex: 1; min-width: 0; }
+.kc-line dt::after { content: ""; flex: 1; min-width: 1em; margin: 0 .2em .28em .5em; border-bottom: 2px dotted #9ca3af; }
+.kc-line dd { font-weight: 700; text-align: right; }
+.kc-line--note { flex-direction: column; align-items: stretch; }
+.kc-line--note dt::after { display: none; }
+.kc-line--note dd { margin-top: .15em; overflow-wrap: anywhere; font-weight: 600; text-align: left; color: #4338ca; }
+.kc-line--total { justify-content: space-between; font-size: clamp(17px, 4.4cqw, 23px); font-weight: 800; text-transform: uppercase; }
+.kc-receipt-tree { margin-top: .4em; font-size: clamp(14px, 2.9cqw, 15px); text-align: right; color: #166534; }
+.kc-receipt-message { font: 600 clamp(23px, 6.4cqw, 34px)/1.32 var(--font-kids-caveat), cursive; color: #1e1b4b; }
+.kc-signature--receipt { margin-top: clamp(10px, 3cqw, 18px); color: #3730a3; }
+.kc-barcode { display: block; width: 72%; height: clamp(36px, 10cqw, 56px); margin: clamp(14px, 3.4cqw, 22px) auto .4em; }
+.kc-receipt-thanks { font-size: clamp(14px, 2.9cqw, 15px); line-height: 1.45; color: #4b5563; }
+.kc-receipt-total { position: relative; }
+.kc-receipt-stamp { position: absolute; top: -.6em; left: 50%; width: clamp(118px, 36cqw, 200px); transform: translateX(-50%) rotate(-12deg); mix-blend-mode: multiply; pointer-events: none; }
+
+/* Party invite: balloons float up once, then rest. */
+@keyframes balloonRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+.kids-studio .kc-balloons svg { animation: balloonRise .9s cubic-bezier(.34, 1.56, .64, 1) both; }
+.kc-invite-title { line-height: 1.1; }
+
+/* Print-only keepsakes wait off-screen (so text fitting can measure them) until printed. */
+.kids-print-root.kc-print { display: block; position: fixed; top: 0; left: -10000px; width: 186mm; visibility: hidden; pointer-events: none; }
+/* Laid out exactly as printed, so the off-screen copy measures true. */
+.kc-print .kc-print-sheet { break-inside: avoid; }
+.kc-print .kc-cert, .kc-print .kc-letter { box-shadow: none; }
+.kc-print .kc-sheet--receipt { width: 120mm; max-width: none; filter: none; transform: none; }
+@media print {
+  .kids-print-root.kc-print { position: static; width: 186mm; visibility: visible; margin: 0 auto; }
+}
+/* A5 (and other small paper): the A4-width sheet is scaled down to the page. */
+@media print and (max-width: 160mm) {
+  .kids-print-root.kc-print { zoom: .667; }
+}
+
+/* Kids shop redesign: editorial product cards and a clearer studio boundary. */
+.kids-hero { background: radial-gradient(ellipse at 78% 25%, rgba(212,163,115,.17), transparent 34%), linear-gradient(120deg, #0b2017 0%, #173a2b 54%, #10291f 100%); }
+.kids-hero-glow { position: absolute; width: 42rem; height: 42rem; right: -14rem; top: -22rem; border-radius: 50%; background: rgba(250, 204, 21, .055); filter: blur(3px); }
+.kids-hero-art { min-height: 340px; height: min(76vw, 520px); isolation: isolate; }
+.kids-hero-art-backdrop { position: absolute; inset: 12% 5% 8%; border: 1px solid rgba(255,255,255,.12); border-radius: 46% 54% 42% 58% / 49% 42% 58% 51%; background: linear-gradient(140deg, rgba(240,223,189,.2), rgba(212,163,115,.08)); transform: rotate(-5deg); }
+.kids-hero-cover { position: absolute; overflow: hidden; border: 7px solid #fffaf0; border-radius: 13px; background: #f7ecd6; box-shadow: 0 28px 55px rgba(0,0,0,.33); }
+.kids-hero-cover img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.kids-hero-cover--left { width: 34%; height: 72%; top: 12%; left: 8%; transform: rotate(-12deg); }
+.kids-hero-cover--right { width: 34%; height: 72%; top: 9%; right: 7%; transform: rotate(10deg); }
+.kids-hero-cover--front { width: 39%; height: 82%; top: 14%; left: 31%; transform: rotate(-1deg); }
+.kids-hero-note { position: absolute; z-index: 5; right: 0; bottom: 8%; border: 1px solid rgba(15,41,30,.14); border-radius: 1rem; background: #f5dfa0; padding: .8rem 1.15rem; color: #0f291e; font: 700 1rem/1.25 var(--font-fraunces), Georgia, serif; box-shadow: 0 14px 30px rgba(0,0,0,.2); transform: rotate(3deg); }
+.kids-category-nav a { white-space: nowrap; }
+.kids-nav-chip { display: inline-flex; min-height: 40px; align-items: center; border: 1px solid #d8cdbb; border-radius: 999px; background: #fffdf8; padding: .55rem .9rem; transition: background .15s ease, border-color .15s ease, color .15s ease; }
+.kids-nav-chip:hover { border-color: #1b4332; background: #e8efe8; color: #0b2017; }
+.kids-shop-section { background: linear-gradient(180deg, #fbf8f2 0%, #f1ece2 100%); }
+.kids-feature-card { scroll-margin-top: 92px; }
+.kids-feature-gallery { background: radial-gradient(ellipse at top left, #fffaf0, #f0e7d8); }
+.kids-feature-main { display: grid; aspect-ratio: 1.06 / 1; place-items: center; overflow: hidden; border: 1px solid rgba(15,41,30,.1); border-radius: 1.35rem; background: #f5efe4; padding: .75rem; }
+.kids-feature-main img { max-height: 100%; }
+.kids-feature-thumb { width: 100%; aspect-ratio: 1; border: 1px solid rgba(15,41,30,.1); border-radius: .9rem; background: #fffaf0; object-fit: cover; }
+.kids-eyebrow { color: #37604b; font-size: .74rem; font-weight: 800; letter-spacing: .16em; line-height: 1.4; text-transform: uppercase; }
+.kids-eyebrow--light { color: #f5dfa0; }
+.kids-feature-point { display: flex; align-items: flex-start; gap: .65rem; border-radius: .85rem; background: #f5f2eb; padding: .85rem .9rem; line-height: 1.45; }
+.kids-feature-point::before { content: "✓"; flex: none; color: #2d6a4f; font-weight: 900; }
+.kids-primary-cta { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; border: 1px solid #1b4332; border-radius: 999px; background: #173a2b; padding: .72rem 1.2rem; color: white; font-size: .875rem; font-weight: 750; line-height: 1.25; text-align: center; text-decoration: none; box-shadow: 0 8px 18px rgba(15,41,30,.12); transition: transform .15s ease, background .15s ease, box-shadow .15s ease; }
+.kids-primary-cta:hover { transform: translateY(-1px); background: #24513c; box-shadow: 0 12px 22px rgba(15,41,30,.18); }
+.kids-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 1.5rem; margin: 4.5rem 0 1.5rem; scroll-margin-top: 100px; }
+.kids-product-card { display: flex; min-width: 0; flex-direction: column; overflow: hidden; border: 1px solid rgba(15,41,30,.12); border-radius: 1.5rem; background: #fff; box-shadow: 0 16px 40px -28px rgba(15,41,30,.38); transition: transform .18s ease, box-shadow .18s ease; }
+.kids-product-card:hover { transform: translateY(-3px); box-shadow: 0 22px 46px -28px rgba(15,41,30,.42); }
+.kids-product-art { position: relative; display: grid; aspect-ratio: 1.58 / 1; place-items: center; overflow: hidden; border-bottom: 1px solid rgba(15,41,30,.08); background: radial-gradient(ellipse at center, #fffaf0 0%, #eee5d6 100%); padding: .75rem; }
+.kids-product-art img { width: 100%; height: 100%; object-fit: contain; }
+.kids-product-badge { position: absolute; z-index: 1; top: .85rem; left: .85rem; border: 1px solid rgba(15,41,30,.09); border-radius: 999px; background: #dcebdd; padding: .42rem .72rem; color: #153728; font-size: .68rem; font-weight: 850; letter-spacing: .09em; }
+.kids-product-badge--gold { background: #f4e4b9; }
+.kids-product-badge--blue { background: #dcebf0; }
+.kids-product-body { display: flex; flex: 1; flex-direction: column; padding: 1.25rem; }
+.kids-product-meta { color: #52695b; font-size: .73rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.kids-product-meta span { margin: 0 .3rem; color: #bb8757; }
+.kids-product-title { margin-top: .5rem; color: #0f291e; font: 700 1.55rem/1.18 var(--font-fraunces), Georgia, serif; }
+.kids-product-description { margin-top: .7rem; color: #40584a; font-size: .9rem; line-height: 1.65; }
+.kids-product-list { display: grid; gap: .48rem; margin-top: 1rem; color: #40584a; font-size: .82rem; line-height: 1.45; }
+.kids-product-list li { position: relative; padding-left: 1.15rem; }
+.kids-product-list li::before { position: absolute; left: 0; color: #47785a; content: "✓"; font-weight: 800; }
+.kids-product-footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-top: auto; padding-top: 1.25rem; }
+.kids-product-price { flex: none; color: #0f291e; font: 750 1.35rem/1 var(--font-fraunces), Georgia, serif; }
+.kids-printable-bundles { margin-top: 4.5rem; border: 1px solid rgba(245,223,160,.2); border-radius: 2rem; background: radial-gradient(ellipse at 10% 0%, #28553e, #10291f 63%); padding: 2rem 1.2rem; box-shadow: 0 26px 65px -38px rgba(15,41,30,.7); }
+.kids-bundle-card { display: flex; min-width: 0; flex-direction: column; border: 1px solid rgba(15,41,30,.12); border-radius: 1.4rem; background: #fffdf8; padding: 1.35rem; color: #0f291e; box-shadow: 0 14px 32px rgba(0,0,0,.12); }
+.kids-bundle-card--featured { border: 2px solid #e0bb5b; background: #f8f0dd; }
+.kids-bundle-kicker { color: #52695b; font-size: .72rem; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+.kids-bundle-card h3 { margin-top: .5rem; font: 700 1.55rem/1.2 var(--font-fraunces), Georgia, serif; }
+.kids-bundle-total { margin-top: 1rem; font: 750 2.4rem/1 var(--font-fraunces), Georgia, serif; }
+.kids-bundle-savings { margin-top: .45rem; color: #246040; font-size: .82rem; font-weight: 800; }
+.kids-bundle-savings span { color: #66766a; font-weight: 550; }
+.kids-bundle-card ul { display: grid; gap: .55rem; margin: 1.15rem 0 1.4rem; color: #40584a; font-size: .87rem; line-height: 1.4; }
+.kids-bundle-card li { padding-left: 1.1rem; position: relative; }
+.kids-bundle-card li::before { position: absolute; left: 0; color: #47785a; content: "✓"; font-weight: 800; }
+.kids-bundle-cta { display: flex; min-height: 46px; align-items: center; justify-content: space-between; gap: .5rem; margin-top: auto; border-radius: .8rem; background: #173a2b; padding: .75rem .9rem; color: white; font-size: .84rem; font-weight: 750; text-decoration: none; }
+.kids-bundle-cta:hover { background: #24513c; }
+.kids-studio-island { background: radial-gradient(ellipse at 10% 0%, #fffaf0 0%, #edf1e9 52%, #e7ede5 100%); }
+.kids-studio-heading { border-bottom: 1px solid rgba(15,41,30,.12); padding-bottom: 1.4rem; }
+.kids-studio-pricing { background: #f8f5ef; border-top: 1px solid #dfd5c7; border-bottom: 1px solid #dfd5c7; }
+.kids-studio-pricing > div > div:first-child > p:first-child { color: #52695b; }
+.kids-studio-pricing > div > div:first-child > h2 { color: #0f291e; }
+
+@media (min-width: 640px) {
+  .kids-product-body { padding: 1.5rem; }
+  .kids-printable-bundles { padding: 2.5rem; }
+  .kids-bundle-card { padding: 1.6rem; }
+}
+@media (max-width: 639px) {
+  .kids-hero-art { min-height: 290px; height: 78vw; max-height: 380px; }
+  .kids-section-heading { align-items: flex-start; flex-direction: column; margin-top: 3.5rem; }
+  .kids-product-art { aspect-ratio: 1.45 / 1; }
+  .kids-product-footer { align-items: flex-start; flex-direction: column; }
+  .kids-product-footer .kids-primary-cta { width: 100%; }
+  .kids-feature-card { border-radius: 1.4rem; }
+  .kids-feature-main { aspect-ratio: 1.2 / 1; }
+  .kids-printable-bundles { margin-top: 3.5rem; border-radius: 1.5rem; padding: 1.35rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kids-product-card, .kids-nav-chip, .kids-primary-cta { transition: none; }
+  .kids-product-card:hover, .kids-primary-cta:hover { transform: none; }
+}
