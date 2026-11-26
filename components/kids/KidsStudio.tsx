@@ -249,7 +249,7 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
         </section>
         <nav aria-label="Kids page sections" className="no-print kids-category-nav sticky top-0 z-20 border-b border-parchment-300 bg-parchment-50/95 px-4 py-3 shadow-sm backdrop-blur sm:px-8">
           <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto pb-1 text-sm font-semibold text-forest-800">
-            <a href="#printables" className="kids-nav-chip">Printable packs</a><a href="#screen-free-packs" className="kids-nav-chip">Screen-free</a><a href="#rainy-day-packs" className="kids-nav-chip">Rainy days</a><a href="#printable-bundles" className="kids-nav-chip">Printable bundles</a><a href="#studio" className="kids-nav-chip">Kids Studio</a><a href="#bundles" className="kids-nav-chip">Studio pricing</a><a href="#privacy-trust" className="kids-nav-chip">Parent promise</a>
+            <a href="#printables" className="kids-nav-chip">Printable packs</a><a href="#screen-free-packs" className="kids-nav-chip">Screen-free</a><a href="#christmas-packs" className="kids-nav-chip">Christmas</a><a href="#rainy-day-packs" className="kids-nav-chip">Rainy days</a><a href="#printable-bundles" className="kids-nav-chip">Printable bundles</a><a href="#studio" className="kids-nav-chip">Kids Studio</a><a href="#bundles" className="kids-nav-chip">Studio pricing</a><a href="#privacy-trust" className="kids-nav-chip">Parent promise</a>
           </div>
         </nav>
 
@@ -292,6 +292,21 @@ export default function KidsStudio({ initialData, recipientOnly = false, shareId
               <article className="kids-product-card">
                 <div className="kids-product-art"><span className="kids-product-badge kids-product-badge--gold">30 MISSIONS</span><Image src="/kids/after-school/30day-challenge-cover.png" alt="The 30-Day Screen-Free Challenge printable cover" width={1241} height={1754} /></div>
                 <div className="kids-product-body"><p className="kids-product-meta">Ages 6–8 <span>·</span> One month</p><h3 className="kids-product-title">The 30-Day Screen-Free Challenge</h3><p className="kids-product-description">A month of short missions grouped around making things, going outside, words and stories, and turning the house into a playground. Skip, swap or repeat days to suit your family.</p><ul className="kids-product-list"><li>Four print files: A4 and US Letter, colour and low-ink</li><li>Month tracker and screen-free month certificate</li></ul><div className="kids-product-footer"><span className="kids-product-price">£4</span><a href="https://payhip.com/b/MjsHy" className="kids-primary-cta">Get the challenge <span className="ml-2">· £4</span></a></div></div>
+              </article>
+            </div>
+
+            <div id="christmas-packs" className="kids-section-heading scroll-mt-28">
+              <div><p className="kids-eyebrow">Ready for December</p><h2 className="mt-2 font-serif text-3xl font-bold sm:text-4xl">Christmas packs</h2></div>
+              <p className="max-w-xl text-sm leading-relaxed text-forest-700 sm:text-base">A screen-free countdown for every day of December, and placemats to keep the kids&apos; table busy on Christmas Day. Print at home, ready in minutes.</p>
+            </div>
+            <div className="grid gap-5 md:grid-cols-2">
+              <article className="kids-product-card">
+                <div className="kids-product-art"><span className="kids-product-badge kids-product-badge--gold">25 DAYS</span><Image src="/kids/after-school/christmas-countdown-cover.png" alt="25-Day Christmas Countdown printable cover" width={990} height={1400} /></div>
+                <div className="kids-product-body"><p className="kids-product-meta">Ages 6–8 <span>·</span> 1–25 December</p><h3 className="kids-product-title">25-Day Christmas Countdown</h3><p className="kids-product-description">One small activity a day, from 1 December to Christmas Day: mazes, word searches, I Spy, a letter to Santa, a paper chain, a snowflake to cut and cards to make. Each takes about 10–15 minutes.</p><ul className="kids-product-list"><li>Four print files: A4 and US Letter, colour and low-ink</li><li>Fridge tracker and a Christmas Countdown Champion certificate</li></ul><div className="kids-product-footer"><span className="kids-product-price">£4</span><a href="https://payhip.com/b/kQz0s" className="kids-primary-cta">Get the Countdown <span className="ml-2">· £4</span></a></div></div>
+              </article>
+              <article className="kids-product-card">
+                <div className="kids-product-art"><span className="kids-product-badge">10 PLACEMATS</span><Image src="/kids/after-school/christmas-placemats-cover.png" alt="Christmas Dinner Placemats printable cover" width={1400} height={990} /></div>
+                <div className="kids-product-body"><p className="kids-product-meta">Ages 6–8 <span>·</span> Christmas Day</p><h3 className="kids-product-title">Christmas Dinner Placemats</h3><p className="kids-product-description">Ten placemats for the kids&apos; table: a maze, a word search, I Spy, Christmas dinner bingo, a cracker joke to write and more. Each one has a &quot;This seat is for&quot; box, so it doubles as a place card.</p><ul className="kids-product-list"><li>Four print files: A4 and US Letter, colour and low-ink</li><li>No scissors or glue, just pencils or crayons</li></ul><div className="kids-product-footer"><span className="kids-product-price">£2.99</span><a href="https://payhip.com/b/pTX31" className="kids-primary-cta">Get the Placemats <span className="ml-2">· £2.99</span></a></div></div>
               </article>
             </div>
 
